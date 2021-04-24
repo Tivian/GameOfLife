@@ -1,14 +1,7 @@
 class Life {
     constructor(canvas) {
-        this.canvas = canvas instanceof jQuery ? canvas.get(0) : canvas;
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.ctx = this.canvas.getContext('2d');
-
-        this.running = false;
-        this.speed = 10;//60;
-
         this.settings = {
+            speed: 10,
             size: 10,
             border: 1,
             bkgColor: '#fff',
@@ -19,6 +12,15 @@ class Life {
             }
         };
 
+        this.canvas = canvas instanceof jQuery ? canvas.get(0) : canvas;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.ctx = this.canvas.getContext('2d');
+
+        this._running = false;
+        this._shift = new Point(0, 0);
+        this._generation = 0;
+
         this.cells = new Map();
 
         let self = this;
@@ -28,26 +30,70 @@ class Life {
             self.draw();
         });
 
+        function toPoint(ev) {
+            return new Point(
+                Math.floor((ev.pageX - self._shift.x) / self.settings.size),
+                Math.floor((ev.pageY - self._shift.y) / self.settings.size)
+            );
+        }
+
+        let displayCoords = (ev) => {
+            let point = toPoint(ev);
+            $('#coords').css({top: ev.pageY + 15, left: ev.pageX + 10});
+            $('#coord_x').text(point.x);
+            $('#coord_y').text(point.y);
+        }
+
+        let lastCoord = new Point(0, 0);
+        let dragging = false;
+        let dragged = false;
+
         $(this.canvas)
             .on('mousemove', ev => {
-                //console.log(Math.floor(ev.pageX / self.settings.size), Math.floor(ev.pageY / self.settings.size));
-                $('#coords').css({top: ev.pageY + 15, left: ev.pageX + 10});
-                $('#coord_x').text(Math.floor(ev.pageX / self.settings.size));
-                $('#coord_y').text(Math.floor(ev.pageY / self.settings.size));
+                if (dragging) {
+                    let coord = new Point(ev.pageX, ev.pageY);
+                    if (coord.distance(lastCoord) > 1)
+                        dragged = true;
+
+                    this._shift.x += coord.x - lastCoord.x;
+                    this._shift.y += coord.y - lastCoord.y;
+
+                    lastCoord = coord;
+                    this.draw();
+                }
+
+                displayCoords(ev);
             })
             .on('mousedown', ev => {
+                lastCoord = new Point(ev.pageX, ev.pageY);
 
+                if (ev.which == 1)
+                    dragging = true;
             })
             .on('mouseup', ev => {
-
+                if (ev.which == 1)
+                    dragging = false;
             })
-            .on('click', ev => {
-                console.log(Math.floor(ev.pageX / self.settings.size), Math.floor(ev.pageY / self.settings.size));
-                self.modify(Math.floor(ev.pageX / self.settings.size), Math.floor(ev.pageY / self.settings.size));
-                self.draw();
+            .on('click', async (ev) => {
+                if (!dragged) {
+                    let point = toPoint(ev);
+                    console.log(point.x, point.y);
+                    self.modify(point.x, point.y);
+                    await self.draw();
+                } else {
+                    dragged = false;
+                }
             });
 
         this.draw();
+    }
+
+    get population() {
+        return this.cells.size;
+    }
+
+    get generation() {
+        return this._generation;
     }
 
     async draw() {
@@ -65,11 +111,11 @@ class Life {
             //this.ctx.fillStyle = cell.isAlive ? '#000' : '#999';
             let color = `rgb(${Math.atan(100 / cell.age) / (Math.PI / 2) * 220}, 0, ${Math.atan(cell.age / 100) / (Math.PI / 2) * 220})`;
             this.ctx.fillStyle = cell.isAlive ? color : '#999';
-            this.ctx.fillRect(cell.x * size, cell.y * size, size, size);
+            this.ctx.fillRect(this._shift.x + cell.x * size, this._shift.y + cell.y * size, size, size);
         }
 
-        for (let y = 0; y < height; y += size) {
-            for (let x = 0; x < width; x += size) {
+        for (let y = (this._shift.y % size) - size; y < height; y += size) {
+            for (let x = (this._shift.x % size) - size; x < width; x += size) {
                 this.ctx.fillStyle = this.settings.borderColor;
                 this.ctx.fillRect(x - this.settings.border / 2, y, this.settings.border, size);
             }
@@ -149,6 +195,7 @@ class Life {
             cell.age++;
         }
 
+        this._generation++;
         if (toModify.size > 0) {
             for (let cell of toModify)
                 this.modify(cell);
@@ -166,12 +213,12 @@ class Life {
         }
 
         let self = this;
-        this.running = true;
+        this._running = true;
         (async _ => {
             console.log("START");
 
-            while(self.running) {
-                await sleep(self.speed);
+            while(self._running) {
+                await sleep(self.settings.speed);
 
                 if (!await self.next() || (self.cells.size == 0))
                     self.stop();
@@ -182,7 +229,7 @@ class Life {
     }
     
     stop() {
-        this.running = false;
+        this._running = false;
     }
 
     clear() {
@@ -209,6 +256,13 @@ class Point {
         hash = prime * hash + this.y;
         return hash;*/
         return this.x + '|' + this.y;
+    }
+
+    distance(other) {
+        if (!(other instanceof Point))
+            return undefined;
+        
+        return Math.floor(Math.pow(other.x - this.x, 2) + Math.pow(other.y - this.y, 2));
     }
 
     toString() {
