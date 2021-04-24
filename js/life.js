@@ -33,6 +33,8 @@ class Life {
         let dragging = false;
         let dragged = false;
 
+        $('#coords').css('user-select', 'none');
+
         $(this.canvas)
             .on('mousemove', ev => {
                 if (dragging) {
@@ -394,7 +396,7 @@ class Cell {
     }
 
     addNeighbor(cell) {
-        if (this.neighbors.size == 8)
+        if (this._neighbors.size == 8)
             return;
 
         if (!this._neighbors.has(cell.hash)) {
