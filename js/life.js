@@ -6,7 +6,7 @@ class Life {
         this.ctx = this.canvas.getContext('2d');
 
         this.running = false;
-        this.speed = 60;
+        this.speed = 10;//60;
 
         this.settings = {
             size: 10,
@@ -34,6 +34,12 @@ class Life {
                 $('#coords').css({top: ev.pageY + 15, left: ev.pageX + 10});
                 $('#coord_x').text(Math.floor(ev.pageX / self.settings.size));
                 $('#coord_y').text(Math.floor(ev.pageY / self.settings.size));
+            })
+            .on('mousedown', ev => {
+
+            })
+            .on('mouseup', ev => {
+
             })
             .on('click', ev => {
                 console.log(Math.floor(ev.pageX / self.settings.size), Math.floor(ev.pageY / self.settings.size));
@@ -79,18 +85,14 @@ class Life {
             if (cell.isAlive) {
                 // kill
                 cell.isAlive = false;
-
-                for (let neighbor of cell.neighbors.values()) {
-                    if (!neighbor.isAlive && neighbor.counter == 0) {
-                        neighbor.neighbors.clear();
-                        this.cells.delete(neighbor.hash);
-                    }
+                
+                for (let neighbor of cell.neighbors) {
+                    if (!neighbor.isAlive && neighbor.counter == 0)
+                        this.remove(neighbor);
                 }
 
-                if (cell.counter == 0) {
-                    cell.neighbors.clear();
-                    this.cells.delete(cell.hash);
-                }
+                if (cell.counter == 0)
+                    this.remove(cell);
             } else {
                 // bring to life
                 cell.isAlive = true;
@@ -101,6 +103,11 @@ class Life {
             this.cells.set(cell.hash, cell);
             this.createNeighborhood(cell);
         }
+    }
+
+    remove(cell) {
+        cell.clear();
+        this.cells.delete(cell.hash);
     }
 
     getOrAdd(x, y) {
@@ -114,14 +121,12 @@ class Life {
     }
 
     createNeighborhood(cell) {
-        let neighborhood = new Map();
+        let neighborhood = new Set();
 
-        for (let neighbor of cell.neighborhood) {
-            let new_cell = this.getOrAdd(neighbor);
-            neighborhood.set(new_cell.hash, new_cell);
-        }
+        for (let neighbor of cell.neighborhood)
+            neighborhood.add(this.getOrAdd(neighbor));
 
-        for (let neighbor of neighborhood.values()) {
+        for (let neighbor of neighborhood) {
             cell.addNeighbor(neighbor);
 
             for (let other of neighbor.neighborhood) {
@@ -138,13 +143,19 @@ class Life {
             if ((cell.isAlive && !this.settings.rule.survive.find(cell.counter))
             || (!cell.isAlive && this.settings.rule.born.find(cell.counter)))
                 toModify.add(cell);
+
+            cell.age++;
         }
 
-        for (let cell of toModify) {
-            this.modify(cell);
-        }
+        if (toModify.size > 0) {
+            for (let cell of toModify)
+                this.modify(cell);
 
-        this.draw();
+            this.draw();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     start() {
@@ -155,11 +166,16 @@ class Life {
         let self = this;
         this.running = true;
         (async function() {
-            console.log(self);
+            console.log("START");
+
             while(self.running) {
                 await sleep(self.speed);
-                self.next();
+
+                if (!await self.next() || (self.cells.size == 0))
+                    self.stop();
             }
+
+            console.log("STOP");
         })();
     }
     
@@ -168,9 +184,13 @@ class Life {
     }
 
     clear() {
+        this.stop();
+
         for (let cell of this.cells.values())
-            cell.neighbors.clear();
+            cell.clear();
         this.cells.clear();
+
+        this.draw();
     }
 }
 
@@ -200,7 +220,7 @@ class Cell {
         this.age = 0;
 
         this.counter = 0;
-        this.neighbors = new Map();
+        this.neighbor = new Map();
 
         this.isAlive = alive;
         this.hash = this.pos.hash;
@@ -222,7 +242,7 @@ class Cell {
 
     set isAlive(value) {
         this.alive = value;
-        for (let neighbor of this.neighbors.values())
+        for (let neighbor of this.neighbors)
             neighbor.counter += value ? 1 : -1;
     }
 
@@ -242,9 +262,13 @@ class Cell {
         };
     }
 
+    get neighbors() {
+        return this.neighbor.values();
+    }
+
     addNeighbor(cell) {
-        if (!this.neighbors.has(cell.hash)) {
-            this.neighbors.set(cell.hash, cell);
+        if (!this.neighbor.has(cell.hash)) {
+            this.neighbor.set(cell.hash, cell);
 
             if (!cell.isAlive)
                 cell.addNeighbor(this);
@@ -254,7 +278,13 @@ class Cell {
     }
 
     removeNeighbor(cell) {
-        this.neighbors.delete(cell.hash);
+        this.neighbor.delete(cell.hash);
+    }
+
+    clear() {
+        for (let other of this.neighbors)
+            other.removeNeighbor(this);
+        this.neighbor.clear();
     }
 
     toString() {

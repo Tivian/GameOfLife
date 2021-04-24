@@ -9,8 +9,8 @@ body {
 
 #coords {
     position: fixed;
-    /*top: 0.5vh;
-    right: 0.5vh;*/
+    top: 0.5vh;
+    left: 0.5vh;
     padding: 5px;
 
     font-family: 'Lato';
