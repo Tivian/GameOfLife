@@ -62,7 +62,9 @@ class Life {
             //if (!cell.alive)
                 //continue;
 
-            this.ctx.fillStyle = cell.isAlive ? '#000' : '#999';
+            //this.ctx.fillStyle = cell.isAlive ? '#000' : '#999';
+            let color = `rgb(${Math.atan(100 / cell.age) / (Math.PI / 2) * 220}, 0, ${Math.atan(cell.age / 100) / (Math.PI / 2) * 220})`;
+            this.ctx.fillStyle = cell.isAlive ? color : '#999';
             this.ctx.fillRect(cell.x * size, cell.y * size, size, size);
         }
 
@@ -159,13 +161,13 @@ class Life {
     }
 
     start() {
-        let sleep = function(ms) {
+        let sleep = ms => {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
         let self = this;
         this.running = true;
-        (async function() {
+        (async _ => {
             console.log("START");
 
             while(self.running) {
@@ -216,34 +218,50 @@ class Point {
 
 class Cell {
     constructor(x, y, alive = false) {
-        this.pos = (x instanceof Cell) ? x.pos : (x instanceof Point) ? x : new Point(x, y);
-        this.age = 0;
+        this._pos = (x instanceof Cell) ? x._pos : (x instanceof Point) ? x : new Point(x, y);
+        this._age = 0;
+        this._alive = alive;
 
-        this.counter = 0;
-        this.neighbor = new Map();
-
-        this.isAlive = alive;
-        this.hash = this.pos.hash;
-
-        Object.freeze(this.pos);
+        this._counter = 0;
+        this._neighbors = new Map();
     }
 
     get x() {
-        return this.pos.x;
+        return this._pos.x;
     }
 
     get y() {
-        return this.pos.y;
+        return this._pos.y;
     }
 
     get isAlive() {
-        return this.alive;
+        return this._alive;
     }
 
     set isAlive(value) {
-        this.alive = value;
+        this._alive = value;
         for (let neighbor of this.neighbors)
-            neighbor.counter += value ? 1 : -1;
+            neighbor._counter += value ? 1 : -1;
+    }
+
+    get neighbors() {
+        return this._neighbors.values();
+    }
+
+    get counter() {
+        return this._counter;
+    }
+
+    get age() {
+        return this._age;
+    }
+
+    set age(value) {
+        this._age = this.isAlive ? value : 0;
+    }
+
+    get hash() {
+        return this._pos.hash;
     }
 
     get neighborhood() {
@@ -262,33 +280,29 @@ class Cell {
         };
     }
 
-    get neighbors() {
-        return this.neighbor.values();
-    }
-
     addNeighbor(cell) {
-        if (!this.neighbor.has(cell.hash)) {
-            this.neighbor.set(cell.hash, cell);
+        if (!this._neighbors.has(cell.hash)) {
+            this._neighbors.set(cell.hash, cell);
 
             if (!cell.isAlive)
                 cell.addNeighbor(this);
             else
-                this.counter++;
+                this._counter++;
         }
     }
 
     removeNeighbor(cell) {
-        this.neighbor.delete(cell.hash);
+        this._neighbors.delete(cell.hash);
     }
 
     clear() {
         for (let other of this.neighbors)
             other.removeNeighbor(this);
-        this.neighbor.clear();
+        this._neighbors.clear();
     }
 
     toString() {
-        return (this.isAlive ? 'Alive' : 'Dead') + ' cell at ' + this.pos.toString();
+        return (this.isAlive ? 'Alive' : 'Dead') + ' cell at ' + this._pos.toString();
     }
 }
 
