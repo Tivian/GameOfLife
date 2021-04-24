@@ -1,7 +1,30 @@
 body {
     margin: 0;
+    overflow: hidden;
 }
 
 #game-of-life {
     position: absolute;
+}
+
+#coords {
+    position: fixed;
+    /*top: 0.5vh;
+    right: 0.5vh;*/
+    padding: 5px;
+
+    font-family: 'Lato';
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 3px black;
+    
+    border: 1px rgba(0, 0, 0, 0.25) solid;
+    border-radius: 20%;
+
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.35);
+    z-index: 100;
+}
+
+#coords > div {
+    display: inline;
 }
