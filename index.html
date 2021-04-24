@@ -3,18 +3,18 @@
     <meta charset="utf-8">
     <title>Game of Life</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="js/life.js" type="application/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script>
-        $(function() {
+        $(() => {
             window.life = new Life($("#game-of-life"));
         });
     </script>
 </head>
 <body>
     <div id="coords">
-        x: <div id="coord_x">0</div><br>
-        y: <div id="coord_y">0</div>
+        <div id="coord_x">0</div>, 
+        <div id="coord_y">0</div>
     </div>
     <canvas id="game-of-life"></canvas>
 </body>
