@@ -66,12 +66,12 @@ class Life {
                 if (ev.which == 1)
                     dragging = false;
             })
-            .on('click', async (ev) => {
+            .on('click', ev => {
                 if (!dragged) {
                     let point = self._toPoint(ev);
                     console.log(point.x, point.y);
                     self.modify(point.x, point.y);
-                    await self.draw();
+                    self.draw();
                 } else {
                     dragged = false;
                 }
@@ -117,6 +117,15 @@ class Life {
         );
     }
 
+    get showDead() {
+        return this.settings.showDead;
+    }
+
+    set showDead(value) {
+        this.settings.showDead = value;
+        this.draw();
+    }
+
     _inside(point) {
         return point.x >= this._top.x
             && point.x <= this._bottom.x
@@ -129,7 +138,7 @@ class Life {
         this.canvas.height = window.innerHeight;
     }
 
-    async draw() {
+    draw() {
         let height = this.canvas.height;
         let width = this.canvas.width;
         let size = this.settings.size;
@@ -141,8 +150,8 @@ class Life {
             if (!this._inside(cell))
                 continue;
 
-            //if (!this.settings.showDead || !cell.isAlive)
-                //continue;
+            if (!this.settings.showDead && !cell.isAlive)
+                continue;
 
             let color = `rgb(${Math.atan(100 / cell.age) / (Math.PI / 2) * 220}, 0, ${Math.atan(cell.age / 100) / (Math.PI / 2) * 220})`;
             this.ctx.fillStyle = cell.isAlive ? color : '#999';
@@ -243,7 +252,6 @@ class Life {
 
             while(self._running) {
                 await sleep(self.settings.speed);
-
                 if (!await self.next() || (self.cells.size == 0))
                     self.stop();
             }
