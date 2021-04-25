@@ -2,6 +2,7 @@ class Life {
     constructor(canvas) {
         this.settings = {
             speed: 10,
+            scale: 1.0,
             size: 10,
             border: 1,
             showDead: false,
@@ -19,13 +20,12 @@ class Life {
         this._resize();
 
         this._running = false;
-        this._shift = new Point(0, 0);
+        this._origin = new Point(0, 0);
         this._generation = 0;
 
         let self = this;
         $(window).on('resize', () => {
-            self.canvas.width = window.innerWidth;
-            self.canvas.height = window.innerHeight;
+            self._resize();
             self.draw();
         });
 
@@ -38,13 +38,14 @@ class Life {
         $(this.canvas)
             .on('mousemove', ev => {
                 if (dragging) {
+                    $(self.canvas).css('cursor', 'grab');
                     let coord = new Point(ev.pageX, ev.pageY);
                     if (coord.distance(lastCoord) > 1)
                         dragged = true;
 
-                    this.shift = [
-                        this.shift.x + coord.x - lastCoord.x, 
-                        this.shift.y + coord.y - lastCoord.y
+                    this.origin = [
+                        this.origin.x + coord.x - lastCoord.x, 
+                        this.origin.y + coord.y - lastCoord.y
                     ];
 
                     lastCoord = coord;
@@ -63,18 +64,30 @@ class Life {
                 }
             })
             .on('mouseup', ev => {
-                if (ev.which == 1)
+                if (ev.which == 1) {
+                    $(self.canvas).css('cursor', '');
                     dragging = false;
+                }
             })
             .on('click', ev => {
                 if (!dragged) {
                     let point = self._toPoint(ev);
                     console.log(point.x, point.y);
-                    self.modify(point.x, point.y);
+                    self.create(point);
                     self.draw();
                 } else {
                     dragged = false;
                 }
+            })
+            .on('wheel', ev => {
+                let delta = ev.originalEvent.deltaY < 0 ? 1 : -1;
+                let weight = self.cellSize / 75;
+                let change = weight * delta;
+                self.scale += change;
+                self.draw();
+                self._displayCoords(ev);
+
+                console.log(change, ev.pageX, ev.pageY);
             })
             .on('contextmenu', ev => {
                 ev.preventDefault();
@@ -99,21 +112,23 @@ class Life {
         return this.canvas.height;
     }
 
-    get shift() {
-        return this._shift;
+    get origin() {
+        return this._origin;
     }
 
-    set shift(value) {
-        [this._shift.x, this._shift.y] = value;
+    set origin(value) {
+        [this._origin.x, this._origin.y] = value instanceof Array
+            ? value : [value.x, value.y];
+        let size = this.cellSize;
 
         this._top = new Point(
-            -Math.ceil(this._shift.x / this.settings.size),
-            -Math.ceil(this._shift.y / this.settings.size)
+            -Math.ceil(this._origin.x / size),
+            Math.ceil(this._origin.y / size)
         );
 
         this._bottom = new Point(
-            -Math.ceil((this._shift.x - this.width) / this.settings.size),
-            -Math.ceil((this._shift.y - this.height) / this.settings.size)
+            -Math.ceil((this._origin.x - this.width) / size),
+            Math.ceil((this._origin.y - this.height) / size)
         );
     }
 
@@ -126,11 +141,37 @@ class Life {
         this.draw();
     }
 
+    get scale() {
+        return this.settings.scale;
+    }
+
+    set scale(value) {
+        if (value < 0.1)
+            value = 0.1;
+        else if (value > 100)
+            value = 100;
+
+        let oldValue = this.settings.scale;
+        this.settings.scale = value;
+        this.origin = [this.origin.x, this.origin.y];
+
+        if (this.cellSize <= this.cellBorder)
+            this.settings.scale = oldValue;
+    }
+
+    get cellSize() {
+        return Math.ceil(this.settings.size * this.settings.scale);
+    }
+
+    get cellBorder() {
+        return Math.ceil(this.settings.border * this.settings.scale);
+    }
+
     _inside(point) {
         return point.x >= this._top.x
             && point.x <= this._bottom.x
-            && point.y >= this._top.y
-            && point.y <= this._bottom.y;
+            && point.y <= this._top.y
+            && point.y >= this._bottom.y;
     }
 
     _resize() {
@@ -141,31 +182,37 @@ class Life {
     draw() {
         let height = this.canvas.height;
         let width = this.canvas.width;
-        let size = this.settings.size;
+        let size = this.cellSize;
+        let border = this.cellBorder;
 
         this.ctx.fillStyle = this.settings.bkgColor;
         this.ctx.fillRect(0, 0, width, height);
 
         for (let cell of this.cells.values()) {
-            if (!this._inside(cell))
-                continue;
-
-            if (!this.settings.showDead && !cell.isAlive)
+            if (!this._inside(cell) || (!this.settings.showDead && !cell.isAlive))
                 continue;
 
             let color = `rgb(${Math.atan(100 / cell.age) / (Math.PI / 2) * 220}, 0, ${Math.atan(cell.age / 100) / (Math.PI / 2) * 220})`;
             this.ctx.fillStyle = cell.isAlive ? color : '#999';
-            this.ctx.fillRect(this.shift.x + cell.x * size, this.shift.y + cell.y * size, size, size);
+            this.ctx.fillRect(this.origin.x + cell.x * size, this.origin.y - cell.y * size, size, size);
         }
 
-        for (let y = (this.shift.y % size) - size; y < height; y += size) {
-            for (let x = (this.shift.x % size) - size; x < width; x += size) {
-                this.ctx.fillStyle = this.settings.borderColor;
-                this.ctx.fillRect(x - this.settings.border / 2, y, this.settings.border, size);
-            }
+        this.ctx.fillStyle = this.settings.borderColor;
+        for (let x = (this.origin.x % size) - size; x < width; x += size)
+            this.ctx.fillRect(x, 0, border, height);
 
-            this.ctx.fillStyle = this.settings.borderColor;
-            this.ctx.fillRect(0, y, this.canvas.width, this.settings.border);
+        for (let y = (this.origin.y % size) - size; y < height; y += size)
+            this.ctx.fillRect(0, y, width, border);
+    }
+
+    create(x, y) {
+        let cell = new Cell(x, y, true);
+
+        if (!this.cells.has(cell.hash)) {
+            this.cells.set(cell.hash, cell);
+            this._createNeighborhood(cell);
+        } else {
+            this.modify(cell);
         }
     }
 
@@ -188,12 +235,12 @@ class Life {
             } else {
                 // bring to life
                 cell.isAlive = true;
-                this.createNeighborhood(cell);
+                this._createNeighborhood(cell);
             }
         } else {
             // create
             this.cells.set(cell.hash, cell);
-            this.createNeighborhood(cell);
+            this._createNeighborhood(cell);
         }
     }
 
@@ -202,8 +249,12 @@ class Life {
         this.cells.delete(cell.hash);
     }
 
-    getOrAdd(x, y) {
-        let cell = new Cell(x, y, false);
+    _createNeighborhood(cell) {
+        for (let neighbor of cell.neighborhood)
+            cell.addNeighbor(this._getOrAdd(neighbor));
+    }
+
+    _getOrAdd(cell) {
         if (this.cells.has(cell.hash)) {
             return this.cells.get(cell.hash);
         } else {
@@ -212,26 +263,21 @@ class Life {
         }
     }
 
-    createNeighborhood(cell) {
-        for (let neighbor of cell.neighborhood)
-            cell.addNeighbor(this.getOrAdd(neighbor));
-    }
-
     async next() {
-        let toModify = [];
+        let toChange = [];
 
         for (let cell of this.cells.values()) {
-            if ((cell.isAlive && !this.settings.rule.survive.find(cell.counter))
-            || (!cell.isAlive && this.settings.rule.born.find(cell.counter)))
-                toModify.push(cell);
+            if ((cell.isAlive && this.settings.rule.survive.indexOf(cell.counter) == -1)
+            || (!cell.isAlive && this.settings.rule.born.indexOf(cell.counter) != -1))
+                toChange.push(cell);
 
             cell.age++;
         }
 
         this._generation++;
-        if (toModify.length > 0) {
-            for (let cell of toModify)
-                this.modify(cell);
+        if (toChange.length > 0) {
+            for (let cell of toChange)
+                this.modify(cell); // TODO: there should be a way to optimize this
 
             this.draw();
             return true;
@@ -275,9 +321,10 @@ class Life {
     }
 
     _toPoint(ev) {
+        let size = this.cellSize;
         return new Point(
-            Math.floor((ev.pageX - this.shift.x) / this.settings.size),
-            Math.floor((ev.pageY - this.shift.y) / this.settings.size)
+            Math.floor((ev.pageX - this.origin.x) / size),
+            -Math.floor((ev.pageY - this.origin.y) / size)
         );
     }
 
@@ -300,9 +347,9 @@ class Life {
     }
 
     center(ev) {
-        this.shift = [
-            window.innerWidth  / 2 - this.settings.size / 2,
-            window.innerHeight / 2 - this.settings.size / 2
+        this.origin = [
+            window.innerWidth  / 2,
+            window.innerHeight / 2
         ];
 
         if (typeof ev !== 'undefined')
@@ -310,17 +357,29 @@ class Life {
 
         this.draw();
     }
+
+    test() {
+        this.create(0, 0);
+        this.create(1, 0);
+        this.create(0, 1);
+        this.create(1, 1);
+        
+        this.create(2, -1);
+
+        this.create(3, 0);
+        this.create(4, 0);
+        this.create(3, 1);
+        this.create(4, 1);
+
+        this.start();
+    }
 }
 
 class Point {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this._hash = this.x + '|' + this.y;
-    }
-
-    get hash() {
-        return this._hash;
+        this.hash = this.x + '|' + this.y;
     }
 
     distance(other) {
@@ -396,7 +455,7 @@ class Cell {
                         if (x == 0 && y == 0)
                             continue;
 
-                        yield new Point(self.x + x, self.y + y);
+                        yield new Cell(self.x + x, self.y + y);
                     }
                 }
             }
@@ -431,7 +490,3 @@ class Cell {
         return (this.isAlive ? 'Alive' : 'Dead') + ' cell at ' + this._pos.toString();
     }
 }
-
-String.prototype.find = function(searchValue, fromIndex) {
-    return this.indexOf(searchValue, fromIndex) != -1;
-};
