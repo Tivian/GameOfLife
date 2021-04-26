@@ -5,7 +5,6 @@ class Life {
             scale: 1.0,
             size: 10,
             border: 1,
-            showDead: false,
             bkgColor: '#fff',
             borderColor: '#ccc',
             rule: {
@@ -16,7 +15,9 @@ class Life {
 
         this.canvas = (canvas instanceof jQuery) ? canvas.get(0) : canvas;
         this.ctx = this.canvas.getContext('2d');
+        this.elem = $(this.canvas);
         this.cells = new Map();
+        this._newGen = new Map();
         this._resize();
 
         this._running = false;
@@ -132,15 +133,6 @@ class Life {
         );
     }
 
-    get showDead() {
-        return this.settings.showDead;
-    }
-
-    set showDead(value) {
-        this.settings.showDead = value;
-        this.draw();
-    }
-
     get scale() {
         return this.settings.scale;
     }
@@ -189,11 +181,11 @@ class Life {
         this.ctx.fillRect(0, 0, width, height);
 
         for (let cell of this.cells.values()) {
-            if (!this._inside(cell) || (!this.settings.showDead && !cell.isAlive))
+            if (!this._inside(cell))
                 continue;
 
             let color = `rgb(${Math.atan(100 / cell.age) / (Math.PI / 2) * 220}, 0, ${Math.atan(cell.age / 100) / (Math.PI / 2) * 220})`;
-            this.ctx.fillStyle = cell.isAlive ? color : '#999';
+            this.ctx.fillStyle = color;
             this.ctx.fillRect(this.origin.x + cell.x * size, this.origin.y - cell.y * size, size, size);
         }
 
@@ -206,90 +198,53 @@ class Life {
     }
 
     create(x, y) {
-        let cell = new Cell(x, y, true);
+        let cell = new Cell(x, y);
 
-        if (!this.cells.has(cell.hash)) {
+        if (this.cells.has(cell.hash))
+            this.cells.delete(cell.hash);
+        else
             this.cells.set(cell.hash, cell);
-            this._createNeighborhood(cell);
-        } else {
-            this.modify(cell);
-        }
-    }
-
-    modify(x, y) {
-        let cell = new Cell(x, y, true);
-
-        if (this.cells.has(cell.hash)) {
-            cell = this.cells.get(cell.hash);
-            if (cell.isAlive) {
-                // kill
-                cell.isAlive = false;
-                
-                for (let neighbor of cell.neighbors) {
-                    if (!neighbor.isAlive && neighbor.counter == 0)
-                        this.remove(neighbor);
-                }
-
-                if (cell.counter == 0)
-                    this.remove(cell);
-            } else {
-                // bring to life
-                cell.isAlive = true;
-                this._createNeighborhood(cell);
-            }
-        } else {
-            // create
-            this.cells.set(cell.hash, cell);
-            this._createNeighborhood(cell);
-        }
-    }
-
-    remove(cell) {
-        cell.clear();
-        this.cells.delete(cell.hash);
-    }
-
-    _createNeighborhood(cell) {
-        for (let neighbor of cell.neighborhood)
-            cell.addNeighbor(this._getOrAdd(neighbor));
-    }
-
-    _getOrAdd(cell) {
-        if (this.cells.has(cell.hash)) {
-            return this.cells.get(cell.hash);
-        } else {
-            this.cells.set(cell.hash, cell);
-            return cell;
-        }
     }
 
     async next() {
-        let toChange = [];
-
-        for (let cell of this.cells.values()) {
-            if ((cell.isAlive && this.settings.rule.survive.indexOf(cell.counter) == -1)
-            || (!cell.isAlive && this.settings.rule.born.indexOf(cell.counter) != -1))
-                toChange.push(cell);
-
-            cell.age++;
-        }
+        let changed = false;
+        this._newGen.clear();
 
         this._generation++;
-        if (toChange.length > 0) {
-            for (let cell of toChange)
-                this.modify(cell); // TODO: there should be a way to optimize this
+        for (let cell of this.cells.values()) {
+            cell.age++;
 
-            this.draw();
-            return true;
-        } else {
-            return false;
+            let counter = 0;
+            for (let neighbor of cell.neighborhood) {
+                if (this.cells.has(neighbor.hash)) {
+                    counter++;
+                } else {
+                    let other_counter = 0;
+                    for (let other of neighbor.neighborhood) {
+                        if (this.cells.has(other.hash))
+                            other_counter++;
+                    }
+
+                    if (this.settings.rule.born.indexOf(other_counter) != -1) {
+                        this._newGen.set(neighbor.hash, neighbor); // create
+                        changed = true;
+                    }
+                }
+            }
+
+            if (this.settings.rule.survive.indexOf(counter) != -1)
+                this._newGen.set(cell.hash, cell); // survive
+            else
+                changed = true;
         }
+
+        this.cells = new Map(this._newGen);
+        return changed;
     }
 
     start() {
-        let sleep = (ms) => {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        let sleep = (ms) => 
+            new Promise(resolve => setTimeout(resolve, ms));
 
         let self = this;
         this._running = true;
@@ -298,8 +253,10 @@ class Life {
 
             while(self._running) {
                 await sleep(self.settings.speed);
-                if (!await self.next() || (self.cells.size == 0))
+                if (!await self.next())
                     self.stop();
+                else
+                    self.draw();
             }
 
             console.log("STOP");
@@ -312,11 +269,8 @@ class Life {
 
     clear() {
         this.stop();
-
-        for (let cell of this.cells.values())
-            cell.clear();
+        this._generation = 0;
         this.cells.clear();
-
         this.draw();
     }
 
@@ -331,8 +285,8 @@ class Life {
     _displayCoords(ev) {
         let point = this._toPoint(ev);
         let elem = $('#coords');
-        let maxHeight = window.innerHeight - elem.outerHeight();
-        let maxWidth = window.innerWidth - elem.outerWidth();
+        let maxHeight = this.elem.height() - elem.outerHeight();
+        let maxWidth = this.elem.width() - elem.outerWidth();
 
         if (!elem.is(":visible"))
             elem.show();
@@ -348,8 +302,8 @@ class Life {
 
     center(ev) {
         this.origin = [
-            window.innerWidth  / 2,
-            window.innerHeight / 2
+            this.elem.width()  / 2,
+            this.elem.height() / 2
         ];
 
         if (typeof ev !== 'undefined')
@@ -358,7 +312,12 @@ class Life {
         this.draw();
     }
 
-    test() {
+    async test() {
+        let sleep = (ms) => 
+            new Promise(resolve => setTimeout(resolve, ms));
+
+        this.clear();
+
         this.create(0, 0);
         this.create(1, 0);
         this.create(0, 1);
@@ -371,7 +330,11 @@ class Life {
         this.create(3, 1);
         this.create(4, 1);
 
+        let start = performance.now();
         this.start();
+        while (this.generation < 500)
+            await sleep(10);
+        console.log(`Time: ${performance.now() - start}ms`);
     }
 }
 
@@ -379,13 +342,10 @@ class Point {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.hash = this.x + '|' + this.y;
+        this.hash = `${x}|${y}`;
     }
 
-    distance(other) {
-        if (!(other instanceof Point))
-            return undefined;
-        
+    distance(other) {        
         return Math.floor(
             Math.pow(other.x - this.x, 2)
           + Math.pow(other.y - this.y, 2));
@@ -397,15 +357,11 @@ class Point {
 }
 
 class Cell {
-    constructor(x, y, alive = false) {
+    constructor(x, y) {
         this._pos = (x instanceof Cell)
             ? x._pos : (x instanceof Point)
             ? x : new Point(x, y);
-        this._age = 0;
-        this._alive = alive;
-
-        this._counter = 0;
-        this._neighbors = new Map();
+        this.age = 0;
     }
 
     get x() {
@@ -416,39 +372,13 @@ class Cell {
         return this._pos.y;
     }
 
-    get isAlive() {
-        return this._alive;
-    }
-
-    set isAlive(value) {
-        this._alive = value;
-        for (let neighbor of this.neighbors)
-            neighbor._counter += value ? 1 : -1;
-    }
-
-    get neighbors() {
-        return this._neighbors.values();
-    }
-
-    get counter() {
-        return this._counter;
-    }
-
-    get age() {
-        return this._age;
-    }
-
-    set age(value) {
-        this._age = this.isAlive ? value : 0;
-    }
-
     get hash() {
         return this._pos.hash;
     }
 
     get neighborhood() {
         let self = this;
-        return { 
+        return {
             *[Symbol.iterator]() {
                 for (let x = -1; x <= 1; x++) {
                     for (let y = -1; y <= 1; y++) {
@@ -462,31 +392,7 @@ class Cell {
         };
     }
 
-    addNeighbor(cell) {
-        if (this._neighbors.size == 8)
-            return;
-
-        if (!this._neighbors.has(cell.hash)) {
-            this._neighbors.set(cell.hash, cell);
-
-            if (!cell.isAlive)
-                cell.addNeighbor(this);
-            else
-                this._counter++;
-        }
-    }
-
-    removeNeighbor(cell) {
-        this._neighbors.delete(cell.hash);
-    }
-
-    clear() {
-        for (let other of this.neighbors)
-            other.removeNeighbor(this);
-        this._neighbors.clear();
-    }
-
     toString() {
-        return (this.isAlive ? 'Alive' : 'Dead') + ' cell at ' + this._pos.toString();
+        return `Cell at ${this._pos.toString()}`;
     }
 }
