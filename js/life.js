@@ -85,6 +85,11 @@ class Life {
                 let weight = self.cellSize / 75;
                 let change = weight * delta;
                 self.scale += change;
+
+                // TODO: change origin point for more natural zooming
+                /*self.origin = [
+                ];*/
+
                 self.draw();
                 self._displayCoords(ev);
 
@@ -169,6 +174,32 @@ class Life {
     _resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+    }
+
+    _toPoint(ev) {
+        let size = this.cellSize;
+        return new Point(
+            Math.floor((ev.pageX - this.origin.x) / size),
+            -Math.floor((ev.pageY - this.origin.y) / size)
+        );
+    }
+
+    _displayCoords(ev) {
+        let point = this._toPoint(ev);
+        let elem = $('#coords');
+        let maxHeight = this.elem.height() - elem.outerHeight();
+        let maxWidth = this.elem.width() - elem.outerWidth();
+
+        if (!elem.is(":visible"))
+            elem.show();
+
+        elem.css({
+            top:  ev.pageY > maxHeight - 35 ? maxHeight - 10 : ev.pageY + 20,
+            left: ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10
+        });
+
+        $('#coord_x').text(point.x);
+        $('#coord_y').text(point.y);
     }
 
     draw() {
@@ -274,30 +305,31 @@ class Life {
         this.draw();
     }
 
-    _toPoint(ev) {
-        let size = this.cellSize;
-        return new Point(
-            Math.floor((ev.pageX - this.origin.x) / size),
-            -Math.floor((ev.pageY - this.origin.y) / size)
-        );
-    }
+    load(cells, override = false) {
+        if (override)
+            this.cells.clear();
 
-    _displayCoords(ev) {
-        let point = this._toPoint(ev);
-        let elem = $('#coords');
-        let maxHeight = this.elem.height() - elem.outerHeight();
-        let maxWidth = this.elem.width() - elem.outerWidth();
+        if (cells instanceof Array) {
+            if (cells[0] instanceof Cell) {
+                for (let cell of cells)
+                    this.cells.set(cell.hash, cell);
+            } else if (cells[0] instanceof Array) {
+                for (let cell of cells) {
+                    let obj = new Cell(cell[0], cell[1]);
+                    this.cells.set(obj.hash, obj);
+                }
+            } else {
+                for (let cell of cells) {
+                    let obj = new Cell(cell.x, cell.y);
+                    this.cells.set(obj.hash, obj);
+                }
+            }
+        } else if (cells instanceof Map) {
+            for (let entry of cells)
+                this.cells.set(entry[0], entry[1]);
+        }
 
-        if (!elem.is(":visible"))
-            elem.show();
-
-        elem.css({
-            top:  ev.pageY > maxHeight - 35 ? maxHeight - 10 : ev.pageY + 20,
-            left: ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10
-        });
-
-        $('#coord_x').text(point.x);
-        $('#coord_y').text(point.y);
+        this.draw();
     }
 
     center(ev) {
