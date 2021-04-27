@@ -39,7 +39,7 @@ class Life {
         $(this.canvas)
             .on('mousemove', ev => {
                 if (dragging) {
-                    $(self.canvas).css('cursor', 'grab');
+                    $(self.canvas).css('cursor', 'grabbing');
                     let coord = new Point(ev.pageX, ev.pageY);
                     if (coord.distance(lastCoord) > 1)
                         dragged = true;
@@ -190,7 +190,7 @@ class Life {
         let maxHeight = this.elem.height() - elem.outerHeight();
         let maxWidth = this.elem.width() - elem.outerWidth();
 
-        if (!elem.is(":visible"))
+        if (!elem.is(':visible'))
             elem.show();
 
         elem.css({
@@ -198,8 +198,8 @@ class Life {
             left: ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10
         });
 
-        $('#coord_x').text(point.x);
-        $('#coord_y').text(point.y);
+        $('#coord-x').text(point.x);
+        $('#coord-y').text(point.y);
     }
 
     draw() {
@@ -280,7 +280,7 @@ class Life {
         let self = this;
         this._running = true;
         (async _ => {
-            console.log("START");
+            console.log('START');
 
             while(self._running) {
                 await sleep(self.settings.speed);
@@ -290,7 +290,7 @@ class Life {
                     self.draw();
             }
 
-            console.log("STOP");
+            console.log('STOP');
         })();
     }
     

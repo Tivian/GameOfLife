@@ -1,23 +1,24 @@
-<html>
+<!DOCTYPE html>
+<html lang='en'>
 <head>
-    <meta charset="utf-8">
+    <meta charset='UTF-8'>
     <title>Game of Life</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <meta name='author' content='Paweł Kania'>
     <link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
 
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/life.js" type="application/javascript"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel='stylesheet' href='css/styles.css'>
+    <script src='js/life.js' type='application/javascript'></script>
+    <script src='https://code.jquery.com/jquery-3.6.0.min.js' integrity='sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=' crossorigin='anonymous'></script>
     <script>
-        $(() => window.life = new Life($("#game-of-life")));
+        $(() => window.life = new Life($('#game-of-life')));
     </script>
 </head>
 <body>
-    <div id="coords">
-        <div id="coord_x">0</div>, 
-        <div id="coord_y">0</div>
+    <div id='coords'>
+        <div id='coord-x'>0</div>, 
+        <div id='coord-y'>0</div>
     </div>
-    <canvas id="game-of-life"></canvas>
+    <canvas id='game-of-life'></canvas>
 </body>
 </html>
