@@ -20,6 +20,7 @@ body {
     border-radius: 15%;
 
     pointer-events: none;
+    user-select: none;
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 100;
     display: none;
@@ -27,4 +28,8 @@ body {
 
 #coords > div {
     display: inline;
+}
+
+#btn-hide > i {
+    transition: transform 500ms;
 }

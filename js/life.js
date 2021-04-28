@@ -14,8 +14,8 @@ class Life {
         };
 
         this.canvas = (canvas instanceof jQuery) ? canvas.get(0) : canvas;
+        this.$canvas = $(this.canvas);
         this.ctx = this.canvas.getContext('2d');
-        this.elem = $(this.canvas);
         this.cells = new Map();
         this._newGen = new Map();
         this._resize();
@@ -25,38 +25,42 @@ class Life {
         this._generation = 0;
 
         let self = this;
-        $(window).on('resize', () => {
-            self._resize();
-            self.draw();
-        });
 
-        let lastCoord = new Point(0, 0);
+        let mouseLast = new Point(0, 0);
         let dragging = false;
         let dragged = false;
 
-        $('#coords').css('user-select', 'none');
-
-        $(this.canvas)
+        $(window)
+            .on('resize', () => {
+                self._resize();
+                self.draw();
+            })
             .on('mousemove', ev => {
                 if (dragging) {
                     $(self.canvas).css('cursor', 'grabbing');
                     let coord = new Point(ev.pageX, ev.pageY);
-                    if (coord.distance(lastCoord) > 1)
+                    if (coord.distance(mouseLast) > 1)
                         dragged = true;
 
                     this.origin = [
-                        this.origin.x + coord.x - lastCoord.x, 
-                        this.origin.y + coord.y - lastCoord.y
+                        this.origin.x + coord.x - mouseLast.x, 
+                        this.origin.y + coord.y - mouseLast.y
                     ];
 
-                    lastCoord = coord;
+                    mouseLast = coord;
                     this.draw();
                 }
-
-                self._displayCoords(ev);
             })
+            .on('mouseup', ev => {
+                if (ev.which == 1) {
+                    self.$canvas.css('cursor', '');
+                    dragging = false;
+                }
+            });
+
+        this.$canvas
             .on('mousedown', ev => {
-                lastCoord = new Point(ev.pageX, ev.pageY);
+                mouseLast = new Point(ev.pageX, ev.pageY);
 
                 if (ev.which == 1) {
                     dragging = true;
@@ -64,15 +68,9 @@ class Life {
                     self.center(ev);
                 }
             })
-            .on('mouseup', ev => {
-                if (ev.which == 1) {
-                    $(self.canvas).css('cursor', '');
-                    dragging = false;
-                }
-            })
             .on('click', ev => {
                 if (!dragged) {
-                    let point = self._toPoint(ev);
+                    let point = self.getPosition(ev);
                     console.log(point.x, point.y);
                     self.create(point);
                     self.draw();
@@ -91,15 +89,14 @@ class Life {
                 ];*/
 
                 self.draw();
-                self._displayCoords(ev);
-
                 console.log(change, ev.pageX, ev.pageY);
-            })
-            .on('contextmenu', ev => {
-                ev.preventDefault();
             });
 
         this.center();
+    }
+
+    get isRunning() {
+        return this._running;
     }
 
     get population() {
@@ -176,32 +173,6 @@ class Life {
         this.canvas.height = window.innerHeight;
     }
 
-    _toPoint(ev) {
-        let size = this.cellSize;
-        return new Point(
-            Math.floor((ev.pageX - this.origin.x) / size),
-            -Math.floor((ev.pageY - this.origin.y) / size)
-        );
-    }
-
-    _displayCoords(ev) {
-        let point = this._toPoint(ev);
-        let elem = $('#coords');
-        let maxHeight = this.elem.height() - elem.outerHeight();
-        let maxWidth = this.elem.width() - elem.outerWidth();
-
-        if (!elem.is(':visible'))
-            elem.show();
-
-        elem.css({
-            top:  ev.pageY > maxHeight - 35 ? maxHeight - 10 : ev.pageY + 20,
-            left: ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10
-        });
-
-        $('#coord-x').text(point.x);
-        $('#coord-y').text(point.y);
-    }
-
     draw() {
         let height = this.canvas.height;
         let width = this.canvas.width;
@@ -274,8 +245,7 @@ class Life {
     }
 
     start() {
-        let sleep = (ms) => 
-            new Promise(resolve => setTimeout(resolve, ms));
+        this.canvas.dispatchEvent(new Event('start'));
 
         let self = this;
         this._running = true;
@@ -283,7 +253,7 @@ class Life {
             console.log('START');
 
             while(self._running) {
-                await sleep(self.settings.speed);
+                await Life.sleep(self.settings.speed);
                 if (!await self.next())
                     self.stop();
                 else
@@ -295,6 +265,7 @@ class Life {
     }
     
     stop() {
+        this.canvas.dispatchEvent(new Event('stop'));
         this._running = false;
     }
 
@@ -306,6 +277,9 @@ class Life {
     }
 
     load(cells, override = false) {
+        if (typeof cells === 'undefined')
+            return;
+
         if (override)
             this.cells.clear();
 
@@ -334,20 +308,26 @@ class Life {
 
     center(ev) {
         this.origin = [
-            this.elem.width()  / 2,
-            this.elem.height() / 2
+            this.$canvas.width()  / 2,
+            this.$canvas.height() / 2
         ];
-
+        
+        let event = new jQuery.Event('mousemove');
         if (typeof ev !== 'undefined')
-            this._displayCoords(ev);
-
+            [event.targer, event.pageX, event.pageY] = [ev.target, ev.pageX, ev.pageY];
+        this.$canvas.trigger(event);
         this.draw();
     }
 
-    async test() {
-        let sleep = (ms) => 
-            new Promise(resolve => setTimeout(resolve, ms));
+    getPosition(ev) {
+        let size = this.cellSize;
+        return new Point(
+            Math.floor((ev.pageX - this.origin.x) / size),
+            -Math.floor((ev.pageY - this.origin.y) / size)
+        );
+    }
 
+    async test() {
         this.clear();
 
         this.create(0, 0);
@@ -365,9 +345,12 @@ class Life {
         let start = performance.now();
         this.start();
         while (this.generation < 500)
-            await sleep(10);
+            await Life.sleep(10);
         console.log(`Time: ${performance.now() - start}ms`);
     }
+
+    static sleep = (ms) => 
+        new Promise(resolve => setTimeout(resolve, ms));
 }
 
 class Point {
