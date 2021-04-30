@@ -30,6 +30,30 @@ body {
     display: inline;
 }
 
+#toolbar {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    user-select: none;
+}
+
+#toolbar *:not([class*=dropdown]) {
+    transition: all 200ms;
+}
+
+#in-speed {
+    box-shadow: none;
+}
+
 #btn-hide > i {
     transition: transform 500ms;
+}
+
+#gr-board-size {
+    display: none;
+}
+
+/* Fix for Bootstrap v5.0 */
+.dropdown-menu-dark .form-floating > label {
+    color: #212529;
 }
