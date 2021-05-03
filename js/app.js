@@ -2,20 +2,28 @@ class UI {
     static life;
     static $coords;
     static $toolbar;
+    static saveModal;
+    static infoToast;
     static speedIncrement = 10;
 
     static init() {
         UI.life = window.life = new Life($('#game-of-life'));
         UI.$coords = $('#coords');
         UI.$toolbar = $('#toolbar');
+        UI.saveModal = new bootstrap.Modal(document.getElementById('modal-save'));
+        UI.infoToast = new bootstrap.Toast(document.getElementById('info-toast'));
 
-        $(window)
-            .on('contextmenu', ev => ev.preventDefault());
+        $.rangeSlider();
+        if (!$.isTouchDevice())
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+        $(window).on('contextmenu', ev => {
+            if ($(ev.target).closest('#dropdown-info').length == 0)
+                ev.preventDefault();
+        });
 
         UI.$toolbar
             .on('mousemove', _ => UI.$coords.hide());
-        $('[data-bs-toggle="tooltip"]').tooltip();
-        $.rangeSlider();
 
         let coordsFollow = true;
         let coordsEnabled = true;
@@ -47,6 +55,17 @@ class UI {
             .on('change.step', _ => 
                 $('#in-game-step').val(UI.life.step)
             )
+            .on('load.file', _ => {
+                $('#gr-file-info').removeClass('d-none');
+                UI.showToast('Loaded ' + UI.life.file);
+            })
+            .on('unload.file', _ =>
+                $('#gr-file-info').addClass('d-none')
+            )
+            .on('life.new life.next life.wipe load.file', _ => {
+                $('#out-gens').text(UI.life.generation);
+                $('#out-populus').text(UI.life.size);
+            })
             .on('mouseenter', ev => {
                 if (coordsEnabled && mouseLeft) {
                     mouseLeft = false;
@@ -59,7 +78,7 @@ class UI {
                     UI.$coords.hide();
                 }
             })
-            .on('mousemove center', ev => {
+            .on('mousemove wheel center', ev => {
                 if (coordsEnabled)
                     UI.displayCoords(ev, coordsFollow);
             });
@@ -97,15 +116,53 @@ class UI {
                 this.changeSpeed((ev.which == 38) ? 1 : (ev.which == 40) ? -1 : 0))
             .val(UI.life.speed);
 
-        $('#btn-load').click(_ => {
-            $('<input type="file">')
-                .prop('accept', '.rle,.cells,.lif,.life,.mcl,.plf,.l')
-                .on('change', ev => 
-                    UI.life.load(new LifeFile(ev.target.files[0]), true)
-                )
-                .click();
+        $('#btn-reload').click(_ => {
+            UI.life.reload();
+            UI.showToast('Reloaded ' + UI.life.file);
         });
-        //$('#btn-save').click(_ => {});
+        $('#btn-load').click(_ => {
+            UI.life.stop();
+            CellFile.open(file => UI.life.load(file, true));
+        });
+        $('#btn-save').click(_ => {
+            if (UI.life.cells.size == 0)
+                return;
+
+            if (UI.life.file !== undefined) {
+                $('#in-file-title').val(UI.life.file.title);
+                $('#in-file-author').val(UI.life.file.author);
+                let $comments = $('#in-file-comments');
+                $comments.val(UI.life.file.comments.join('\n'));
+                let fname = UI.life.file.name.match(/^(.*)\./);
+                if (fname)
+                    $('#in-file-name').val(fname[1]);
+            }
+
+            UI.saveModal.show();
+        });
+        $('#btn-download').click(_ => {
+            let fname = $('#in-file-name').val().trim();
+            let format = $('#in-file-format').val().trim();
+            if (fname === '')
+                return;
+
+            let file = CellFile.get(format, fname, UI.life.cells);
+            if (!file)
+                return;
+
+            file.rule = UI.life.rule;
+            file.title = $('#in-file-title').val();
+            file.author = $('#in-file-author').val();
+            file.comments = $('#in-file-comments').val().split('\n');
+
+            let link = document.createElement('a');
+            link.setAttribute('href', file.toDataURL());
+            link.setAttribute('download', file.name);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            UI.saveModal.hide();
+        });
         //$('#btn-gallery').click(_ => {});
         $('#btn-lock').click(_ => {
             let state = $('#btn-lock > i').attr('class').indexOf('unlock') != -1;
@@ -114,7 +171,6 @@ class UI {
                 .attr('data-bs-original-title', state ? 'Unlock' : 'Lock')
                 .tooltip('show');
         });
-        $('#btn-info').click(_ => UI.life.test()); // TODO
         $('#btn-night').click(_ => {
             let $btn = $('#btn-night');
             let $symbol = $('#btn-night > i');
@@ -144,7 +200,7 @@ class UI {
             });
         });
 
-        // dropdown menu setup
+        // setup of the settings dropdown
         $('.dropdown-menu').click(ev =>
             ev.stopPropagation());
         $('#toolbar')
@@ -156,7 +212,30 @@ class UI {
                     $('#in-board-height').val(limit.height);
                     $('#in-game-step').val(UI.life.step);
                     $('#in-board-type').val(UI.life.type).trigger('change');
+                } else if (ev.target.id == 'btn-info') {
+                    let file = UI.life.file;
+                    console.log(file);
+                    $('#dropdown-info .dropdown-divider').each((_, elem) => $(elem).show());
+
+                    if (file.title.length > 0)
+                        $('#info-title').text(file.title);
+                    else
+                        $('#gr-info-title').hide();
+
+                    if (file.author.length > 0)
+                        $('#info-author').text(file.author);
+                    else
+                        $('#gr-info-author').hide();
+
+                    if (file.comments.length > 0)
+                        $('#info-comments').html(file.comments.join('<br>'));
+                    else
+                        $('#gr-info-comments').hide();
                 }
+            })
+            .on('shown.bs.dropdown', ev => {
+                if (ev.target.id == 'btn-info')
+                    $('#dropdown-info .dropdown-divider:visible:last').hide();
             });
         $('#in-game-rule-born, #in-game-rule-survive').on('input', ev => {
             let $elem = $(ev.target);
@@ -253,8 +332,9 @@ class UI {
     }
 
     static updateRule() {
-        $('#in-game-rule-born').val(UI.life.rule.born);
-        $('#in-game-rule-survive').val(UI.life.rule.survive);
+        let rule = UI.life.rule.match(/B(\d+)\/S(\d+)/i);
+        $('#in-game-rule-born').val(rule[1]);
+        $('#in-game-rule-survive').val(rule[2]);
     }
 
     static changeSpeed(delta) {
@@ -265,5 +345,11 @@ class UI {
 
         $elem.val(val + delta);
         $elem.trigger('input');
+    }
+
+    // TODO
+    static showToast(html, color) {
+        $('#info-toast .toast-body').html(html);
+        UI.infoToast.show();
     }
 }

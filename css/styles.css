@@ -23,7 +23,6 @@ body {
     user-select: none;
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 100;
-    display: none;
 }
 
 #coords > div {
@@ -41,6 +40,13 @@ body {
     transition: all 200ms;
 }
 
+#info {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    user-select: none;
+}
+
 #in-speed {
     box-shadow: none;
 }
@@ -49,11 +55,19 @@ body {
     transition: transform 500ms;
 }
 
-#gr-board-size {
-    display: none;
+#dropdown-info {
+    width: 300px;
+}
+
+#dropdown-info .text-muted {
+    user-select: text !important;
 }
 
 /* Fix for Bootstrap v5.0 */
 .dropdown-menu-dark .form-floating > label {
     color: #212529;
+}
+
+.modal-body .input-group .form-floating {
+    width: 84.7%;
 }

@@ -20,4 +20,8 @@ $.rangeSlider = function() {
 $.deepCopy = function(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
+
+$.isTouchDevice = function() {
+    return !!('ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch);
+}
 }(jQuery));

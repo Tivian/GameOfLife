@@ -5,9 +5,10 @@ class Life {
             step: 1,
             scale: 1.0,
             size: 10,
-            border: 1,
+            border: 0.4,
             locked: false,
             detect: true,
+            showBorder: true,
             type: 'infinite',
             limit: {
                 from: new Point(),
@@ -17,9 +18,9 @@ class Life {
             top: new Point(),
             bottom: new Point(),
             colors: {
-                background: '#fff',
-                border: '#ccc',
-                outside: '#bbb',
+                background: '#fcfcfc',
+                border: '#bbb',
+                outside: '#aaa',
                 hot: [ 0xdc, 0x14, 0x3c ],
                 medium: [ 0x00, 0x00, 0xff ],
                 cold: [ 0x00, 0x00, 0xcd ]
@@ -30,6 +31,12 @@ class Life {
             }
         };
         this.defaults = $.deepCopy(this._settings);
+        this.cellSize = this._settings.size;
+        this.cellBorder = this._settings.border;
+        this.scaleThreshold = 0.5;
+        this.zoomIntensity = 0.1;
+        this.minScale = 0.01;
+        this.maxScale = 100;
 
         this.canvas = (canvas instanceof jQuery) ? canvas.get(0) : canvas;
         this.$canvas = $(this.canvas);
@@ -39,9 +46,9 @@ class Life {
         this.cells = new Map();
         this._newGen = new Map();
         this._generation = 0;
-        this._running = false;        
-
-        let self = this;
+        this._running = false;
+        this._dirty = false;
+        this._file = undefined;
 
         let mouseLast = new Point();
         let dragging = false;
@@ -49,12 +56,12 @@ class Life {
 
         $(window)
             .on('resize', () => {
-                self._resize();
-                self.draw();
+                this._resize();
+                this.draw();
             })
             .on('mousemove', ev => {
                 if (dragging) {
-                    $(self.canvas).css('cursor', 'grabbing');
+                    $(this.canvas).css('cursor', 'grabbing');
                     let coord = new Point(ev.pageX, ev.pageY);
                     if (coord.distance(mouseLast) > 1)
                         dragged = true;
@@ -70,7 +77,7 @@ class Life {
             })
             .on('mouseup', ev => {
                 if (ev.which == 1) {
-                    self.$canvas.css('cursor', '');
+                    this.$canvas.css('cursor', '');
                     dragging = false;
                 }
             });
@@ -82,31 +89,29 @@ class Life {
                 if (ev.which == 1) {
                     dragging = true;
                 } else if (ev.which == 2) {
-                    self.center(ev);
+                    this.center(ev);
                 }
             })
             .on('click', ev => {
                 if (!dragged && !this._settings.locked) {
-                    let point = self.getPosition(ev);
+                    let point = this.getPosition(ev);
                     console.log(`Create cell at ${point.toString()}`);
-                    self.create(point.x, point.y);
-                    self.draw();
+                    this.create(point.x, point.y);
+                    this.draw();
                 } else {
                     dragged = false;
                 }
             })
             .on('wheel', ev => {
-                let delta = ev.originalEvent.deltaY < 0 ? 1 : -1;
-                let weight = self.cellSize / 75;
-                let change = weight * delta;
-                self.scale += change;
-
-                // TODO: change origin point for more natural zooming
-                /*self.origin = [
-                ];*/
-
-                self.draw();
-                console.log(change, ev.pageX, ev.pageY);
+                let wheel = ev.originalEvent.deltaY < 0 ? 1 : -1;
+                let zoom = Math.exp(wheel * this.zoomIntensity);
+                let xoff = (ev.pageX - this.origin.x) / this.scale;
+                let yoff = (ev.pageY - this.origin.y) / this.scale;
+                this.scale *= zoom;
+                this.origin = [
+                    ev.pageX - xoff * this.scale,
+                    ev.pageY - yoff * this.scale ];
+                this.draw();
             });
 
         this.center();
@@ -116,7 +121,7 @@ class Life {
         return this._running;
     }
 
-    get population() {
+    get size() {
         return this.cells.size;
     }
 
@@ -147,17 +152,7 @@ class Life {
     set origin(value) {
         [this._settings.origin.x, this._settings.origin.y] = value instanceof Array
             ? value : [value.x, value.y];
-        let size = this.cellSize;
-
-        this._settings.top = new Point(
-            -Math.ceil(this._settings.origin.x / size),
-            Math.ceil(this._settings.origin.y / size)
-        );
-
-        this._settings.bottom = new Point(
-            -Math.ceil((this._settings.origin.x - this.width) / size),
-            Math.ceil((this._settings.origin.y - this.height) / size)
-        );
+        this._setDrawLimits();
     }
 
     get scale() {
@@ -165,49 +160,48 @@ class Life {
     }
 
     set scale(value) {
-        if (value < 0.1)
-            value = 0.1;
-        else if (value > 100)
-            value = 100;
+        if (value < this.minScale)
+            value = this.minScale;
+        else if (value > this.maxScale)
+            value = this.maxScale;
 
-        let oldValue = this._settings.scale;
         this._settings.scale = value;
-        this.origin = [this._settings.origin.x, this._settings.origin.y];
-
-        if (this.cellSize <= this.cellBorder)
-            this._settings.scale = oldValue;
-    }
-
-    get cellSize() {
-        return Math.ceil(this._settings.size * this._settings.scale);
-    }
-
-    get cellBorder() {
-        return Math.ceil(this._settings.border * this._settings.scale);
+        this.cellSize = this._settings.size * this._settings.scale;
+        this.cellBorder = this._settings.border * this._settings.scale;
     }
 
     get rule() {
-        return this._settings.rule;
+        return `B${this._settings.rule.born}/S${this._settings.rule.survive}`;
     }
 
     set rule(value) {
         if (typeof value !== 'undefined') {
             if (typeof value === 'object') {
+                if (!value.born && !value.survive)
+                    return;
+
                 [this._settings.rule.born, this._settings.rule.survive] =
                     [value.born, value.survive];
             } else if (typeof value === 'string') {
-                let result = value.match(/B?([0-8]+)\/S?([0-8]+)/);
+                let result = value.toUpperCase().match(/[BS][0-8]*/gi);
 
                 if (result != null) {
-                    [this._settings.rule.born, this._settings.rule.survive] =
-                        [result[1], result[2]];
+                    this._settings.rule = { born: '', survive: '' };
+                    for (let rule of result)
+                        this._settings.rule[rule.startsWith('B') ? 'born' : 'survive'] = rule.substring(1);
                 } else {
-                    return;
+                    result = value.match(/([0-8]+)?\/([0-8]+)?/i);
+                    if (result == null)
+                        return;
+
+                    this._settings.rule.survive = result[1] || '';
+                    this._settings.rule.born = result[2] || '';
                 }
             } else {
                 return;
             }
 
+            // sort the numbers inside the rule string
             const normalize = str => new Array(...(new Set(str.split('')))).sort().join('');
             this._settings.rule.born = normalize(this._settings.rule.born);
             this._settings.rule.survive = normalize(this._settings.rule.survive);
@@ -255,6 +249,15 @@ class Life {
         this.$canvas.trigger('change.detect');
     }
 
+    get showBorder() {
+        return this._settings.showBorder;
+    }
+
+    set showBorder(value) {
+        this._settings.showBorder = !!value;
+        this.$canvas.trigger('change.border');
+    }
+
     get type() {
         return this._settings.type;
     }
@@ -264,6 +267,7 @@ class Life {
         if (!valid.has(value)) 
             return;
 
+        this._dirty = value !== 'infinite';
         this._settings.type = value;
         this.$canvas.trigger('change.type');
     }
@@ -297,13 +301,46 @@ class Life {
         }
     }
 
+    get file() {
+        return this._file;
+    }
+
+    set file(value) {
+        this._file = value;
+        this.$canvas.trigger(`${!value ? 'un' : ''}load.file`);
+    }
+
     _resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        this._setDrawLimits();
+    }
+
+    _setDrawLimits() {
+        let size = this.cellSize;
+        let origin = this._settings.origin;
+
+        this._settings.top = new Point(
+            -Math.ceil(origin.x / size),
+            Math.ceil(origin.y / size)
+        );
+
+        this._settings.bottom = new Point(
+            -Math.ceil((origin.x - this.width) / size),
+            Math.ceil((origin.y - this.height) / size)
+        );
     }
 
     _inside(point) {
         return this._insideRect(point, this._settings.top, this._settings.bottom);
+    }
+
+    _insideLimit(point) {
+        return this._insideRect(point, this._settings.limit.from, this._settings.limit.to);
+    }
+
+    _insideLimitCoord(x, y) {
+        return this._insideRectCoord(x, y, this._settings.limit.from, this._settings.limit.to);
     }
 
     _insideRect(point, from, to) {
@@ -396,6 +433,14 @@ class Life {
         return ((a % n) + n) % n;
     }
 
+    _clean() {
+        this._dirty = false;
+        for (let entry of this.cells) {
+            if (!this._insideLimit(entry[1]))
+                this.cells.delete(entry[0]);
+        }
+    }
+
     draw() {
         let height = this.canvas.height;
         let width = this.canvas.width;
@@ -426,17 +471,19 @@ class Life {
             this.ctx.fillRect(origin.x + cell.x * size, origin.y - cell.y * size, size, size);
         });
 
-        this.ctx.fillStyle = colors.border;
-        for (let x = (origin.x % size) - size; x < width; x += size)
-            this.ctx.fillRect(x - 0.5, -0.5, border, height);
+        // borders are 0.5px shifted because of anti-aliasing
+        if (this.scale >= this.scaleThreshold) {
+            this.ctx.fillStyle = colors.border;
+            for (let x = (origin.x % size) - size; x < width; x += size)
+                this.ctx.fillRect(x - 0.5, -0.5, border, height);
 
-        for (let y = (origin.y % size) - size; y < height; y += size)
-            this.ctx.fillRect(-0.5, y - 0.5, width, border);
+            for (let y = (origin.y % size) - size; y < height; y += size)
+                this.ctx.fillRect(-0.5, y - 0.5, width, border);
+        }
     }
 
     create(x, y) {
-        if (this._settings.type !== 'infinite'
-          && (!this._insideRectCoord(x, y, this._settings.limit.from, this._settings.limit.to)))
+        if (this._settings.type !== 'infinite' && !this._insideLimitCoord(x, y))
             return;
 
         let cell = new Cell(x, y);
@@ -445,9 +492,17 @@ class Life {
             this.cells.delete(cell.hash);
         else
             this.cells.set(cell.hash, cell);
+
+        this.$canvas.trigger('life.new');
     }
 
     next() {
+        if (this.size == 0)
+            return;
+
+        if (this._dirty)
+            this._clean();
+
         let changed = false;
         this._newGen.clear();
 
@@ -500,6 +555,7 @@ class Life {
 
         this.cells.clear();
         this._newGen.forEach((val, key) => this.cells.set(key, val));
+        this.$canvas.trigger('life.next');
         return changed;
     }
 
@@ -507,23 +563,22 @@ class Life {
         if (this._running)
             return;
 
+        this._running = true;
         this.$canvas.trigger('start');
 
-        let self = this;
-        this._running = true;
         (async _ => {
             console.log('START');
 
-            while(self._running) {
-                await Life.sleep(self._settings.speed);
-                for (let i = 0; i < self._settings.step; i++) {
-                    if (!self.next() && self._settings.detect) {
-                        self.stop();
+            while(this._running) {
+                await Life.sleep(this._settings.speed);
+                for (let i = 0; i < this._settings.step; i++) {
+                    if (!this.next() && this._settings.detect) {
+                        this.stop();
                         break;
                     }
                 }
 
-                self.draw();
+                this.draw();
             }
 
             console.log('STOP');
@@ -534,18 +589,21 @@ class Life {
         if (!this._running)
             return;
 
-        this.$canvas.trigger('stop');
         this._running = false;
+        this.$canvas.trigger('stop');
     }
 
     clear() {
         this.stop();
         this._generation = 0;
+        this.file = undefined;
         this.cells.clear();
-        this.draw();
+        this.center();
+
+        this.$canvas.trigger('life.wipe');
     }
 
-    load(cells, override = false) {
+    load(cells, override = false, force = false) {
         if (typeof cells === 'undefined')
             return;
 
@@ -568,17 +626,62 @@ class Life {
             }
         } else if (cells instanceof Map) {
             cells.forEach((val, key) => this.cells.set(key, val));
-        } else if (cells instanceof LifeFile) {
-            console.log('file', cells);
+        } else if (cells instanceof CellFile) {
+            this.file = cells;
+            this.reload(override, force);
+            this.$canvas.trigger('load.file');
+            return;
         }
 
         this.draw();
     }
 
-    center(ev) {
+    reload(override = true, force = false, center = true) {
+        if (this.isRunning || !this.file || !(this.file instanceof CellFile))
+            return;
+
+        if (override)
+            this.cells.clear();
+
+        this.file.cells.forEach(point => {
+            let cell = new Cell(point.x, point.y);
+            this.cells.set(cell.hash, cell);
+        });
+
+        if (!force && this.file.type && this.file.type !== 'Life') {
+            console.log(`Unsupported mode "${this.file.type}".`);
+            return;
+        }
+
+        if (typeof this.file.rule === 'string')
+            this.rule = this.file.rule;
+
+        if (this.file instanceof MCellFile) {
+            if (this.file.board) {
+                this.limit = this.file.board;
+                this.type = this.file.wrapped ? 'finite' : 'wrapped';
+            }
+
+            if (this.file.speed)
+                this.speed = this.file.speed;
+        }
+
+        if (center && ![...this.cells.values()].some(x => this._inside(x)))
+                this.center(this.nearest(0, 0));
+
+        this.draw();
+    }
+
+    center(ev, x = 0, y = 0) {
+        if (typeof ev === 'object' && 'x' in ev && 'y' in ev)
+            [ev, x, y] = [undefined, ev.x, ev.y];
+        if (typeof ev === 'number' && typeof x === 'number')
+            [ev, x, y] = [undefined, ev, x];
+
+        this.scale = this.defaults.scale;
         this.origin = [
-            this.$canvas.width()  / 2 - 0.5 * this.cellSize,
-            this.$canvas.height() / 2 - 0.5 * this.cellSize
+            this.$canvas.width()  / 2 - x * this.cellSize,
+            this.$canvas.height() / 2 + y * this.cellSize
         ];
 
         let event = new jQuery.Event('mousemove');
@@ -586,6 +689,19 @@ class Life {
             [event.targer, event.pageX, event.pageY] = [ev.target, ev.pageX, ev.pageY];
         this.$canvas.trigger(event);
         this.draw();
+    }
+
+    nearest(x = 0, y = 0) {
+        let zero = new Point(x, y);
+        let result = [...this.cells.values()].reduce((acc, cur) => {
+            let dist = cur.distance(zero);
+            return {
+                cell: acc.dist > dist ? cur : acc.cell,
+                dist: Math.min(acc.dist, dist)
+            };
+        }, { cell: undefined, dist: Number.MAX_VALUE });
+
+        return result.cell;
     }
 
     getPosition(ev) {
@@ -638,6 +754,31 @@ class Life {
          */
     }
 
+    static getBoundingBox(cells) {
+        if (!cells)
+            return undefined;
+
+        if (cells instanceof Map)
+            cells = cells.values();
+
+        return [...cells].reduce((acc, cur) => {
+            let obj = {
+                top: Math.max(acc.top, cur.y),
+                bottom: Math.min(acc.bottom, cur.y),
+                left: Math.min(acc.left, cur.x),
+                right: Math.max(acc.right, cur.x)
+            };
+            obj.width = obj.right - obj.left + 1;
+            obj.height = obj.top - obj.bottom + 1;
+            return obj;
+        }, {
+            top: -Number.MAX_VALUE,
+            bottom: Number.MAX_VALUE,
+            left: Number.MAX_VALUE,
+            right: -Number.MAX_VALUE
+        });
+    }
+
     static sleep = (ms) => 
         new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -682,8 +823,12 @@ class Cell {
         return this._pos.hash;
     }
 
+    distance(other) {
+        return this._pos.distance(other);
+    }
+
     toString() {
-        return `Cell at ${this._pos.toString()}`;
+        return 'Cell at ' + this._pos;
     }
 
     static getHash(x, y) {

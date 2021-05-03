@@ -25,7 +25,7 @@
     </script>
 </head>
 <body>
-    <div id='coords' class='rounded-pill px-2'>
+    <div id='coords' class='rounded-pill collapse px-2'>
         <div id='coord-x'>0</div>, 
         <div id='coord-y'>0</div>
     </div>
@@ -51,6 +51,31 @@
                 <i class='fas fa-fast-forward' aria-hidden='true'></i>
             </a>
         </div>
+        <div id='gr-file-info' class='btn-group me-1 mb-1 d-none' role='group'>
+            <a id='btn-info' type='button' class='btn btn-secondary' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                <i class='fas fa-info-circle' aria-hidden='true'></i>
+            </a>
+            <div id='dropdown-info' class='dropdown-menu p-3'>
+                <div id='gr-info-title'>
+                    <p class='fs-5'>Title</p>
+                    <p id='info-title' class='text-muted'></p>
+                    <hr class="dropdown-divider">
+                </div>
+                <div id='gr-info-author'>
+                    <p class='fs-5'>Author</p>
+                    <p id='info-author' class='text-muted'></p>
+                    <hr class="dropdown-divider">
+                </div>
+                <div id='gr-info-comments'>
+                    <p class='fs-5'>Comments</p>
+                    <p id='info-comments' class='text-muted'></p>
+                    <hr class="dropdown-divider">
+                </div>
+            </div>
+            <a id='btn-reload' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Reload'>
+                <i class='fas fa-redo' aria-hidden='true'></i>
+            </a>
+        </div>
         <div class='btn-group me-1 mb-1' role='group'>
             <a id='btn-load' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Load'>
                 <i class='fas fa-folder-open' aria-hidden='true'></i>
@@ -64,7 +89,7 @@
             <a id='btn-settings' type='button' class='btn btn-secondary' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                 <i class='fas fa-sliders-h' aria-hidden='true'></i>
             </a>
-            <form id='dropdown-settings' class='dropdown-menu px-3' aria-labelledby='dropdown-settings' autocomplete='off'>
+            <form id='dropdown-settings' class='dropdown-menu px-3' autocomplete='off'>
                 <div class='mb-3 mt-1'>
                     <label for='in-game-rule' class='form-label'>Rule</label>
                     <div id='in-game-rule' class='input-group'>
@@ -82,7 +107,7 @@
                     </select>
                     <label for='in-board-type'>Board type</label>
                 </div>
-                <div id='gr-board-size' class='mb-3'>
+                <div id='gr-board-size' class='mb-3 collapse'>
                     <label for='in-board-size' class='form-label'>Board size</label>
                     <div id='in-board-size' class='input-group'>
                         <input id='in-board-width' type='text' class='form-control text-center' size='9' aria-label='Width'>
@@ -116,9 +141,6 @@
             <a id='btn-lock' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Lock'>
                 <i class='fas fa-unlock' aria-hidden='true'></i>
             </a>
-            <a id='btn-info' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Info'>
-                <i class='fas fa-info-circle' aria-hidden='true'></i>
-            </a>
             <a id='btn-night' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Dark mode'>
                 <i class='fas fa-lightbulb' aria-hidden='true'></i>
             </a>
@@ -127,6 +149,63 @@
             <a id='btn-hide' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Hide'>
                 <i class='fas fa-arrow-right' aria-hidden='true'></i>
             </a>
+        </div>
+    </div>
+
+    <div id='info' class='btn-toolbar d-flex flex-wrap-reverse justify-content-end' role='toolbar'>
+        <div class='input-group'>
+            <span class='input-group-text bg-secondary text-white border-0'>Generation</span>
+            <span id='out-gens' type='text' class='form-control'>0</span>
+        </div>
+        <div class='input-group'>
+            <span class='input-group-text bg-secondary text-white border-0'>Population</span>
+            <span id='out-populus' type='text' class='form-control'>0</span>
+        </div>
+    </div>
+
+    <div class='modal fade' id='modal-save' tabindex='-1' aria-hidden='true'>
+        <div class='modal-dialog modal-dialog-centered'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='modal-save-label'>Save pattern</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                </div>
+                <form class='modal-body' autocomplete='off'>
+                    <div class='form-floating mb-3'>
+                        <input id='in-file-title' type='text' class='form-control'>
+                        <label for='in-file-title'>Title</label>
+                    </div>
+                    <div class='form-floating mb-3'>
+                        <input id='in-file-author' type='text' class='form-control'>
+                        <label for='in-file-author'>Author</label>
+                    </div>
+                    <div class='form-floating mb-3'>
+                        <textarea id='in-file-comments' class='form-control' aria-label='Comments'></textarea>
+                        <label for='in-file-comments'>Comments</label>
+                    </div>
+                    <div class='input-group mb-3'>
+                        <div class='form-floating'>
+                            <input id='in-file-name' type='text' class='form-control' aria-label='Filename'>
+                            <label for='in-file-name'>File name</label>
+                        </div>
+                        <select id='in-file-format' class='input-group-text' aria-label='File format' disabled>
+                            <option value='rle' selected>.rle</option>
+                            <option value='life'>.lif</option>
+                        </select>
+                    </div>
+                </form>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                    <button id='btn-download' type='button' class='btn btn-primary'>Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id='info-toast' class='toast align-items-center position-relative bg-secondary bg-gradient text-white border-0' role='alert' aria-live='assertive' aria-atomic='true'>
+        <div class='d-flex'>
+            <button type='button' class='btn-close btn-close-white my-auto ms-2' data-bs-dismiss='toast' aria-label='Close'></button>
+            <div class='toast-body'> </div>
         </div>
     </div>
 </body>
