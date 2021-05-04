@@ -1,5 +1,5 @@
 class Life {
-    constructor(canvas) {
+    constructor(canvas, options) {
         this._settings = {
             speed: 10,
             step: 1,
@@ -17,10 +17,12 @@ class Life {
             origin: new Point(),
             top: new Point(),
             bottom: new Point(),
+            colorCells: true,
             colors: {
                 background: '#fcfcfc',
                 border: '#bbb',
                 outside: '#aaa',
+                basic: '#020202',
                 hot: [ 0xdc, 0x14, 0x3c ],
                 medium: [ 0x00, 0x00, 0xff ],
                 cold: [ 0x00, 0x00, 0xcd ]
@@ -38,7 +40,24 @@ class Life {
         this.minScale = 0.01;
         this.maxScale = 100;
 
-        this.canvas = (canvas instanceof jQuery) ? canvas.get(0) : canvas;
+        const defaultOptions = {
+            fullscreen: true,
+            events: true
+        };
+        options = options || defaultOptions;
+        if (options.fullscreen === undefined)
+            options.fullscreen = defaultOptions.fullscreen;
+        if (options.events === undefined)
+            options.events = defaultOptions.events;
+        this._options = $.deepCopy(options);
+
+        Object.freeze(this._options);
+        Object.freeze(this.defaults);
+
+        this.canvas = (typeof canvas === 'string')
+            ? document.getElementById(canvas)
+            : ((canvas instanceof jQuery)
+                ? canvas.get(0) : canvas);
         this.$canvas = $(this.canvas);
         this.ctx = this.canvas.getContext('2d');
         this._resize();
@@ -53,6 +72,10 @@ class Life {
         let mouseLast = new Point();
         let dragging = false;
         let dragged = false;
+
+        this.center();
+        if (!this._options.events)
+            return;
 
         $(window)
             .on('resize', () => {
@@ -95,7 +118,6 @@ class Life {
             .on('click', ev => {
                 if (!dragged && !this._settings.locked) {
                     let point = this.getPosition(ev);
-                    console.log(`Create cell at ${point.toString()}`);
                     this.create(point.x, point.y);
                     this.draw();
                 } else {
@@ -113,8 +135,6 @@ class Life {
                     ev.pageY - yoff * this.scale ];
                 this.draw();
             });
-
-        this.center();
     }
 
     get isRunning() {
@@ -258,6 +278,15 @@ class Life {
         this.$canvas.trigger('change.border');
     }
 
+    get colorCells() {
+        return this._settings.colorCells;
+    }
+
+    set colorCells(value) {
+        this._settings.colorCells = !!value;
+        this.$canvas.trigger('change.color');
+    }
+
     get type() {
         return this._settings.type;
     }
@@ -311,8 +340,11 @@ class Life {
     }
 
     _resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        if (this._options.fullscreen) {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        }
+
         this._setDrawLimits();
     }
 
@@ -465,9 +497,10 @@ class Life {
             if (!this._inside(cell))
                 return;
 
-            this.ctx.fillStyle = this._colorGradient(
-                Math.atan(cell.age / 500) / (Math.PI / 2),
-                colors.hot, colors.medium, colors.cold);
+            this.ctx.fillStyle = (!this._settings.colorCells)
+                ? this._settings.colors.basic
+                : this._colorGradient(Math.atan(cell.age / 500) / (Math.PI / 2),
+                    colors.hot, colors.medium, colors.cold);
             this.ctx.fillRect(origin.x + cell.x * size, origin.y - cell.y * size, size, size);
         });
 
@@ -596,6 +629,9 @@ class Life {
     clear() {
         this.stop();
         this._generation = 0;
+        this.rule = this.defaults.rule;
+        this.type = this.defaults.type;
+        this.limit = this.defaults.limit;
         this.file = undefined;
         this.cells.clear();
         this.center();
@@ -629,7 +665,6 @@ class Life {
         } else if (cells instanceof CellFile) {
             this.file = cells;
             this.reload(override, force);
-            this.$canvas.trigger('load.file');
             return;
         }
 
@@ -638,10 +673,13 @@ class Life {
 
     reload(override = true, force = false, center = true) {
         if (this.isRunning || !this.file || !(this.file instanceof CellFile))
-            return;
+            throw 'The automaton is running';
 
-        if (override)
-            this.cells.clear();
+        if (override) {
+            let file = this.file;
+            this.clear();
+            this.file = file;
+        }
 
         this.file.cells.forEach(point => {
             let cell = new Cell(point.x, point.y);
@@ -649,8 +687,7 @@ class Life {
         });
 
         if (!force && this.file.type && this.file.type !== 'Life') {
-            console.log(`Unsupported mode "${this.file.type}".`);
-            return;
+            throw `Unsupported mode "${this.file.type}"`;
         }
 
         if (typeof this.file.rule === 'string')
@@ -667,18 +704,25 @@ class Life {
         }
 
         if (center && ![...this.cells.values()].some(x => this._inside(x)))
-                this.center(this.nearest(0, 0));
+            this.center(this.nearest(0, 0));
 
         this.draw();
+        this.$canvas.trigger('load.file');
     }
 
-    center(ev, x = 0, y = 0) {
-        if (typeof ev === 'object' && 'x' in ev && 'y' in ev)
-            [ev, x, y] = [undefined, ev.x, ev.y];
-        if (typeof ev === 'number' && typeof x === 'number')
-            [ev, x, y] = [undefined, ev, x];
+    getBoundingBox() {
+        return Life.getBoundingBox(this.cells);
+    }
 
-        this.scale = this.defaults.scale;
+    center(ev, x = 0, y = 0, rescale = true) {
+        if (typeof ev === 'object' && 'x' in ev && 'y' in ev)
+            [ev, x, y, rescale] = [undefined, ev.x, ev.y, x];
+        if (typeof ev === 'number' && typeof x === 'number')
+            [ev, x, y, rescale] = [undefined, ev, x, y];
+
+        if (rescale)
+            this.scale = this.defaults.scale;
+
         this.origin = [
             this.$canvas.width()  / 2 - x * this.cellSize,
             this.$canvas.height() / 2 + y * this.cellSize
@@ -716,6 +760,12 @@ class Life {
         const gradient = new Set([ 'hot', 'medium', 'cold' ]);
         this._settings.colors[name] = gradient.has(name) ?
             this._convertColor(color) : color;
+        this.$canvas.trigger('change.color');
+    }
+
+    toBlob(callback, quality = 0.92, type = 'image/jpeg') {
+        this.draw();
+        return this.canvas.toBlob(callback, type, quality);
     }
 
     async test() {

@@ -4,6 +4,7 @@ class UI {
     static $toolbar;
     static saveModal;
     static infoToast;
+    static gallery;
     static speedIncrement = 10;
 
     static init() {
@@ -12,6 +13,7 @@ class UI {
         UI.$toolbar = $('#toolbar');
         UI.saveModal = new bootstrap.Modal(document.getElementById('modal-save'));
         UI.infoToast = new bootstrap.Toast(document.getElementById('info-toast'));
+        UI.gallery = new Gallery('modal-gallery', './static/patterns.zip');
 
         $.rangeSlider();
         if (!$.isTouchDevice())
@@ -57,7 +59,7 @@ class UI {
             )
             .on('load.file', _ => {
                 $('#gr-file-info').removeClass('d-none');
-                UI.showToast('Loaded ' + UI.life.file);
+                UI.showToast('Loaded ' + UI.life.file, 'success');
             })
             .on('unload.file', _ =>
                 $('#gr-file-info').addClass('d-none')
@@ -117,8 +119,12 @@ class UI {
             .val(UI.life.speed);
 
         $('#btn-reload').click(_ => {
-            UI.life.reload();
-            UI.showToast('Reloaded ' + UI.life.file);
+            try {
+                UI.life.reload();
+                UI.showToast('Reloaded ' + UI.life.file, 'primary');
+            } catch (error) {
+                UI.showToast(error, 'danger');
+            }
         });
         $('#btn-load').click(_ => {
             UI.life.stop();
@@ -132,10 +138,13 @@ class UI {
                 $('#in-file-title').val(UI.life.file.title);
                 $('#in-file-author').val(UI.life.file.author);
                 let $comments = $('#in-file-comments');
-                $comments.val(UI.life.file.comments.join('\n'));
-                let fname = UI.life.file.name.match(/^(.*)\./);
-                if (fname)
-                    $('#in-file-name').val(fname[1]);
+                if (UI.life.file.comments)
+                    $comments.val(UI.life.file.comments.join('\n'));
+                if (UI.life.file.name) {
+                    let fname = UI.life.file.name.match(/^(.*)\./);
+                    if (fname)
+                        $('#in-file-name').val(fname[1]);
+                }
             }
 
             UI.saveModal.show();
@@ -143,7 +152,7 @@ class UI {
         $('#btn-download').click(_ => {
             let fname = $('#in-file-name').val().trim();
             let format = $('#in-file-format').val().trim();
-            if (fname === '')
+            if (!fname)
                 return;
 
             let file = CellFile.get(format, fname, UI.life.cells);
@@ -156,14 +165,17 @@ class UI {
             file.comments = $('#in-file-comments').val().split('\n');
 
             let link = document.createElement('a');
-            link.setAttribute('href', file.toDataURL());
+            let href = URL.createObjectURL(file.toBlob());
+            link.setAttribute('href', href);
             link.setAttribute('download', file.name);
-            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+            URL.revokeObjectURL(href);
             UI.saveModal.hide();
         });
-        //$('#btn-gallery').click(_ => {});
+        $('#btn-gallery').click(_ => {
+            UI.life.stop();
+            UI.gallery.show();
+        });
         $('#btn-lock').click(_ => {
             let state = $('#btn-lock > i').attr('class').indexOf('unlock') != -1;
             UI.life.locked = state;
@@ -214,7 +226,6 @@ class UI {
                     $('#in-board-type').val(UI.life.type).trigger('change');
                 } else if (ev.target.id == 'btn-info') {
                     let file = UI.life.file;
-                    console.log(file);
                     $('#dropdown-info .dropdown-divider').each((_, elem) => $(elem).show());
 
                     if (file.title.length > 0)
@@ -227,8 +238,16 @@ class UI {
                     else
                         $('#gr-info-author').hide();
 
-                    if (file.comments.length > 0)
-                        $('#info-comments').html(file.comments.join('<br>'));
+                        function addhttp(url) {
+                        if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+                        url = "http://" + url;
+                        }
+                        return url;
+                        }
+
+                    let comments = file.comments.map(line => UI.convertIfLink(line));
+                    if (comments.length > 0)
+                        $('#info-comments').html(comments.join('<br>'));
                     else
                         $('#gr-info-comments').hide();
                 }
@@ -287,6 +306,20 @@ class UI {
         $('#sw-dead').change(ev =>
             UI.life.detectStillLife = ev.target.checked
         );
+        $('#sw-colors').change(ev => {
+            UI.life.colorCells = ev.target.checked;
+            UI.life.draw();
+        });
+
+        $('#btn-gallery-load').click(_ => {
+            UI.life.stop();
+            UI.gallery.file.getBlob().then(data => {
+                data.name = UI.gallery.file.name;
+                CellFile.read(data, file =>
+                    UI.life.load(file, true));
+            });
+            UI.gallery.hide();
+        });
     }
 
     static theme(name) {
@@ -298,6 +331,7 @@ class UI {
                 UI.life.setColor('outside', UI.life.defaults.colors.outside);
                 UI.life.setColor('medium', UI.life.defaults.colors.medium);
                 UI.life.setColor('cold', UI.life.defaults.colors.cold);
+                UI.life.setColor('basic', UI.life.defaults.colors.basic);
                 break;
             case 'dark':
                 $('#toolbar .dropdown-menu').addClass('dropdown-menu-dark');
@@ -306,6 +340,7 @@ class UI {
                 UI.life.setColor('outside', '#555');
                 UI.life.setColor('medium', '#1e90ff');
                 UI.life.setColor('cold', '#00f');
+                UI.life.setColor('basic', '#fefefe');
                 break;
         }
 
@@ -314,6 +349,9 @@ class UI {
 
     static displayCoords(ev, follow = true) {
         let point = UI.life.getPosition(ev);
+        if (isNaN(point.x) || isNaN(point.y))
+            return;
+
         let maxHeight = UI.life.height - UI.$coords.outerHeight();
         let maxWidth = UI.life.width - UI.$coords.outerWidth();
 
@@ -347,9 +385,54 @@ class UI {
         $elem.trigger('input');
     }
 
-    // TODO
-    static showToast(html, color) {
-        $('#info-toast .toast-body').html(html);
+    static showToast(html, color = 'secondary') {
+        const light = [
+            'primary', 'secondary', 'success',
+            'danger', 'dark'
+        ];
+        const dark = [
+            'info', 'warning', 'light'
+        ];
+
+        if (color && !light.includes(color) && !dark.includes(color))
+            throw 'Unknown toast color!';
+
+        let $toast = $('#info-toast');
+        let $body = $('#info-toast .toast-body');
+        let $button = $('#info-toast .btn-close');
+
+        let fx = (light.includes(color)) ? 'addClass' : 'removeClass';
+        $toast[fx]('text-white');
+        $button[fx]('btn-close-white');
+
+        let className = $toast.attr('class');
+        let toRemove = className.match(/(bg-\S+)/ig)
+            .filter(x => !x.includes('gradient'));
+        $toast.removeClass(toRemove);
+        $toast.addClass(`bg-${color}`);
+
+        $body.html(html);
         UI.infoToast.show();
+    }
+
+    static convertIfLink(text) {
+        let url = text;
+        try {
+            if (url && !/^https?:\/\//i.test(url))
+                url = 'http://' + url;
+
+            url = new URL(url);
+            let name = url.href;
+            if (url.hostname.includes('conwaylife')) {
+                if (url.pathname.includes('wiki'))
+                    name = 'LifeWiki entry';
+                else if (url.pathname.includes('forum'))
+                    name = 'ConwayLife forum';
+            }
+
+            return `<a href='${url}' target='_blank'>${name}</a>`;
+        } catch (error) {
+            return text;
+        }
     }
 }

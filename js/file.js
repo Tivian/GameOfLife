@@ -1,6 +1,7 @@
 class CellFile {
     static supported = '.rle,.cells,.lif,.life,.mcl,.l';
-    static debug = true;
+    static debug = false;
+    static strict = false;
     description = 'Generic cellular automata file';
 
     constructor(name, cells) {
@@ -19,8 +20,8 @@ class CellFile {
         this.comments = [];
     }
 
-    toDataURL() {
-        return `data:text/plain;charset=UTF-8,${encodeURIComponent(this.save())}`;
+    toBlob() {
+        return new Blob([this.save()], { type: 'text/plain' });
     }
 
     toString() {
@@ -60,6 +61,9 @@ class CellFile {
     }
 
     static read(handle, callback, onerror) {
+        if (!handle)
+            return;
+
         if (!onerror)
             onerror = reason => console.log(reason);
 
@@ -70,19 +74,19 @@ class CellFile {
             console.log(`Loading file "${handle.name}"...`);
 
         handle.text().then(data => {
-            data = data.replace(/[^\S\n\r]+/gm, ' ').replace(/^[ ]|[\r]/gm, '');
+            data = data.replace(/[^\S\n\r]+/gm, ' ').replace(/^[ ]|[\r]|[ ]$/gm, '');
             window.tst = data;
 
             if (data.length == 0) {
-                throw `Empty pattern file: "${handle.name}"`;
+                throw `Empty file: "${handle.name}"`;
             } else {
                 let file = undefined;
 
-                if (data.match(/^((x|y|rule[s]?)[^\n]*){2,3}$|^[\db$]{2,}$/gmi)) {
+                if (/^((x|y|rule[s]?)[^\n]*){2,3}$|^[\db$]{2,}$/gmi.test(data)) {
                     file = RLEFile._read(handle.name, data);
-                } else if (data.match(/^(#Life 1\.|#P\s+|!)|^[.*o]+$|^[-+ \d]+$/gm)) {
+                } else if (/^(#Life 1\.|#P\s+|!)|^[.*o]+$|^[-+ \d]+$/gm.test(data)) {
                     file = LifeFile._read(handle.name, data);
-                } else if (data.match(/^#MC(ell|Life)/gm)) {
+                } else if (/^#MC(ell|Life)/gm.test(data)) {
                     file = MCellFile._read(handle.name, data);
                 }
 
@@ -100,7 +104,7 @@ class RLEFile extends CellFile {
 
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !name.match(/^.*\.(rle)/g))
+        if (cells && !/^.*\.(rle)/g.test(name))
             this.name += '.rle';
     }
 
@@ -165,7 +169,6 @@ class RLEFile extends CellFile {
             [lastX, lastY] = [cell.x, cell.y];
         }
 
-        //if (lastX != boundingBox.right)
         add(count, 'o', 3);
         out += '!';
 
@@ -190,19 +193,19 @@ class RLEFile extends CellFile {
             console.log('Detected RLE file.');
 
         lines.forEach((line, index) => {
-            if (line.match(/^#\s?N/gi)) { // title
+            if (/^#\s?N/gi.test(line)) { // title
                 let title = line.match(/^#\s?N\s?(.+)/i);
                 if (title)
                     file.title = title[1];
-            } else if (line.match(/^#\s?O/gi)) { // author
+            } else if (/^#\s?O/gi.test(line)) { // author
                 let author = line.match(/^#\s?O\s?(.+)/i);
                 if (author)
                     file.author = author[1];
-            } else if (line.match(/^#\s?C/gi)) { // comment
+            } else if (/^#\s?C/gi.test(line)) { // comment
                 let comment = line.match(/^#\s?C\s*(.+)?/i);
                 if (comment && comment[1])
                     file.comments.push(comment[1]);
-            } else if (line.match(/^((x|y|rule[s]?)\s?=.*){2,3}/gi)) { // game rules
+            } else if (/^((x|y|rule[s]?)\s?=.*){2,3}/gi.test(line)) { // game rules
                 let rules = line.match(
                     /^x\s?=\s?([-+]?\d+).+y\s?=\s?([-+]?\d+)(.+rule[s]?\s?=\s?([BS]?[0-8]*\/[BS]?[0-8]*))?/i);
                 if (rules) {
@@ -214,7 +217,7 @@ class RLEFile extends CellFile {
                     [x, y] = [-Math.floor(file.width / 2), -Math.floor(file.height / 2)];
                     startX = x;
                 }
-            } else if (line.match(/^[\db$!|a-z]+$/gi)) { // cells
+            } else if (/^[\db$!|a-z]+$/gi.test(line)) { // cells
                 if (finished)
                     return;
 
@@ -248,10 +251,10 @@ class RLEFile extends CellFile {
                             break;
                     }
                 }
-            } else if (line.length != 0 && !line.match(/^[#]/g)) {
+            } else if (line.length != 0 && !/^[#]/g.test(line)) {
                 if (finished)
                     file.comments.push(line);
-                else
+                else if (this.strict)
                     throw `Unknown line [${index + 1}]: "${line}"`;
             }
         });
@@ -265,7 +268,7 @@ class LifeFile extends CellFile {
 
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !name.match(/^.*\.(lif)/g))
+        if (cells && !/^.*\.(lif)/g.test(name))
             this.name += '.lif';
     }
 
@@ -288,38 +291,38 @@ class LifeFile extends CellFile {
 
         lines.forEach((line, index) => {
             // life files tends to have two different line styles
-            if (line.match(/^[!#]/i))
+            if (/^[!#]/i.test(line))
                 style = line[0];
 
-            if (line.match(/^#\s?Life/gi)) { // file signature
+            if (/^#\s?Life/gi.test(line)) { // file signature
                 ; // ignore this line
-            } else if (line.match(/^!\s?Name\s?:/gi)) { // title
+            } else if (/^!\s?Name\s?:/gi.test(line)) { // title
                 let title = line.match(/^!\s?Name\s?:\s?(.+)/i);
                 if (title)
                     file.title = title[1];
-            } else if (line.match(/^!\s?Author\s?:/gi)) { // author
+            } else if (/^!\s?Author\s?:/gi.test(line)) { // author
                 let author = line.match(/^!\s?Author\s?:\s?(.+)/i);
                 if (author)
                     file.author = author[1];
-            } else if (line.match(/^#[RN]/gi)) { // game rule
+            } else if (/^#[RN]/gi.test(line)) { // game rule
                 let rule = line.match(/^#[RN]\s?([0-8]*\/[0-8]*)?/i);
                 if (rule && rule[1])
                     file.rule = rule[1];
-            } else if (line.match(/^#P/gi)) { // origin
+            } else if (/^#P/gi.test(line)) { // origin
                 let origin = line.match(/^#P\s?([-+]?\d+)\s?([-+]?\d+)/i);
                 if (origin) {
                     [x, y] = [parseInt(origin[1]), parseInt(origin[2])];
                     startX = x;
                 }
-            } else if (line.match(/^#S/gi)) { // speed
+            } else if (/^#S/gi.test(line)) { // speed
                 let speed = line.match(/^#S\s?(\d+)/i);
                 if (speed)
                     file.speed = parseInt(speed[1]);
-            } else if (line.match(/^[!#]\s?[CD]?/gi)) { // comment
+            } else if (/^[!#]\s?[CD]?/gi.test(line)) { // comment
                 let comment = line.match(/^[!#]\s?[CD]?\s*(.+)?/i);
                 if (comment && comment[1])
                     file.comments.push(comment[1]);
-            } else if (line.match(/^[.*o]+$/gi)) { // cells
+            } else if (/^[.*o]+$/gi.test(line)) { // cells
                 let matches = line.matchAll(/([.*o])+?/gi);
 
                 for (let match of matches) {
@@ -330,7 +333,7 @@ class LifeFile extends CellFile {
 
                 x = startX;
                 y++;
-            } else if (line.match(/^[-+\d ]+$/gi)) { // single cell with coordinates
+            } else if (/^[-+\d ]+$/gi.test(line)) { // single cell with coordinates
                 let cell = line.match(/^([-+\d]+)\s?([-+\d]+)$/i);
                 if (cell)
                     cells.add(new Point(parseInt(cell[1]), parseInt(cell[2])));
@@ -338,7 +341,7 @@ class LifeFile extends CellFile {
                 y++;
             } else if (line.length != 0 && style == '!') { // unknown line from dbLife
                 ;
-            } else if (line.length != 0 && !line.match(/^[!#]/g)) {
+            } else if (this.strict && line.length != 0 && !/^[!#]/g.test(line)) {
                 throw `Unknown line #${index + 1}: "${line}"`;
             }
         });
@@ -363,7 +366,7 @@ class MCellFile extends CellFile {
 
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !name.match(/^.*\.(mcl)/g))
+        if (cells && !/^.*\.(mcl)/g.test(name))
             this.name += '.mcl';
 
         this.type = 'Life';
@@ -384,21 +387,21 @@ class MCellFile extends CellFile {
             console.log('Detected MCell file.');
         
         lines.forEach((line, index) => {
-            if (line.match(/^#MCell/gi)) { // file signature
+            if (/^#MCell/gi.test(line)) { // file signature
                 ; // ignore this line
-            } else if (line.match(/^#GAME/gi)) { // type of the cellular automata
+            } else if (/^#GAME/gi.test(line)) { // type of the cellular automata
                 let type = line.match(/^#GAME\s?(.+)$/i);
                 if (type)
                     file.type = type[1];
-            } else if (line.match(/^#RULE/gi)) { // rules of the automata
+            } else if (/^#RULE/gi.test(line)) { // rules of the automata
                 let rule = line.match(/^#RULE\s?(.+)$/i);
                 if (rule)
                     file.rule = rule[1];
-            } else if (line.match(/^#SPEED/gi)) { // set speed
+            } else if (/^#SPEED/gi.test(line)) { // set speed
                 let speed = line.match(/^#SPEED\s?(\d+)$/i);
                 if (speed)
                     file.speed = parseInt(speed[1]);
-            } else if (line.match(/^#BOARD/gi)) { // set the board size
+            } else if (/^#BOARD/gi.test(line)) { // set the board size
                 let board = line.match(/^#BOARD\s?(\d+)x(\d+)$/i);
                 if (board) {
                     file.board = {
@@ -406,27 +409,27 @@ class MCellFile extends CellFile {
                         height: parseInt(board[2])
                     };
                 }
-            } else if (line.match(/^#CCOLORS/gi)) { // number of colors
+            } else if (/^#CCOLORS/gi.test(line)) { // number of colors
                 let colors = line.match(/^#CCOLORS\s?(\d+)$/i);
                 if (colors)
                     file.colors = parseInt(colors[1]);
-            } else if (line.match(/^#COLORING/gi)) { // coloring method
+            } else if (/^#COLORING/gi.test(line)) { // coloring method
                 let coloring = line.match(/^#COLORING\s?(\d+)$/i);
                 if (coloring)
                     file.coloring = parseInt(coloring[1]);
-            } else if (line.match(/^#WRAP/gi)) { // is board wrapped
+            } else if (/^#WRAP/gi.test(line)) { // is board wrapped
                 let wrap = line.match(/^#WRAP\s?(\d)$/i);
                 if (wrap)
                     file.wrapped = !!parseInt(wrap[1]);
-            } else if (line.match(/^#PALETTE/gi)) { // set the palette
+            } else if (/^#PALETTE/gi.test(line)) { // set the palette
                 let palette = line.match(/^#PALETTE\s?(.+)$/i);
                 if (palette)
                     file.palette = palette[1];
-            } else if (line.match(/^#D\s?.+$/gi)) { // comment
+            } else if (/^#D\s?.*$/gi.test(line)) { // comment
                 let comment = line.match(/^#D\s*(.+)?$/i);
                 if (comment && comment[1])
                     file.comments.push(comment[1]);
-            } else if (line.match(/^#L\s?[.$\w]+$/gi)) { // cells in RLE format
+            } else if (/^#L\s?[.$\w]+$/gi.test(line)) { // cells in RLE format
                 let matches = line.substring(2).matchAll(/(\d+)?\s?([.$A-Za-z])\s?/gi);
 
                 for (let match of matches) {
@@ -446,7 +449,7 @@ class MCellFile extends CellFile {
                             break;
                     }
                 }
-            } else if (line.length != 0) {
+            } else if (this.strict && line.length != 0) {
                 throw `Unknown line [${index + 1}]: "${line}"`;
             }
         });

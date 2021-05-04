@@ -18,7 +18,9 @@
     <script src='js/app.js' type='application/javascript'></script>
     <script src='js/life.js' type='application/javascript'></script>
     <script src='js/file.js' type='application/javascript'></script>
+    <script src='js/gallery.js' type='application/javascript'></script>
     <script src='js/jquery.utility.js' type='application/javascript'></script>
+    <script src='js/libs/zip-fs.min.js' type='application/javascript'></script>
 
     <script>
         $(() => UI.init());
@@ -59,17 +61,17 @@
                 <div id='gr-info-title'>
                     <p class='fs-5'>Title</p>
                     <p id='info-title' class='text-muted'></p>
-                    <hr class="dropdown-divider">
+                    <hr class='dropdown-divider'>
                 </div>
                 <div id='gr-info-author'>
                     <p class='fs-5'>Author</p>
                     <p id='info-author' class='text-muted'></p>
-                    <hr class="dropdown-divider">
+                    <hr class='dropdown-divider'>
                 </div>
                 <div id='gr-info-comments'>
                     <p class='fs-5'>Comments</p>
                     <p id='info-comments' class='text-muted'></p>
-                    <hr class="dropdown-divider">
+                    <hr class='dropdown-divider'>
                 </div>
             </div>
             <a id='btn-reload' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Reload'>
@@ -137,6 +139,10 @@
                     <input id='sw-dead' type='checkbox' class='form-check-input' checked>
                     <label for='sw-dead' class='form-check-label text-end'>Stop at still life</label>
                 </div>
+                <div class='mb-1 form-check form-switch'>
+                    <input id='sw-colors' type='checkbox' class='form-check-input' checked>
+                    <label for='sw-colors' class='form-check-label text-end'>Show cell age</label>
+                </div>
             </form>
             <a id='btn-lock' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Lock'>
                 <i class='fas fa-unlock' aria-hidden='true'></i>
@@ -163,7 +169,7 @@
         </div>
     </div>
 
-    <div class='modal fade' id='modal-save' tabindex='-1' aria-hidden='true'>
+    <div id='modal-save' class='modal fade' tabindex='-1' aria-hidden='true'>
         <div class='modal-dialog modal-dialog-centered'>
             <div class='modal-content'>
                 <div class='modal-header'>
@@ -197,6 +203,41 @@
                 <div class='modal-footer'>
                     <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
                     <button id='btn-download' type='button' class='btn btn-primary'>Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id='modal-gallery' class='modal fade' tabindex='-1' aria-hidden='true'>
+        <div class='modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='modal-save-label'>Pattern gallery</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                </div>
+                <div class='modal-body'>
+                    <div class='container'>
+                        <div class='row'>
+                            <div class='col-8 border-end pe-3'>
+                                <canvas id='gallery-preview' class='sticky-top collapse'></canvas>
+                            </div>
+                            <div class='col-4 border-start pe-0'>
+                                <div class='ms-2'>
+                                    <select id='gallery-set' class='form-select' aria-label='Choose set of files'>
+                                    </select>
+                                </div>
+                                <hr class='my-2 ms-2'/>
+                                <div class='ms-2 mb-3'>
+                                    <div id='gallery-file-list' class='list-group'>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                    <button id='btn-gallery-load' type='button' class='btn btn-primary'>Load pattern</button>
                 </div>
             </div>
         </div>

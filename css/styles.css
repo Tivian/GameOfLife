@@ -63,6 +63,14 @@ body {
     user-select: text !important;
 }
 
+#modal-gallery .modal-content {
+    min-height: 100%;
+}
+
+#modal-gallery .modal-body {
+    overflow-x: hidden;
+}
+
 /* Fix for Bootstrap v5.0 */
 .dropdown-menu-dark .form-floating > label {
     color: #212529;
