@@ -64,6 +64,8 @@ class Gallery {
 
                         this.files.set(dir.name.substr(dir.name.indexOf('_') + 1), files);
                     }
+
+                    $(document).trigger('gallery.load');
                 });
             });
         });
@@ -134,5 +136,44 @@ class Gallery {
     hide() {
         this.previewLife.clear();
         this.modal.hide();
+    }
+
+    find(str) {
+        let found = [];
+        let traverse = (node) => {
+            for (let entry of node.children) {
+                if (entry.directory)
+                    traverse(entry);
+                else if (entry.data.filename.includes(str))
+                    found.push(entry);
+            }
+        }
+
+        traverse(this.fs.root);
+        return found;
+    }
+
+    load(file) {
+        if (!file && this.file)
+            file = this.file;
+        else if (typeof file === 'string')
+            file = this.find(file)[0];
+
+        this.file = file;
+        return new Promise(resolve => {
+            file.getBlob().then(data => {
+                data.name = file.name;
+                CellFile.read(data, resolve);
+            });
+        });
+    }
+
+    random(minSize, maxSize) {
+        minSize = minSize || 0;
+        maxSize = maxSize || Number.MAX_VALUE;
+        let selection = UI.gallery.fs.entries.filter(e =>
+            !e.directory && e.data.compressedSize >= minSize && e.data.compressedSize <= maxSize);
+        this.file = selection[Math.floor(Math.random() * selection.length)];
+        return this.file;
     }
 }

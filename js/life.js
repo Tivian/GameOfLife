@@ -68,6 +68,14 @@ class Life {
         this._running = false;
         this._dirty = false;
         this._file = undefined;
+        this._engine = 'worker';
+
+        this.engines = {
+            naive: '_setupNaive',
+            worker: '_setupWorker'
+        };
+        Object.freeze(this.engines);
+        this[this.engines[this._engine]]();
 
         let mouseLast = new Point();
         let dragging = false;
@@ -86,7 +94,7 @@ class Life {
                 if (dragging) {
                     $(this.canvas).css('cursor', 'grabbing');
                     let coord = new Point(ev.pageX, ev.pageY);
-                    if (coord.distance(mouseLast) > 1)
+                    if (Point.distance(coord, mouseLast) > 1)
                         dragged = true;
 
                     this.origin = [
@@ -109,11 +117,10 @@ class Life {
             .on('mousedown', ev => {
                 mouseLast = new Point(ev.pageX, ev.pageY);
 
-                if (ev.which == 1) {
+                if (ev.which == 1)
                     dragging = true;
-                } else if (ev.which == 2) {
+                else if (ev.which == 2)
                     this.center(ev);
-                }
             })
             .on('click', ev => {
                 if (!dragged && !this._settings.locked) {
@@ -137,11 +144,25 @@ class Life {
             });
     }
 
+    get engine() {
+        return this._engine;
+    }
+
+    set engine(value) {
+        const valid = [ 'naive', 'worker'/*, 'hashlife'*/ ];
+        if (!valid.includes(value))
+            return;
+
+        this._engine = value;
+        this[this.engines[this._engine]]();
+        this.$canvas.trigger('change.engine');
+    }
+
     get isRunning() {
         return this._running;
     }
 
-    get size() {
+    get population() {
         return this.cells.size;
     }
 
@@ -339,6 +360,71 @@ class Life {
         this.$canvas.trigger(`${!value ? 'un' : ''}load.file`);
     }
 
+    _setupNaive() {
+        this.next = this.next_naive;
+        this.start = this.start_naive;
+    }
+
+    _setupWorker(cores = 4) {
+        if (!window.Worker)
+            return;
+
+        if (cores > navigator.hardwareConcurrency / 2)
+            cores = navigator.hardwareConcurrency / 2;
+
+        this.next = this.next_worker;
+        this.start = this.start_worker;
+
+        this.cores = cores;
+        this.workers = [];
+
+        for (let i = 0; i < this.cores; i++)
+            this.workers.push(new Worker('./js/life.worker.js'));
+
+        let result = 0;
+        let done = 0;
+        let step = 0;
+        this.workers.forEach((w, i) => {
+            w.postMessage({ action: 'new', nth: i, cores: this.cores });
+            w.postMessage({ action: 'setup', settings: this._settings });
+            w.onmessage = async ev => {
+                if (ev.data.action === 'done') {
+                    if (done == 0)
+                        this._newGen.clear();
+
+                    ev.data.result[0].forEach((val, key) => this._newGen.set(key, val));
+                    result = (result << 1) | ev.data.result[1];
+                    if (++done == this.cores) {
+                        done = 0;
+
+                        if (result == 0 && this._settings.detect) {
+                            this.stop();
+                        } else {
+                            this._generation++;
+
+                            if (this.cells.size != 0)
+                                [this.cells, this._newGen] = [this._newGen, this.cells];
+
+                            if (++step >= this.step) {
+                                this.$canvas.trigger('life.next');
+                                this.draw();
+                                step = 0;
+                            }
+
+                            if (this._running) {
+                                if (step == 0)
+                                    await Life.sleep(this.speed);
+                                this.next();
+                            }
+                        }
+
+                        result = 0;
+                    }
+                }
+            };
+        });
+    }
+
     _resize() {
         if (this._options.fullscreen) {
             this.canvas.width = window.innerWidth;
@@ -387,11 +473,11 @@ class Life {
     }
 
     _getHash(x, y) {
-        return this._limitCoords(x, y, Cell.getHash);
+        return this._limitCoords(x, y, (x, y) => `${x}|${y}`);
     }
 
     _newCell(x, y) {
-        return this._limitCoords(x, y, (x, y) => new Cell(x, y));
+        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: `${x}|${y}` }));
     }
 
     _limitCoords(x, y, callback) {
@@ -519,7 +605,7 @@ class Life {
         if (this._settings.type !== 'infinite' && !this._insideLimitCoord(x, y))
             return;
 
-        let cell = new Cell(x, y);
+        let cell = this._newCell(x, y);
 
         if (this.cells.has(cell.hash))
             this.cells.delete(cell.hash);
@@ -529,8 +615,30 @@ class Life {
         this.$canvas.trigger('life.new');
     }
 
-    next() {
-        if (this.size == 0)
+    start_naive() {
+        if (this._running)
+            return;
+
+        this._running = true;
+        this.$canvas.trigger('start');
+
+        (async _ => {
+            while(this._running) {
+                await Life.sleep(this._settings.speed);
+                for (let i = 0; i < this._settings.step; i++) {
+                    if (!this.next() && this._settings.detect) {
+                        this.stop();
+                        break;
+                    }
+                }
+
+                this.draw();
+            }
+        })();
+    }
+
+    next_naive() {
+        if (this.population == 0)
             return;
 
         if (this._dirty)
@@ -586,36 +694,26 @@ class Life {
                 changed = true;
         }
 
-        this.cells.clear();
-        this._newGen.forEach((val, key) => this.cells.set(key, val));
+        [this.cells, this._newGen] = [this._newGen, this.cells];
         this.$canvas.trigger('life.next');
         return changed;
     }
 
-    start() {
+    start_worker() {
         if (this._running)
             return;
 
         this._running = true;
         this.$canvas.trigger('start');
 
-        (async _ => {
-            console.log('START');
+        this.workers.forEach(w =>
+            w.postMessage({ action: 'setup', settings: this._settings }));
+        this.next();
+    }
 
-            while(this._running) {
-                await Life.sleep(this._settings.speed);
-                for (let i = 0; i < this._settings.step; i++) {
-                    if (!this.next() && this._settings.detect) {
-                        this.stop();
-                        break;
-                    }
-                }
-
-                this.draw();
-            }
-
-            console.log('STOP');
-        })();
+    next_worker() {
+        this.workers.forEach(w =>
+            w.postMessage({ action: 'next', cells: this.cells }));
     }
     
     stop() {
@@ -639,41 +737,59 @@ class Life {
         this.$canvas.trigger('life.wipe');
     }
 
+    randomize(width, height, threshold = 0.5) {
+        let soup = [];
+        let shift = { x: width / 2, y: height / 2 };
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                if (Math.random() < threshold)
+                    soup.push([x - shift.x, y - shift.y]);
+            }
+        }
+
+        this.load(soup, true);
+    }
+
     load(cells, override = false, force = false) {
         if (typeof cells === 'undefined')
             return;
 
-        if (override)
+        if (override && !(cells instanceof CellFile))
             this.cells.clear();
 
-        if (cells instanceof Array) {
-            if (cells[0] instanceof Cell) {
-                cells.forEach(cell => this.cells.set(cell.hash, cell));
-            } else if (cells[0] instanceof Array) {
-                cells.forEach(cell => {
-                    let obj = new Cell(cell[0], cell[1]);
-                    this.cells.set(obj.hash, obj);
-                });
-            } else {
-                cells.forEach(cell => {
-                    let obj = new Cell(cell.x, cell.y);
-                    this.cells.set(obj.hash, obj);
-                });
-            }
-        } else if (cells instanceof Map) {
-            cells.forEach((val, key) => this.cells.set(key, val));
-        } else if (cells instanceof CellFile) {
+        if (cells instanceof Set)
+            cells = [...cells];
+
+        if (cells instanceof CellFile) {
             this.file = cells;
             this.reload(override, force);
-            return;
-        }
+        } else {
+            if (cells instanceof Array) {
+                if (cells[0] instanceof Array) {
+                    cells.forEach(cell => {
+                        let obj = this._newCell(cell[0], cell[1]);
+                        this.cells.set(obj.hash, obj);
+                    });
+                } else {
+                    cells.forEach(cell => {
+                        let obj = this._newCell(cell.x, cell.y);
+                        this.cells.set(obj.hash, obj);
+                    });
+                }
+            } else if (cells instanceof Map) {
+                cells.forEach((val, key) => this.cells.set(key, val));
+            }
 
-        this.draw();
+            this.draw();
+        }
     }
 
     reload(override = true, force = false, center = true) {
-        if (this.isRunning || !this.file || !(this.file instanceof CellFile))
+        if (this.isRunning)
             throw 'The automaton is running';
+
+        if (!this.file || !(this.file instanceof CellFile))
+            throw 'Invalid pattern file';
 
         if (override) {
             let file = this.file;
@@ -682,13 +798,12 @@ class Life {
         }
 
         this.file.cells.forEach(point => {
-            let cell = new Cell(point.x, point.y);
+            let cell = this._newCell(point.x, point.y);
             this.cells.set(cell.hash, cell);
         });
 
-        if (!force && this.file.type && this.file.type !== 'Life') {
+        if (!force && this.file.type && this.file.type !== 'Life')
             throw `Unsupported mode "${this.file.type}"`;
-        }
 
         if (typeof this.file.rule === 'string')
             this.rule = this.file.rule;
@@ -738,7 +853,7 @@ class Life {
     nearest(x = 0, y = 0) {
         let zero = new Point(x, y);
         let result = [...this.cells.values()].reduce((acc, cur) => {
-            let dist = cur.distance(zero);
+            let dist = Point.distance(cur, zero);
             return {
                 cell: acc.dist > dist ? cur : acc.cell,
                 dist: Math.min(acc.dist, dist)
@@ -768,42 +883,6 @@ class Life {
         return this.canvas.toBlob(callback, type, quality);
     }
 
-    async test() {
-        if (this.isRunning)
-            return;
-
-        this.clear();
-        let speed = this.speed;
-        this.speed = 0;
-
-        this.create(-2, 1);
-        this.create(-1, 1);
-        this.create(-2, 0);
-        this.create(-1, 0);
-        
-        this.create(0, -1);
-
-        this.create(1, 0);
-        this.create(2, 0);
-        this.create(1, 1);
-        this.create(2, 1);
-
-        let start = performance.now();
-        this.start();
-        while (this.generation < 500)
-            await Life.sleep(10);
-        console.log(`Time: ${Math.round(performance.now() - start)}ms`);
-        this.stop();
-        this.speed = speed;
-
-        /* RESULTS
-         *  Firefox: 7700 / 2800(with profiler launched[WTF])
-         *  Chrome:  2700
-         *  Edge:    2700
-         *  Opera:   2700
-         */
-    }
-
     static getBoundingBox(cells) {
         if (!cells)
             return undefined;
@@ -811,7 +890,16 @@ class Life {
         if (cells instanceof Map)
             cells = cells.values();
 
-        return [...cells].reduce((acc, cur) => {
+        cells = [...cells];
+        if (cells.length == 0) {
+            return {
+                top: 0,   bottom: 0,
+                left: 0,   right: 0,
+                width: 0, height: 0
+            };
+        }
+
+        return cells.reduce((acc, cur) => {
             let obj = {
                 top: Math.max(acc.top, cur.y),
                 bottom: Math.min(acc.bottom, cur.y),
@@ -841,47 +929,20 @@ class Point {
     }
 
     distance(other) {        
-        return Math.floor(
-            Math.pow(other.x - this.x, 2)
-          + Math.pow(other.y - this.y, 2));
+        return Point.distance(this, other);
     }
 
     toString() {
         return `(${this.x}, ${this.y})`;
     }
 
+    static distance(a, b) {
+        return Math.floor(
+            Math.pow(b.x - a.x, 2)
+          + Math.pow(b.y - a.y, 2));
+    }
+
     static getHash(x, y) {
         return `${x}|${y}`;
-    }
-}
-
-class Cell {
-    constructor(x, y) {
-        this._pos = new Point(x, y);
-        this.age = 0;
-    }
-
-    get x() {
-        return this._pos.x;
-    }
-
-    get y() {
-        return this._pos.y;
-    }
-
-    get hash() {
-        return this._pos.hash;
-    }
-
-    distance(other) {
-        return this._pos.distance(other);
-    }
-
-    toString() {
-        return 'Cell at ' + this._pos;
-    }
-
-    static getHash(x, y) {
-        return Point.getHash(x, y);
     }
 }

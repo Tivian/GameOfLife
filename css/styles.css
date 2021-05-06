@@ -63,6 +63,10 @@ body {
     user-select: text !important;
 }
 
+#dropdown-info a {
+    word-break: break-all;
+}
+
 #modal-gallery .modal-content {
     min-height: 100%;
 }

@@ -5,6 +5,7 @@ class UI {
     static saveModal;
     static infoToast;
     static gallery;
+    static fps = {};
     static speedIncrement = 10;
 
     static init() {
@@ -12,12 +13,14 @@ class UI {
         UI.$coords = $('#coords');
         UI.$toolbar = $('#toolbar');
         UI.saveModal = new bootstrap.Modal(document.getElementById('modal-save'));
-        UI.infoToast = new bootstrap.Toast(document.getElementById('info-toast'));
+        UI.infoToast = new bootstrap.Toast(document.getElementById('info-toast'), {autohide: false});
         UI.gallery = new Gallery('modal-gallery', './static/patterns.zip');
 
         $.rangeSlider();
         if (!$.isTouchDevice())
             $('[data-bs-toggle="tooltip"]').tooltip();
+        else
+            UI.touchInit();
 
         $(window).on('contextmenu', ev => {
             if ($(ev.target).closest('#dropdown-info').length == 0)
@@ -35,11 +38,13 @@ class UI {
                 $('#btn-play > i').attr('class', 'fas fa-pause');
                 $('#in-board-size > input, #in-game-rule > input').prop('readonly', true);
                 $('#in-board-type').prop('disabled', true);
+                $('#in-engine').prop('disabled', true);
             })
             .on('stop', _ => {
                 $('#btn-play > i').attr('class', 'fas fa-play');
                 $('#in-board-size > input, #in-game-rule > input').prop('readonly', false);
                 $('#in-board-type').prop('disabled', false);
+                $('#in-engine').prop('disabled', false);
             })
             .on('change.rule', _ =>  UI.updateRule())
             .on('change.speed', _ =>
@@ -57,6 +62,9 @@ class UI {
             .on('change.step', _ => 
                 $('#in-game-step').val(UI.life.step)
             )
+            .on('change.engine', _ =>
+                $('#in-engine').val(UI.life.engine)
+            )
             .on('load.file', _ => {
                 $('#gr-file-info').removeClass('d-none');
                 UI.showToast('Loaded ' + UI.life.file, 'success');
@@ -66,7 +74,25 @@ class UI {
             )
             .on('life.new life.next life.wipe load.file', _ => {
                 $('#out-gens').text(UI.life.generation);
-                $('#out-populus').text(UI.life.size);
+                $('#out-populus').text(UI.life.population);
+            })
+            .on('life.next', _ => {
+                if (!UI.fps.timestamp) {
+                    UI.fps.timestamp = performance.now();
+                } else {
+                    let diff = !UI.fps.lastGen ? 1 : (UI.life.generation - UI.fps.lastGen);
+                    let value = diff * 1000 / (performance.now() - UI.fps.timestamp);
+                    UI.fps.lastGen = UI.life.generation;
+                    UI.fps.speed = (!UI.fps.speed) ? value : (UI.fps.speed + value) / 2;
+                    UI.fps.max = !UI.fps.max ? UI.fps.speed : UI.fps.speed > UI.fps.max ? UI.fps.speed : UI.fps.max;
+                    UI.fps.min = !UI.fps.min ? UI.fps.speed : (UI.fps.speed < UI.fps.min || UI.fps.min < 1) ? UI.fps.speed : UI.fps.min;
+                    UI.fps.timestamp = performance.now();
+                    $('#out-fps').text(`${Math.floor(UI.fps.min)} | ${Math.floor(UI.fps.speed)} | ${Math.floor(UI.fps.max)}`);
+                }
+            })
+            .on('life.wipe', _ => {
+                UI.speed = UI.max = UI.min = undefined;
+                $('#out-fps').text('0 | 0 | 0');
             })
             .on('mouseenter', ev => {
                 if (coordsEnabled && mouseLeft) {
@@ -85,12 +111,7 @@ class UI {
                     UI.displayCoords(ev, coordsFollow);
             });
 
-        $('#btn-play').click(_ => {
-            if (UI.life.isRunning)
-                UI.life.stop();
-            else
-                UI.life.start();
-        });
+        $('#btn-play').click(_ => UI.play());
         $('#btn-next').click(_ => {
             if (!UI.life.isRunning) {
                 UI.life.next();
@@ -103,14 +124,12 @@ class UI {
         $('#btn-faster').click(_ => this.changeSpeed(-UI.speedIncrement));
         $('#in-speed')
             .on('input', ev => {
-                let $elem = $(ev.target);
-                let val = $elem.val();
-                val = parseInt(val.replace(/[^-+0-9]/g, ''));
+                let val = parseInt(ev.target.value.replace(/[^-+0-9]/g, ''));
                 if (isNaN(val) || val < 1)
                     val = 1;
                 if (val >= 10000)
                     val = 9999;
-                $elem.val(val);
+                ev.target.value = val;
 
                 UI.life.speed = val;
             })
@@ -176,21 +195,28 @@ class UI {
             UI.life.stop();
             UI.gallery.show();
         });
+        $('#btn-random').click(_ => {
+            UI.load(UI.gallery.random(0, 1000))
+        });
         $('#btn-lock').click(_ => {
             let state = $('#btn-lock > i').attr('class').indexOf('unlock') != -1;
             UI.life.locked = state;
-            $('#btn-lock')
-                .attr('data-bs-original-title', state ? 'Unlock' : 'Lock')
-                .tooltip('show');
+            if (!$.isTouchDevice()) {
+                $('#btn-lock')
+                    .attr('data-bs-original-title', state ? 'Unlock' : 'Lock')
+                    .tooltip('show');
+            }
         });
         $('#btn-night').click(_ => {
             let $btn = $('#btn-night');
             let $symbol = $('#btn-night > i');
             let state = $symbol.attr('class').indexOf('far') != -1;
 
-            $btn
-                .attr('data-bs-original-title', state ? 'Dark mode' : 'Light mode')
-                .tooltip('show');
+            if (!$.isTouchDevice()) {
+                $btn
+                    .attr('data-bs-original-title', state ? 'Dark mode' : 'Light mode')
+                    .tooltip('show');
+            }
             $symbol
                 .removeClass(state ? 'far' : 'fas')
                 .addClass(state ? 'fas' : 'far');
@@ -204,12 +230,19 @@ class UI {
             $toHide.animate({
                 right: state ? -1.2 * UI.$toolbar.width() : ''
             });
-            $('#btn-hide')
-                .attr('data-bs-original-title', state ? 'Show' : 'Hide')
-                .tooltip('show');
+            if (!$.isTouchDevice()) {
+                $('#btn-hide')
+                    .attr('data-bs-original-title', state ? 'Show' : 'Hide')
+                    .tooltip('show');
+            }
             $('#btn-hide > i').css({
                 transform: state ? 'rotate(180deg)' : ''
             });
+        });
+
+        $('#btn-gallery-load').click(_ => {
+            UI.load();
+            UI.gallery.hide();
         });
 
         // setup of the settings dropdown
@@ -230,6 +263,8 @@ class UI {
 
                     if (file.title.length > 0)
                         $('#info-title').text(file.title);
+                    else if (UI.gallery.file)
+                        $('#info-title').text(UI.gallery.file.name.match(/(.*)\./)[1]);
                     else
                         $('#gr-info-title').hide();
 
@@ -238,14 +273,8 @@ class UI {
                     else
                         $('#gr-info-author').hide();
 
-                        function addhttp(url) {
-                        if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
-                        url = "http://" + url;
-                        }
-                        return url;
-                        }
-
-                    let comments = file.comments.map(line => UI.convertIfLink(line));
+                    let comments = file.comments
+                        .map(line => UI.convertIfLink(line)).filter(x => x);
                     if (comments.length > 0)
                         $('#info-comments').html(comments.join('<br>'));
                     else
@@ -257,26 +286,22 @@ class UI {
                     $('#dropdown-info .dropdown-divider:visible:last').hide();
             });
         $('#in-game-rule-born, #in-game-rule-survive').on('input', ev => {
-            let $elem = $(ev.target);
-            let str = $elem.val();
+            let str = ev.target.value;
             str = str.replace(/(.)(?=.*\1)|[^0-8]/g, '');
             str = str.split('').sort().join('');
-            $elem.val(str);
+            ev.target.value = str;
 
             UI.life.rule = `B${$('#in-game-rule-born').val()}/S${$('#in-game-rule-survive').val()}`;
         });
         $('#in-board-type').change(ev => {
-            let value = $(ev.target).val();
+            let value = ev.target.value;
             $('#gr-board-size').toggle(value != 'infinite');
 
             UI.life.type = $('#in-board-type').val();
             UI.life.draw();
         });
         $('#in-board-width, #in-board-height').on('input', ev => {
-            let $elem = $(ev.target);
-            let str = $elem.val();
-            str = str.replace(/[^-+\d]/g, '');
-            $elem.val(str);
+            ev.target.value = parseInt(ev.target.value) || 0;
 
             UI.life.limit = {
                 width: $('#in-board-width').val(),
@@ -285,10 +310,10 @@ class UI {
             UI.life.draw();
         });
         $('#in-game-step').on('change input', ev =>
-            UI.life.step = $(ev.target).val()
+            UI.life.step = ev.target.value
         );
         $('#in-coord-display').change(ev => {
-            let value = $(ev.target).val();
+            let value = ev.target.value;
             coordsFollow = value != 'corner';
             coordsEnabled = value != 'off';
 
@@ -310,16 +335,82 @@ class UI {
             UI.life.colorCells = ev.target.checked;
             UI.life.draw();
         });
+        $('#sw-fps').change(ev =>
+            $('#out-fps').parent().css('display', ev.target.checked ? 'flex' : 'none')
+        )
+        $('#in-engine').change(ev =>
+            UI.life.engine = ev.target.value
+        );
 
-        $('#btn-gallery-load').click(_ => {
-            UI.life.stop();
-            UI.gallery.file.getBlob().then(data => {
-                data.name = UI.gallery.file.name;
-                CellFile.read(data, file =>
-                    UI.life.load(file, true));
-            });
-            UI.gallery.hide();
+        $(document).on('gallery.load', _ => UI.demo());
+        $(document).on('keydown', ev => {
+            if (ev.target !== document.body)
+                return;
+
+            if (ev.which >= 97 && ev.which <= 105) // numpad 1-9
+                UI.numpad(ev.which - 97);
+            else if (ev.which == 32) // SPACE
+                UI.play();
         });
+    }
+
+    static play() {
+        if (UI.life.isRunning)
+            UI.life.stop();
+        else
+            UI.life.start();
+    }
+
+    static numpad(key) {
+        let bb = UI.life.getBoundingBox();
+        let center = [bb.left + bb.width / 2, bb.top - bb.height / 2];
+        let pos = [
+            [bb.left, bb.bottom], [center[0], bb.bottom], [bb.right, bb.bottom],
+            [bb.left, center[1]],         center,         [bb.right, center[1]],
+            [bb.left,    bb.top], [center[0],    bb.top], [bb.right,    bb.top]
+        ];
+        UI.life.center(...pos[key]);
+        UI.$coords.hide();
+    }
+
+    static touchInit() {
+        document.addEventListener('touchstart', UI.touchHandler);
+        document.addEventListener('touchmove', UI.touchHandler);
+        document.addEventListener('touchend', UI.touchHandler);
+        document.addEventListener('touchcancel', UI.touchHandler);
+
+        UI.$coords.remove();
+    }
+
+    static touchHandler(ev) {
+        let touches = ev.changedTouches,
+            first = touches[0],
+            type = '';
+
+        switch (ev.type) {
+            case 'touchstart': type = 'mousedown'; break;
+            case 'touchmove':  type = 'mousemove'; break;
+            case 'touchend':   type = 'mouseup';   break;
+            default:           return;
+        }
+
+        let simulatedEvent = document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent(type, true, true, window, 1,
+            first.screenX, first.screenY,
+            first.clientX, first.clientY, false,
+            false, false, false, 0/*LMB*/, null);
+
+        first.target.dispatchEvent(simulatedEvent);
+    }
+
+    static demo() {
+        UI.load(UI.gallery.random(200, 500));
+    }
+
+    static load(file) {
+        UI.gallery.load(file)
+            .then(data => UI.life.load(data, true))
+            .catch(error => UI.showToast(error, 'danger'));
     }
 
     static theme(name) {
@@ -370,7 +461,7 @@ class UI {
     }
 
     static updateRule() {
-        let rule = UI.life.rule.match(/B(\d+)\/S(\d+)/i);
+        let rule = UI.life.rule.match(/B(\d*)\/S(\d*)/i);
         $('#in-game-rule-born').val(rule[1]);
         $('#in-game-rule-survive').val(rule[2]);
     }
@@ -385,6 +476,7 @@ class UI {
         $elem.trigger('input');
     }
 
+    static toastTimeout = undefined;
     static showToast(html, color = 'secondary') {
         const light = [
             'primary', 'secondary', 'success',
@@ -398,7 +490,7 @@ class UI {
             throw 'Unknown toast color!';
 
         let $toast = $('#info-toast');
-        let $body = $('#info-toast .toast-body');
+        let $toastBody = $('#info-toast .toast-body');
         let $button = $('#info-toast .btn-close');
 
         let fx = (light.includes(color)) ? 'addClass' : 'removeClass';
@@ -411,13 +503,19 @@ class UI {
         $toast.removeClass(toRemove);
         $toast.addClass(`bg-${color}`);
 
-        $body.html(html);
+        $toastBody.html(html);
         UI.infoToast.show();
+        if (UI.toastTimeout)
+            clearTimeout(UI.toastTimeout);
+        UI.toastTimeout = setTimeout(_ => UI.infoToast.hide(), 5000);
     }
 
     static convertIfLink(text) {
         let url = text;
-        try {
+
+        if (/(.cell|.rle)/gi.test(url)) {
+            return '';
+        } else if (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gi.test(url)) {
             if (url && !/^https?:\/\//i.test(url))
                 url = 'http://' + url;
 
@@ -431,7 +529,7 @@ class UI {
             }
 
             return `<a href='${url}' target='_blank'>${name}</a>`;
-        } catch (error) {
+        } else {
             return text;
         }
     }
