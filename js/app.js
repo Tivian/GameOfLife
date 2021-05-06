@@ -36,17 +36,19 @@ class UI {
         UI.life.$canvas
             .on('start', _ => {
                 $('#btn-play > i').attr('class', 'fas fa-pause');
-                $('#in-board-size > input, #in-game-rule > input').prop('readonly', true);
+                $('#in-board-size > input, #in-game-rule').prop('readonly', true);
                 $('#in-board-type').prop('disabled', true);
                 $('#in-engine').prop('disabled', true);
             })
             .on('stop', _ => {
                 $('#btn-play > i').attr('class', 'fas fa-play');
-                $('#in-board-size > input, #in-game-rule > input').prop('readonly', false);
+                $('#in-board-size > input, #in-game-rule').prop('readonly', false);
                 $('#in-board-type').prop('disabled', false);
                 $('#in-engine').prop('disabled', false);
             })
-            .on('change.rule', _ =>  UI.updateRule())
+            .on('change.rule', _ =>
+                $('#in-game-rule').val(UI.life.rule)
+            )
             .on('change.speed', _ =>
                 $('#in-speed').val(UI.life.speed)
             )
@@ -251,11 +253,11 @@ class UI {
         $('#toolbar')
             .on('show.bs.dropdown', ev => {
                 if (ev.target.id == 'btn-settings') {
-                    UI.updateRule();
                     let limit = UI.life.limit;
                     $('#in-board-width').val(limit.width);
                     $('#in-board-height').val(limit.height);
                     $('#in-game-step').val(UI.life.step);
+                    $('#in-game-rule').val(UI.life.rule);
                     $('#in-board-type').val(UI.life.type).trigger('change');
                 } else if (ev.target.id == 'btn-info') {
                     let file = UI.life.file;
@@ -285,13 +287,10 @@ class UI {
                 if (ev.target.id == 'btn-info')
                     $('#dropdown-info .dropdown-divider:visible:last').hide();
             });
-        $('#in-game-rule-born, #in-game-rule-survive').on('input', ev => {
-            let str = ev.target.value;
-            str = str.replace(/(.)(?=.*\1)|[^0-8]/g, '');
-            str = str.split('').sort().join('');
-            ev.target.value = str;
-
-            UI.life.rule = `B${$('#in-game-rule-born').val()}/S${$('#in-game-rule-survive').val()}`;
+        $('#in-game-rule').on('input', ev => {
+            let match = ev.target.value.match(/(B?[0-8]*\/S?[0-8]*)|(S[0-8]*\/B[0-8]*)/g);
+            UI.life.rule = !match ? 'B/S' : match[0];
+            ev.target.value = UI.life.rule;
         });
         $('#in-board-type').change(ev => {
             let value = ev.target.value;
@@ -458,12 +457,6 @@ class UI {
 
         $('#coord-x').text(point.x);
         $('#coord-y').text(point.y);
-    }
-
-    static updateRule() {
-        let rule = UI.life.rule.match(/B(\d*)\/S(\d*)/i);
-        $('#in-game-rule-born').val(rule[1]);
-        $('#in-game-rule-survive').val(rule[2]);
     }
 
     static changeSpeed(delta) {

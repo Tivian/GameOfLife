@@ -402,7 +402,7 @@ class Life {
                         } else {
                             this._generation++;
 
-                            if (this.cells.size != 0)
+                            if (this.cells.size != 0 && this._running)
                                 [this.cells, this._newGen] = [this._newGen, this.cells];
 
                             if (++step >= this.step) {
@@ -727,9 +727,6 @@ class Life {
     clear() {
         this.stop();
         this._generation = 0;
-        this.rule = this.defaults.rule;
-        this.type = this.defaults.type;
-        this.limit = this.defaults.limit;
         this.file = undefined;
         this.cells.clear();
         this.center();
@@ -739,7 +736,7 @@ class Life {
 
     randomize(width, height, threshold = 0.5) {
         let soup = [];
-        let shift = { x: width / 2, y: height / 2 };
+        let shift = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 if (Math.random() < threshold)
@@ -747,6 +744,7 @@ class Life {
             }
         }
 
+        this.stop();
         this.load(soup, true);
     }
 
