@@ -5,18 +5,11 @@ class LifeWorker {
     }
 
     _getHash(x, y) {
-        return this._limitCoords(x, y, (x, y) => `${x}|${y}`);
+        return this._limitCoords(x, y, Point.getHash);
     }
 
     _newCell(x, y) {
-        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: `${x}|${y}`}));
-    }
-
-    _insideRectCoord(x, y, from, to) {
-        return x >= from.x
-            && x <= to.x
-            && y <= from.y
-            && y >= to.y;
+        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }));
     }
 
     _limitCoords(x, y, callback) {
@@ -27,7 +20,7 @@ class LifeWorker {
             case 'infinite':
                 return callback(x, y);
             case 'finite':
-                if (this._insideRectCoord(x, y, from, to))
+                if (Point.isInside(x, y, from, to))
                     return callback(x, y);
                 break;
             case 'wrapped':
@@ -121,6 +114,8 @@ class LifeWorker {
 }
 
 let life = new LifeWorker();
+importScripts('./point.js');
+
 onmessage = function(ev) {
     switch (ev.data.action) {
         case 'new':

@@ -400,10 +400,10 @@ class Life {
                         if (result == 0 && this._settings.detect) {
                             this.stop();
                         } else {
-                            this._generation++;
-
-                            if (this.cells.size != 0 && this._running)
+                            if (this.cells.size != 0) {
+                                this._generation++;
                                 [this.cells, this._newGen] = [this._newGen, this.cells];
+                            }
 
                             if (++step >= this.step) {
                                 this.$canvas.trigger('life.next');
@@ -450,19 +450,19 @@ class Life {
     }
 
     _inside(point) {
-        return this._insideRect(point, this._settings.top, this._settings.bottom);
+        return Point.isInside(point.x, point.y, this._settings.top, this._settings.bottom);
     }
 
     _insideLimit(point) {
-        return this._insideRect(point, this._settings.limit.from, this._settings.limit.to);
+        return Point.isInside(point.x, point.y, this._settings.limit.from, this._settings.limit.to);
     }
 
     _insideLimitCoord(x, y) {
-        return this._insideRectCoord(x, y, this._settings.limit.from, this._settings.limit.to);
+        return Point.isInside(x, y, this._settings.limit.from, this._settings.limit.to);
     }
 
     _insideRect(point, from, to) {
-        return this._insideRectCoord(point.x, point.y, from, to);
+        return Point.isInside(point.x, point.y, from, to);
     }
 
     _insideRectCoord(x, y, from, to) {
@@ -473,11 +473,11 @@ class Life {
     }
 
     _getHash(x, y) {
-        return this._limitCoords(x, y, (x, y) => `${x}|${y}`);
+        return this._limitCoords(x, y, Point.getHash);
     }
 
     _newCell(x, y) {
-        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: `${x}|${y}` }));
+        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }));
     }
 
     _limitCoords(x, y, callback) {
@@ -784,7 +784,7 @@ class Life {
 
     reload(override = true, force = false, center = true) {
         if (this.isRunning)
-            throw 'The automaton is running';
+            throw 'The automaton is running!';
 
         if (!this.file || !(this.file instanceof CellFile))
             throw 'Invalid pattern file';
@@ -821,6 +821,26 @@ class Life {
 
         this.draw();
         this.$canvas.trigger('load.file');
+    }
+
+    remove(cells) {
+        if (cells instanceof Set)
+            cells = [...cells];
+        else if (cells instanceof Map)
+            cells = [...cells.values()];
+
+        if (!cells.length && cells.x && cells.y)
+            cells = [cells];
+
+        if (!cells[0].x && !cells[0].y)
+            throw 'Unknown format';
+
+        for (let cell of cells) {
+            this.cells.delete(Point.getHash(cell.x, cell.y));
+        }
+
+        this.draw();
+        this.$canvas.trigger('life.wipe');
     }
 
     getBoundingBox() {
@@ -867,6 +887,10 @@ class Life {
             Math.floor((ev.pageX - this.origin.x) / size),
             -Math.floor((ev.pageY - this.origin.y) / size)
         );
+    }
+
+    getCells() {
+        return [...this.cells.values()];
     }
 
     setColor(name, color) {
@@ -917,30 +941,4 @@ class Life {
 
     static sleep = (ms) => 
         new Promise(resolve => setTimeout(resolve, ms));
-}
-
-class Point {
-    constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
-        this.hash = Point.getHash(x, y);
-    }
-
-    distance(other) {        
-        return Point.distance(this, other);
-    }
-
-    toString() {
-        return `(${this.x}, ${this.y})`;
-    }
-
-    static distance(a, b) {
-        return Math.floor(
-            Math.pow(b.x - a.x, 2)
-          + Math.pow(b.y - a.y, 2));
-    }
-
-    static getHash(x, y) {
-        return `${x}|${y}`;
-    }
 }

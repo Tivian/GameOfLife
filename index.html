@@ -19,6 +19,7 @@
     <script src='js/app.js' type='application/javascript'></script>
     <script src='js/life.js' type='application/javascript'></script>
     <script src='js/file.js' type='application/javascript'></script>
+    <script src='js/point.js' type='application/javascript'></script>
     <script src='js/gallery.js' type='application/javascript'></script>
     <script src='js/jquery.utility.js' type='application/javascript'></script>
     <script src='js/libs/zip-fs.min.js' type='application/javascript'></script>
@@ -52,6 +53,18 @@
             <input id='in-speed' type='text' class='form-control form-inline text-center p-1 rounded-0' size='1' placeholder='Speed' aria-label='Speed'>
             <a id='btn-faster' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Faster'>
                 <i class='fas fa-fast-forward' aria-hidden='true'></i>
+            </a>
+        </div>
+        <div class='btn-group me-1 mb-1' role='group'>
+            <input id='btn-select' type='checkbox' class='btn-check' autocomplete='off'>
+            <label class='btn btn-secondary' for='btn-select' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Select'>
+                <i class='fas fa-vector-square' aria-hidden='true'></i>
+            </label>
+            <a id='btn-cut' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Cut'>
+                <i class='fas fa-cut' aria-hidden='true'></i>
+            </a>
+            <a id='btn-paste' type='button' class='btn btn-secondary' data-bs-toggle='tooltip' data-bs-placement='bottom' title='Paste'>
+                <i class='fas fa-paste' aria-hidden='true'></i>
             </a>
         </div>
         <div id='gr-file-info' class='btn-group me-1 mb-1 d-none' role='group'>
@@ -149,7 +162,7 @@
                     <label for='sw-colors' class='form-check-label text-end'>Show cell age</label>
                 </div>
                 <div class='mb-1 form-check form-switch'>
-                    <input id='sw-fps' type='checkbox' class='form-check-input' checked>
+                    <input id='sw-fps' type='checkbox' class='form-check-input'>
                     <label for='sw-fps' class='form-check-label text-end'>Show generation speed</label>
                 </div>
                 <div>
@@ -179,7 +192,7 @@
     </div>
 
     <div id='info' class='btn-toolbar d-flex flex-wrap-reverse justify-content-end' role='toolbar'>
-        <div class='input-group'>
+        <div class='input-group collapse'>
             <span class='input-group-text bg-secondary text-white border-0'>gps</span>
             <span id='out-fps' type='text' class='form-control'>0 | 0 | 0</span>
         </div>
