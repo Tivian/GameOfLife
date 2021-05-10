@@ -1,4 +1,91 @@
-/** Singleton with all UI related functions. */
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> app.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Gallery.html">Gallery</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="Point.html">Point</a></li><li><a href="UI.html">UI</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>app.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Singleton with all UI related functions. */
 class UI {
     static life;
     static $coords;
@@ -96,7 +183,7 @@ class UI {
                     this.fps.lastGen = this.life.generation;
                     this.fps.speed = (!this.fps.speed) ? value : (this.fps.speed + value) / 2;
                     this.fps.max = !this.fps.max ? this.fps.speed : this.fps.speed > this.fps.max ? this.fps.speed : this.fps.max;
-                    this.fps.min = !this.fps.min ? this.fps.speed : (this.fps.speed < this.fps.min || this.fps.min < 1) ? this.fps.speed : this.fps.min;
+                    this.fps.min = !this.fps.min ? this.fps.speed : (this.fps.speed &lt; this.fps.min || this.fps.min &lt; 1) ? this.fps.speed : this.fps.min;
                     this.fps.timestamp = performance.now();
                     $('#out-fps').text(`${Math.floor(this.fps.min)} | ${Math.floor(this.fps.speed)} | ${Math.floor(this.fps.max)}`);
                 }
@@ -106,13 +193,13 @@ class UI {
                 $('#out-fps').text('0 | 0 | 0');
             })
             .on('mouseenter', ev => {
-                if (coordsEnabled && mouseLeft) {
+                if (coordsEnabled &amp;&amp; mouseLeft) {
                     mouseLeft = false;
                     this.displayCoords(ev, coordsFollow);
                 }
             })
             .on('mouseleave', _ => {
-                if (coordsEnabled && !mouseLeft) {
+                if (coordsEnabled &amp;&amp; !mouseLeft) {
                     mouseLeft = true;
                     this.$coords.hide();
                 }
@@ -136,7 +223,7 @@ class UI {
         $('#in-speed')
             .on('input', ev => {
                 let val = parseInt(ev.target.value.replace(/[^-+0-9]/g, ''));
-                if (isNaN(val) || val < 1)
+                if (isNaN(val) || val &lt; 1)
                     val = 1;
                 if (val >= 10000)
                     val = 9999;
@@ -173,7 +260,7 @@ class UI {
 
             if (ev.type == 'mousedown') {
                 downPoint = new Point(ev.pageX, ev.pageY);
-            } else if (downPoint && ev.type == 'mousemove') {
+            } else if (downPoint &amp;&amp; ev.type == 'mousemove') {
                 let movePoint = new Point(ev.pageX, ev.pageY);
                 dragging = (movePoint.distance(downPoint) > dragDelta);
             } else if (ev.type == 'mouseup') {
@@ -185,7 +272,7 @@ class UI {
                 }
             }
 
-            if (this.selectState == 'selected' && ev.type == 'mouseup') {
+            if (this.selectState == 'selected' &amp;&amp; ev.type == 'mouseup') {
                 if (dragging)
                     return;
 
@@ -196,7 +283,7 @@ class UI {
                 console.log('WIPE');
             }
 
-            if (this.selectState == 'none' && ev.type == 'mouseup') {
+            if (this.selectState == 'none' &amp;&amp; ev.type == 'mouseup') {
                 this.selectState = 'anchor';
                 this.selectStart = { x: cellPos.x, y: cellPos.y };
 
@@ -208,7 +295,7 @@ class UI {
                 });
             } else if (this.selectState == 'anchor') {
                 // FIXME: Is there more elegant way to do this?
-                if (cellPos.x >= this.selectStart.x && cellPos.y <= this.selectStart.y) { // bottom right quadrant
+                if (cellPos.x >= this.selectStart.x &amp;&amp; cellPos.y &lt;= this.selectStart.y) { // bottom right quadrant
                     $selectBox.css({
                         left: startPoint.x,
                         top: startPoint.y,
@@ -216,14 +303,14 @@ class UI {
                         height: currPoint.y - startPoint.y + size
                     });
                 } else {
-                    if (cellPos.x < this.selectStart.x && cellPos.y > this.selectStart.y) { // top left quadrant
+                    if (cellPos.x &lt; this.selectStart.x &amp;&amp; cellPos.y > this.selectStart.y) { // top left quadrant
                         $selectBox.css({
                             left: currPoint.x,
                             top: currPoint.y,
                             width: startPoint.x - currPoint.x + size,
                             height: startPoint.y - currPoint.y + size
                         });
-                    } else if (cellPos.x < this.selectStart.x) { // bottom left quadrant
+                    } else if (cellPos.x &lt; this.selectStart.x) { // bottom left quadrant
                         $selectBox.css({
                             left: currPoint.x,
                             top: startPoint.y,
@@ -240,16 +327,16 @@ class UI {
                     }
                 }
 
-                if (this.selectState != 'selected' && ev.type == 'mouseup') {
+                if (this.selectState != 'selected' &amp;&amp; ev.type == 'mouseup') {
                     this.selectState = 'selected';
                     this.selectEnd = { x: cellPos.x, y: cellPos.y };
 
                     // Shift coordinates so that selectStart is top left corner
                     //  and selectEnd is bottom right corner of the selected area.
                     let height = Math.abs(this.selectStart.y - cellPos.y);
-                    if (cellPos.x < this.selectStart.x && cellPos.y > this.selectStart.y) {
+                    if (cellPos.x &lt; this.selectStart.x &amp;&amp; cellPos.y > this.selectStart.y) {
                         [this.selectStart, this.selectEnd] = [this.selectEnd, this.selectStart];
-                    } else if (cellPos.x < this.selectStart.x) {
+                    } else if (cellPos.x &lt; this.selectStart.x) {
                         this.selectStart.y -= height;
                         this.selectEnd.y += height;
                         [this.selectStart, this.selectEnd] = [this.selectEnd, this.selectStart];
@@ -445,7 +532,7 @@ class UI {
                     let comments = file.comments
                         .map(line => this.convertIfLink(line)).filter(x => x);
                     if (comments.length > 0)
-                        $('#info-comments').html(comments.join('<br>'));
+                        $('#info-comments').html(comments.join('&lt;br>'));
                     else
                         $('#gr-info-comments').hide();
                 }
@@ -513,7 +600,7 @@ class UI {
             if (ev.target !== document.body)
                 return;
 
-            if (ev.which >= 97 && ev.which <= 105) { // numpad 1-9
+            if (ev.which >= 97 &amp;&amp; ev.which &lt;= 105) { // numpad 1-9
                 this.numpad(ev.which - 97);
             } else if (ev.which == 32) { // SPACE
                 this.play();
@@ -580,7 +667,7 @@ class UI {
             return;
         }
 
-        if (this.clipboard && this.clipboard.length > 0) {
+        if (this.clipboard &amp;&amp; this.clipboard.length > 0) {
             let pasteFx = (ev) => {
                 let pos = this.life.getPosition(ev);
                 let bb = Life.getBoundingBox(this.clipboard);
@@ -723,7 +810,7 @@ class UI {
     }
 
     /**
-     * Loads randomly choosen file from gallery.<br>
+     * Loads randomly choosen file from gallery.&lt;br>
      * Used on startup.
      */
     static demo() {
@@ -741,8 +828,8 @@ class UI {
     }
 
     /**
-     * Switches theme of the website.<br>
-     * Currently only <code>light</code> and <code>dark</code> values are valid.
+     * Switches theme of the website.&lt;br>
+     * Currently only &lt;code>light&lt;/code> and &lt;code>dark&lt;/code> values are valid.
      * @param {string} name - The name of the theme
      */
     static theme(name) {
@@ -783,7 +870,7 @@ class UI {
         let maxHeight = this.life.height - this.$coords.outerHeight();
         let maxWidth = this.life.width - this.$coords.outerWidth();
 
-        if (ev.target == this.life.canvas && !this.$coords.is(':visible'))
+        if (ev.target == this.life.canvas &amp;&amp; !this.$coords.is(':visible'))
             this.$coords.show();
 
         if (follow) {
@@ -804,7 +891,7 @@ class UI {
     static changeSpeed(delta) {
         let $elem = $('#in-speed');
         let val = parseInt($elem.val());
-        if (val == 1 && delta == this.speedIncrement)
+        if (val == 1 &amp;&amp; delta == this.speedIncrement)
             val = 0;
 
         $elem.val(val + delta);
@@ -826,7 +913,7 @@ class UI {
             'info', 'warning', 'light'
         ];
 
-        if (color && !light.includes(color) && !dark.includes(color))
+        if (color &amp;&amp; !light.includes(color) &amp;&amp; !dark.includes(color))
             throw 'Unknown toast color!';
 
         let $toast = $('#info-toast');
@@ -860,8 +947,8 @@ class UI {
 
         if (/(.cell|.rle)/gi.test(url)) {
             return '';
-        } else if (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gi.test(url)) {
-            if (url && !/^https?:\/\//i.test(url))
+        } else if (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&amp;'\(\)\*\+,;=.]+$/gi.test(url)) {
+            if (url &amp;&amp; !/^https?:\/\//i.test(url))
                 url = 'http://' + url;
 
             url = new URL(url);
@@ -873,9 +960,38 @@ class UI {
                     name = 'ConwayLife forum';
             }
 
-            return `<a href='${url}' target='_blank'>${name}</a>`;
+            return `&lt;a href='${url}' target='_blank'>${name}&lt;/a>`;
         } else {
             return text;
         }
     }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

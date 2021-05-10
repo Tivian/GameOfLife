@@ -1,0 +1,5379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Life</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Gallery.html">Gallery</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="Point.html">Point</a></li><li><a href="UI.html">UI</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Class</p>
+                    <h1>Life</h1>
+                </header>
+                
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Board for Game of Life.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class='vertical-section'>
+                <div class="members">
+                    <div class="member">
+                        <div class=name>
+                            <span class="tag">Constructor</span>
+                        </div>
+                        
+
+
+    
+    <h4 class="name" id="Life">
+        <a class="href-link" href="#Life">#</a>
+        
+        <span class="code-name">
+            
+                new Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Create new board.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>canvas</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+|
+
+<span class="param-type">object</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">An ID of the canvas element or jQuery object of canvas.</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>options</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">object</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">An options for the board setup.</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line2">line 2</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class='vertical-section'>
+            <h1>Members</h1>
+            <div class="members">
+            
+                <div class="member">
+
+<h4 class="name" id="_gradientRGB">
+    <a class="href-link" href="#_gradientRGB">#</a>
+    
+    <span class="code-name">
+        _gradientRGB
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Variable to prevent array creation at every  call to _colorGradient.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line718">line 718</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type"><a href="Point.html">Point</a></span>
+
+
+    </span>
+
+<h4 class="name" id="bottom">
+    <a class="href-link" href="#bottom">#</a>
+    
+    <span class="code-name">
+        bottom
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The bottom right corner of the visible viewbox in game coordinates.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line225">line 225</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="colorCells">
+    <a class="href-link" href="#colorCells">#</a>
+    
+    <span class="code-name">
+        colorCells
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Denotes if <a href="Life.html#draw">draw</a> function should color cells showing their age.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line380">line 380</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="detectStillLife">
+    <a class="href-link" href="#detectStillLife">#</a>
+    
+    <span class="code-name">
+        detectStillLife
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Denotes if automaton should stop when last generation  consisted of only still lifes.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line354">line 354</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">string</span>
+
+
+    </span>
+
+<h4 class="name" id="engine">
+    <a class="href-link" href="#engine">#</a>
+    
+    <span class="code-name">
+        engine
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Chooses which engine should be used for creating future generation of the automaton.Valid values are <code>naive</code> and <code>worker</code>.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line159">line 159</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">CellFile</span>
+
+
+    </span>
+
+<h4 class="name" id="file">
+    <a class="href-link" href="#file">#</a>
+    
+    <span class="code-name">
+        file
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Currently loaded pattern file.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line448">line 448</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#load.event:file - If given file isn't undefined.</li>
+            
+                <li>Life#unload.event:file - If given file is undefined.</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="generation">
+    <a class="href-link" href="#generation">#</a>
+    
+    <span class="code-name">
+        generation
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The number of calculated generations.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line193">line 193</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="height">
+    <a class="href-link" href="#height">#</a>
+    
+    <span class="code-name">
+        height
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The height of the canvas.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line209">line 209</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="isRunning">
+    <a class="href-link" href="#isRunning">#</a>
+    
+    <span class="code-name">
+        isRunning
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    True if automaton is currently running.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line177">line 177</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">object</span>
+
+
+    </span>
+
+<h4 class="name" id="limit">
+    <a class="href-link" href="#limit">#</a>
+    
+    <span class="code-name">
+        limit
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Rectangle corresponding to set limits. <br>Relevant only in <code>wrapped</code> and <code>finite</code> board types.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line413">line 413</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="locked">
+    <a class="href-link" href="#locked">#</a>
+    
+    <span class="code-name">
+        locked
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Denotes if viewbox can be moved or any cells can be changed.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line340">line 340</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type"><a href="Point.html">Point</a></span>
+
+
+    </span>
+
+<h4 class="name" id="origin">
+    <a class="href-link" href="#origin">#</a>
+    
+    <span class="code-name">
+        origin
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The top left corner of the visible viewbox in pixels.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line233">line 233</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="population">
+    <a class="href-link" href="#population">#</a>
+    
+    <span class="code-name">
+        population
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The number of alive cells.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line185">line 185</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">string</span>
+
+
+    </span>
+
+<h4 class="name" id="rule">
+    <a class="href-link" href="#rule">#</a>
+    
+    <span class="code-name">
+        rule
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The rulestring of the automaton in B/S notation.<br>Input accepts also S/B notation.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line267">line 267</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="scale">
+    <a class="href-link" href="#scale">#</a>
+    
+    <span class="code-name">
+        scale
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The scale of the viewbox.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line247">line 247</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="showBorder">
+    <a class="href-link" href="#showBorder">#</a>
+    
+    <span class="code-name">
+        showBorder
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Denotes if <a href="Life.html#draw">draw</a> function should draw cell borders.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line367">line 367</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+<h4 class="name" id="sleep">
+    <a class="href-link" href="#sleep">#</a>
+    
+    <span class="code-name">
+        sleep
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Helper function used in delaying next generation.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1274">line 1274</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="speed">
+    <a class="href-link" href="#speed">#</a>
+    
+    <span class="code-name">
+        speed
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The number of miliseconds between each generation.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line310">line 310</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="step">
+    <a class="href-link" href="#step">#</a>
+    
+    <span class="code-name">
+        step
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The number of generation skipped between each draw.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line325">line 325</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type"><a href="Point.html">Point</a></span>
+
+
+    </span>
+
+<h4 class="name" id="top">
+    <a class="href-link" href="#top">#</a>
+    
+    <span class="code-name">
+        top
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The top left corner of the visible viewbox in game coordinates.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line217">line 217</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">string</span>
+
+
+    </span>
+
+<h4 class="name" id="type">
+    <a class="href-link" href="#type">#</a>
+    
+    <span class="code-name">
+        type
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Chooses type of automaton board.<br>Valid values are <code>infinite</code>, <code>finite</code> and <code>wrapped</code>.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line394">line 394</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">number</span>
+
+
+    </span>
+
+<h4 class="name" id="width">
+    <a class="href-link" href="#width">#</a>
+    
+    <span class="code-name">
+        width
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The width of the canvas.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line201">line 201</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+            </div>
+        </div>
+    
+
+    
+        <div class='vertical-section'>
+            <h1>Methods</h1>
+            <div class="members">
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".getBoundingBox">
+        <a class="href-link" href="#.getBoundingBox">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                getBoundingBox<span class="signature">(cells)</span><span class="type-signature"> &rarr; {object}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Calculates bounding box of given set of cells.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>cells</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">An Array/Set/Map of alive cells</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1235">line 1235</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The bounding box</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">object</span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="center">
+        <a class="href-link" href="#center">#</a>
+        
+        <span class="code-name">
+            
+                center<span class="signature">(ev<span class="signature-attributes">opt</span>, x<span class="signature-attributes">opt</span>, y<span class="signature-attributes">opt</span>, rescale<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Centers viewbox using given mouse event.<br>When no event is given then this function sets center point  in the center of the canvas.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>ev</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">MouseEvent</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last">A mouse event used to calculate proper origin point</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>x</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          0
+      
+      </td>
+  
+
+  <td class="description last">The X-axis coordinate of new center point</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>y</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          0
+      
+      </td>
+  
+
+  <td class="description last">The Y-axis coordinate of new center point</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>rescale</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          true
+      
+      </td>
+  
+
+  <td class="description last">If true then restores scale to default value</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1144">line 1144</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>event:mousemove</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="clear">
+        <a class="href-link" href="#clear">#</a>
+        
+        <span class="code-name">
+            
+                clear<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Clears the automaton and centers the viewbox.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line981">line 981</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#life.event:wipe</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="create">
+        <a class="href-link" href="#create">#</a>
+        
+        <span class="code-name">
+            
+                create<span class="signature">(x, y)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Creates alive cell at given coordinates.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>x</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The X-axis coordinate</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>y</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The Y-axis coordinate</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line830">line 830</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#life.event:new</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="draw">
+        <a class="href-link" href="#draw">#</a>
+        
+        <span class="code-name">
+            
+                draw<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Draws current state of the automaton within visible viewbox.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line782">line 782</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="getBoundingBox">
+        <a class="href-link" href="#getBoundingBox">#</a>
+        
+        <span class="code-name">
+            
+                getBoundingBox<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Calculates bounding box for currenly alive cells.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1130">line 1130</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The bounding box of current game board</div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="getCells">
+        <a class="href-link" href="#getCells">#</a>
+        
+        <span class="code-name">
+            
+                getCells<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Returns cells as array.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1201">line 1201</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The alive cells as array</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">Array</span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="getPosition">
+        <a class="href-link" href="#getPosition">#</a>
+        
+        <span class="code-name">
+            
+                getPosition<span class="signature">(ev)</span><span class="type-signature"> &rarr; {<a href="Point.html">Point</a>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Converts given mouse event into cell coordinates.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>ev</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">MouseEvent</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">A mouse event</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1189">line 1189</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The coordinates of cell corresponding to the mouse position</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type"><a href="Point.html">Point</a></span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="load">
+        <a class="href-link" href="#load">#</a>
+        
+        <span class="code-name">
+            
+                load<span class="signature">(cells, override<span class="signature-attributes">opt</span>, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Loads cells from file or collection.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>cells</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last">The CellFile or Map/Set/Array of cells</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>override</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          false
+      
+      </td>
+  
+
+  <td class="description last">If true then board will be cleared</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>force</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          false
+      
+      </td>
+  
+
+  <td class="description last">Relevant only for MCell files.  If true then game type won't be checked.</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1019">line 1019</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="nearest">
+        <a class="href-link" href="#nearest">#</a>
+        
+        <span class="code-name">
+            
+                nearest<span class="signature">(x, y)</span><span class="type-signature"> &rarr; {object}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Finds nearest alive cell to given coordinates.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>x</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+      <td class="default">
+      
+          0
+      
+      </td>
+  
+
+  <td class="description last">The X-axis coordinate</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>y</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+      <td class="default">
+      
+          0
+      
+      </td>
+  
+
+  <td class="description last">The Y-axis coordinate</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1171">line 1171</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The alive cell which is nearest to the given coordinates</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">object</span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="next_naive">
+        <a class="href-link" href="#next_naive">#</a>
+        
+        <span class="code-name">
+            
+                next_naive<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Calculates next generation in naive way.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line875">line 875</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#life.event:next</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>True if any cell changed state.</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">boolean</span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="next_worker">
+        <a class="href-link" href="#next_worker">#</a>
+        
+        <span class="code-name">
+            
+                next_worker<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Calculates next generation.<br>In current version doesn't behave the same as <a href="Life.html#next_naive">next_naive</a>.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line960">line 960</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#life.event:next</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="randomize">
+        <a class="href-link" href="#randomize">#</a>
+        
+        <span class="code-name">
+            
+                randomize<span class="signature">(width, height, threshold)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Populate randomly the game board.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>width</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last">The width of randomized area</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>height</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last">The height of randomized area</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>threshold</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+
+  
+      <td class="default">
+      
+          0.5
+      
+      </td>
+  
+
+  <td class="description last">Controls how many cells gonna be alive,  should be in [0; 1] range</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line998">line 998</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="reload">
+        <a class="href-link" href="#reload">#</a>
+        
+        <span class="code-name">
+            
+                reload<span class="signature">(override<span class="signature-attributes">opt</span>, force<span class="signature-attributes">opt</span>, center<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Reloads last loaded file.<br>Works only after any file was loaded.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>override</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          true
+      
+      </td>
+  
+
+  <td class="description last">If true then game board will be cleared</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>force</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          false
+      
+      </td>
+  
+
+  <td class="description last">If true then MCell game type will be ignored</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>center</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          true
+      
+      </td>
+  
+
+  <td class="description last">If true then loaded pattern will  be centered on (0, 0) point</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1061">line 1061</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="remove">
+        <a class="href-link" href="#remove">#</a>
+        
+        <span class="code-name">
+            
+                remove<span class="signature">(cells)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Removes from the game board only given cells.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>cells</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">An Array/Set/Map of cells or single cell to be removed</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1106">line 1106</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="setColor">
+        <a class="href-link" href="#setColor">#</a>
+        
+        <span class="code-name">
+            
+                setColor<span class="signature">(name, color)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Sets given color to given value.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>name</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">A color to set</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>color</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">A color value in format recognized by CSS.</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1211">line 1211</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#change.event:color</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="start_naive">
+        <a class="href-link" href="#start_naive">#</a>
+        
+        <span class="code-name">
+            
+                start_naive<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Starts the naive engine for automaton.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line848">line 848</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#event:start</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="start_worker">
+        <a class="href-link" href="#start_worker">#</a>
+        
+        <span class="code-name">
+            
+                start_worker<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Starts automaton using Web Worker.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line943">line 943</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#event:start</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="stop">
+        <a class="href-link" href="#stop">#</a>
+        
+        <span class="code-name">
+            
+                stop<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Stops the automaton.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line969">line 969</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#event:stop</li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="toBlob">
+        <a class="href-link" href="#toBlob">#</a>
+        
+        <span class="code-name">
+            
+                toBlob<span class="signature">(callback, quality<span class="signature-attributes">opt</span>, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Converts game canvas into blob.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>callback</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last">A callback which will be called  after conversion is done</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>quality</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">number</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          0.92
+      
+      </td>
+  
+
+  <td class="description last">The quality of the snapshot, must be between 0 and 1</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>type</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          image/jpeg
+      
+      </td>
+  
+
+  <td class="description last">The MIME type of the snapshot</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1225">line 1225</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+            </div>
+        </div>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

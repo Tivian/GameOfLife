@@ -1,4 +1,91 @@
-/** Board for Game of Life. */
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> life.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Gallery.html">Gallery</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="Point.html">Point</a></li><li><a href="UI.html">UI</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>life.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Board for Game of Life. */
 class Life {
     /**
      * Create new board.
@@ -129,7 +216,7 @@ class Life {
                     this.center(ev);
             })
             .on('click', ev => {
-                if (!dragged && !this._settings.locked) {
+                if (!dragged &amp;&amp; !this._settings.locked) {
                     let point = this.getPosition(ev);
                     this.create(point.x, point.y);
                     this.draw();
@@ -138,7 +225,7 @@ class Life {
                 }
             })
             .on('wheel', ev => {
-                let wheel = ev.originalEvent.deltaY < 0 ? 1 : -1;
+                let wheel = ev.originalEvent.deltaY &lt; 0 ? 1 : -1;
                 let zoom = Math.exp(wheel * this.zoomIntensity);
                 let xoff = (ev.pageX - this.origin.x) / this.scale;
                 let yoff = (ev.pageY - this.origin.y) / this.scale;
@@ -153,7 +240,7 @@ class Life {
     /**
      * Chooses which engine should be used for creating
      *  future generation of the automaton.
-     * Valid values are <code>naive</code> and <code>worker</code>.
+     * Valid values are &lt;code>naive&lt;/code> and &lt;code>worker&lt;/code>.
      * @type {string}
      */
     get engine() {
@@ -249,7 +336,7 @@ class Life {
     }
 
     set scale(value) {
-        if (value < this.minScale)
+        if (value &lt; this.minScale)
             value = this.minScale;
         else if (value > this.maxScale)
             value = this.maxScale;
@@ -260,7 +347,7 @@ class Life {
     }
 
     /**
-     * The rulestring of the automaton in B/S notation.<br>
+     * The rulestring of the automaton in B/S notation.&lt;br>
      * Input accepts also S/B notation.
      * @type {string}
      */
@@ -271,7 +358,7 @@ class Life {
     set rule(value) {
         if (typeof value !== 'undefined') {
             if (typeof value === 'object') {
-                if (!value.born && !value.survive)
+                if (!value.born &amp;&amp; !value.survive)
                     return;
 
                 [this._settings.rule.born, this._settings.rule.survive] =
@@ -312,7 +399,7 @@ class Life {
     }
 
     set speed(value) {
-        if (value < 1)
+        if (value &lt; 1)
             value = 1;
         this._settings.speed = value;
         this.$canvas.trigger('change.speed');
@@ -327,7 +414,7 @@ class Life {
     }
 
     set step(value) {
-        if (value < 1)
+        if (value &lt; 1)
             value = 1;
         this._settings.step = value;
         this.$canvas.trigger('change.step');
@@ -387,8 +474,8 @@ class Life {
     }
 
     /**
-     * Chooses type of automaton board.<br>
-     * Valid values are <code>infinite</code>, <code>finite</code> and <code>wrapped</code>.
+     * Chooses type of automaton board.&lt;br>
+     * Valid values are &lt;code>infinite&lt;/code>, &lt;code>finite&lt;/code> and &lt;code>wrapped&lt;/code>.
      * @type {string}
      */
     get type() {
@@ -406,8 +493,8 @@ class Life {
     }
 
     /**
-     * Rectangle corresponding to set limits. <br>
-     * Relevant only in <code>wrapped</code> and <code>finite</code> board types.
+     * Rectangle corresponding to set limits. &lt;br>
+     * Relevant only in &lt;code>wrapped&lt;/code> and &lt;code>finite&lt;/code> board types.
      * @type {object}
      */
     get limit() {
@@ -424,9 +511,9 @@ class Life {
 
     set limit(value) {
         if (typeof value === 'object') {
-            if (value.from !== undefined && value.to !== undefined) {
+            if (value.from !== undefined &amp;&amp; value.to !== undefined) {
                 [this._settings.limit.from, this._settings.limit.to] = [value.from, value.to];
-            } else if (value.width !== undefined && value.height !== undefined) {
+            } else if (value.width !== undefined &amp;&amp; value.height !== undefined) {
                 let width  = Math.ceil(value.width  / 2);
                 let height = Math.ceil(value.height / 2);
                 this._settings.limit.from = new Point(-width, height);
@@ -481,7 +568,7 @@ class Life {
         this.cores = cores;
         this.workers = [];
 
-        for (let i = 0; i < this.cores; i++)
+        for (let i = 0; i &lt; this.cores; i++)
             this.workers.push(new Worker('./js/life.worker.js'));
 
         let result = 0;
@@ -496,11 +583,11 @@ class Life {
                         this._newGen.clear();
 
                     ev.data.result[0].forEach((val, key) => this._newGen.set(key, val));
-                    result = (result << 1) | ev.data.result[1];
+                    result = (result &lt;&lt; 1) | ev.data.result[1];
                     if (++done == this.cores) {
                         done = 0;
 
-                        if (result == 0 && this._settings.detect) {
+                        if (result == 0 &amp;&amp; this._settings.detect) {
                             this.stop();
                         } else {
                             if (this.cells.size != 0) {
@@ -571,8 +658,8 @@ class Life {
     }
 
     /**
-     * Checks if point is inside board limits.<br>
-     * Relevant only for <code>wrapped</code> and <code>finite</code> board types.
+     * Checks if point is inside board limits.&lt;br>
+     * Relevant only for &lt;code>wrapped&lt;/code> and &lt;code>finite&lt;/code> board types.
      * @param {(Point|object)} point - A point to check.
      * @returns {boolean} True if point is inside.
      * @private
@@ -582,8 +669,8 @@ class Life {
     }
 
     /**
-     * Checks if coordinates are inside board limits.<br>
-     * Relevant only for <code>wrapped</code> and <code>finite</code> board types.
+     * Checks if coordinates are inside board limits.&lt;br>
+     * Relevant only for &lt;code>wrapped&lt;/code> and &lt;code>finite&lt;/code> board types.
      * @param {number} x - The X-axis coordinate
      * @param {number} y - The Y-axis coordinate
      * @returns {boolean} True if coordinates are inside.
@@ -594,7 +681,7 @@ class Life {
     }
 
     /**
-     * Returns hash for given coordinates.<br>
+     * Returns hash for given coordinates.&lt;br>
      * Used for hashing in the map.
      * @param {number} x - The X-axis coordinate
      * @param {number} y - The Y-axis coordinate
@@ -623,7 +710,7 @@ class Life {
      * @param {*} x - The X-axis coordinate
      * @param {*} y - The Y-axis coordinate
      * @param {coordsCallback} callback - A function which is called with translated coordinates
-     * @returns {(object|undefined)} The alive cell or <code>undefined</code> if cell
+     * @returns {(object|undefined)} The alive cell or &lt;code>undefined&lt;/code> if cell
      *   at given coordinates shouldn't exist with current board type.
      * @private
      */
@@ -645,7 +732,7 @@ class Life {
      * @param {*} y - The Y-axis coordinate
      * @param {coordsCallback} callback - A function which is called with translated coordinates
      * @param {object} settings - The settings of the automaton
-     * @returns {(object|undefined)} The alive cell or <code>undefined</code> if cell
+     * @returns {(object|undefined)} The alive cell or &lt;code>undefined&lt;/code> if cell
      *   at given coordinates shouldn't exist with current board type.
      * @private
      */
@@ -721,9 +808,9 @@ class Life {
      * Calculates gradient value.
      * @param {number} fadeFraction - A value in range [0; 1].
      *   Value 0 meaning left side of the gradient and value 1 meaning right side.
-     * @param {Array.<number>} rgbColor1 - An RGB array for color on the left side
-     * @param {Array.<number>} rgbColor2 - An RGB array for color in the middle
-     * @param {Array.<number>=} rgbColor3 - An RGB array for color on the right side
+     * @param {Array.&lt;number>} rgbColor1 - An RGB array for color on the left side
+     * @param {Array.&lt;number>} rgbColor2 - An RGB array for color in the middle
+     * @param {Array.&lt;number>=} rgbColor3 - An RGB array for color on the right side
      * @returns {string} The RGBA string with calculated gradient value.
      * Inspired by {@link https://gist.github.com/gskema/2f56dc2e087894ffc756c11e6de1b5ed}.
      * @private
@@ -745,7 +832,7 @@ class Life {
             }
         }
 
-        for (let i = 0; i < 3; i++)
+        for (let i = 0; i &lt; 3; i++)
             this._gradientRGB[i] = Math.floor(color1[i] + ((color2[i] - color1[i]) * fade));
 
         return `rgb(${this._gradientRGB.join(',')})`;
@@ -763,7 +850,7 @@ class Life {
     }
 
     /**
-     * Cleans dirty board.<br>
+     * Cleans dirty board.&lt;br>
      * Game board becomes dirty when board type was changed after
      *   creating alive cells outside the limits of the board.
      * @private
@@ -813,10 +900,10 @@ class Life {
         // borders are 0.5px shifted because of anti-aliasing
         if (this.scale >= this.scaleThreshold) {
             this.ctx.fillStyle = colors.border;
-            for (let x = (origin.x % size) - size; x < width; x += size)
+            for (let x = (origin.x % size) - size; x &lt; width; x += size)
                 this.ctx.fillRect(x - 0.5, -0.5, border, height);
 
-            for (let y = (origin.y % size) - size; y < height; y += size)
+            for (let y = (origin.y % size) - size; y &lt; height; y += size)
                 this.ctx.fillRect(-0.5, y - 0.5, width, border);
         }
     }
@@ -828,7 +915,7 @@ class Life {
      * @fires Life#life.new
      */
     create(x, y) {
-        if (this._settings.type !== 'infinite' && !this._insideLimitCoord(x, y))
+        if (this._settings.type !== 'infinite' &amp;&amp; !this._insideLimitCoord(x, y))
             return;
 
         let cell = Life._newCell(x, y, this._settings);
@@ -855,8 +942,8 @@ class Life {
         (async _ => {
             while(this._running) {
                 await Life.sleep(this._settings.speed);
-                for (let i = 0; i < this._settings.step; i++) {
-                    if (!this.next() && this._settings.detect) {
+                for (let i = 0; i &lt; this._settings.step; i++) {
+                    if (!this.next() &amp;&amp; this._settings.detect) {
                         this.stop();
                         break;
                     }
@@ -887,9 +974,9 @@ class Life {
             cell.age++;
 
             let counter = 0;
-            for (let dx = -1; dx <= 1; dx++) {
-                for (let dy = -1; dy <= 1; dy++) {
-                    if (dx == 0 && dy == 0)
+            for (let dx = -1; dx &lt;= 1; dx++) {
+                for (let dy = -1; dy &lt;= 1; dy++) {
+                    if (dx == 0 &amp;&amp; dy == 0)
                         continue;
 
                     let neighborHash = Life._getHash(cell.x + dx,
@@ -901,9 +988,9 @@ class Life {
                         counter++;
                     } else {
                         let otherCounter = 0;
-                        for (let cx = -1; cx <= 1; cx++) {
-                            for (let cy = -1; cy <= 1; cy++) {
-                                if (cx == 0 && cy == 0)
+                        for (let cx = -1; cx &lt;= 1; cx++) {
+                            for (let cy = -1; cy &lt;= 1; cy++) {
+                                if (cx == 0 &amp;&amp; cy == 0)
                                     continue;
 
                                 let otherHash = Life._getHash(cell.x + dx + cx,
@@ -953,7 +1040,7 @@ class Life {
     }
 
     /**
-     * Calculates next generation.<br>
+     * Calculates next generation.&lt;br>
      * In current version doesn't behave the same as [next_naive]{@link Life#next_naive}.
      * @fires Life#life.next
      */
@@ -998,9 +1085,9 @@ class Life {
     randomize(width, height, threshold = 0.5) {
         let soup = [];
         let shift = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
-        for (let x = 0; x < width; x++) {
-            for (let y = 0; y < height; y++) {
-                if (Math.random() < threshold)
+        for (let x = 0; x &lt; width; x++) {
+            for (let y = 0; y &lt; height; y++) {
+                if (Math.random() &lt; threshold)
                     soup.push([x - shift.x, y - shift.y]);
             }
         }
@@ -1020,7 +1107,7 @@ class Life {
         if (typeof cells === 'undefined')
             return;
 
-        if (override && !(cells instanceof CellFile))
+        if (override &amp;&amp; !(cells instanceof CellFile))
             this.cells.clear();
 
         if (cells instanceof Set)
@@ -1051,7 +1138,7 @@ class Life {
     }
 
     /**
-     * Reloads last loaded file.<br>
+     * Reloads last loaded file.&lt;br>
      * Works only after any file was loaded.
      * @param {boolean=} override - If true then game board will be cleared
      * @param {boolean=} force - If true then MCell game type will be ignored
@@ -1076,7 +1163,7 @@ class Life {
             this.cells.set(cell.hash, cell);
         });
 
-        if (!force && this.file.type && this.file.type !== 'Life')
+        if (!force &amp;&amp; this.file.type &amp;&amp; this.file.type !== 'Life')
             throw `Unsupported mode "${this.file.type}"`;
 
         if (typeof this.file.rule === 'string')
@@ -1092,7 +1179,7 @@ class Life {
                 this.speed = this.file.speed;
         }
 
-        if (center && ![...this.cells.values()].some(x => this._inside(x)))
+        if (center &amp;&amp; ![...this.cells.values()].some(x => this._inside(x)))
             this.center(this.nearest(0, 0));
 
         this.draw();
@@ -1109,10 +1196,10 @@ class Life {
         else if (cells instanceof Map)
             cells = [...cells.values()];
 
-        if (!cells.length && cells.x && cells.y)
+        if (!cells.length &amp;&amp; cells.x &amp;&amp; cells.y)
             cells = [cells];
 
-        if (!cells[0].x && !cells[0].y)
+        if (!cells[0].x &amp;&amp; !cells[0].y)
             throw 'Unknown format';
 
         for (let cell of cells) {
@@ -1132,7 +1219,7 @@ class Life {
     }
 
     /**
-     * Centers viewbox using given mouse event.<br>
+     * Centers viewbox using given mouse event.&lt;br>
      * When no event is given then this function sets center point
      *   in the center of the canvas.
      * @param {MouseEvent=} ev - A mouse event used to calculate proper origin point
@@ -1142,9 +1229,9 @@ class Life {
      * @fires mousemove
      */
     center(ev, x = 0, y = 0, rescale = true) {
-        if (typeof ev === 'object' && 'x' in ev && 'y' in ev)
+        if (typeof ev === 'object' &amp;&amp; 'x' in ev &amp;&amp; 'y' in ev)
             [ev, x, y, rescale] = [undefined, ev.x, ev.y, x];
-        if (typeof ev === 'number' && typeof x === 'number')
+        if (typeof ev === 'number' &amp;&amp; typeof x === 'number')
             [ev, x, y, rescale] = [undefined, ev, x, y];
 
         if (rescale)
@@ -1274,3 +1361,32 @@ class Life {
     static sleep = (ms) => 
         new Promise(resolve => setTimeout(resolve, ms));
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

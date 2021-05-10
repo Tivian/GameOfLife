@@ -1,50 +1,20 @@
+/** Web Worker simplified version of [Life]{@link Life} class. */
 class LifeWorker {
+    /**
+     * Creates new Life class for Web Worker.
+     * @param {number} nth - A number of this thread
+     * @param {number} cores - A number of all threads
+     */
     constructor(nth, cores) {
         [this.nth, this.cores] = [nth, cores];
         this.newGen = new Map();
     }
 
-    _getHash(x, y) {
-        return this._limitCoords(x, y, Point.getHash);
-    }
-
-    _newCell(x, y) {
-        return this._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }));
-    }
-
-    _limitCoords(x, y, callback) {
-        let from = this.settings.limit.from;
-        let to = this.settings.limit.to;
-
-        switch (this.settings.type) {
-            case 'infinite':
-                return callback(x, y);
-            case 'finite':
-                if (Point.isInside(x, y, from, to))
-                    return callback(x, y);
-                break;
-            case 'wrapped':
-                return callback(
-                    this._mod(x - from.x, (to.x - from.x + 1)) + from.x,
-                    this._mod(y - from.y, (to.y - from.y - 1)) + from.y
-                );
-        }
-
-        return undefined;
-    }
-
-    _birth(count) {
-        return this.settings.rule.born.indexOf(count) != -1;
-    }
-
-    _death(count) {
-        return this.settings.rule.survive.indexOf(count) == -1;
-    }
-
-    _mod(a, n) {
-        return ((a % n) + n) % n;
-    }
-
+    /**
+     * Calculates next generation of autmaton.
+     * @param {Map} cells - A Map of alive cells
+     * @returns {boolean} True if any cell changed state.
+     */
     next(cells) {
         let changed = false;
         this.newGen.clear();
@@ -68,7 +38,7 @@ class LifeWorker {
                     if (dx == 0 && dy == 0)
                         continue;
 
-                    let neighborHash = this._getHash(cell.x + dx, cell.y + dy);
+                    let neighborHash = Life._getHash(cell.x + dx, cell.y + dy, this.settings);
                     if (neighborHash === undefined)
                         continue;
 
@@ -81,7 +51,8 @@ class LifeWorker {
                                 if (cx == 0 && cy == 0)
                                     continue;
 
-                                let otherHash = this._getHash(cell.x + dx + cx, cell.y + dy + cy);
+                                let otherHash = Life._getHash(cell.x + dx + cx,
+                                    cell.y + dy + cy, this.settings);
                                 if (otherHash === undefined)
                                     continue;
 
@@ -90,8 +61,8 @@ class LifeWorker {
                             }
                         }
 
-                        if (this._birth(otherCounter)) {
-                            let neighbor = this._newCell(cell.x + dx, cell.y + dy);
+                        if (Life._birth(otherCounter, this.settings)) {
+                            let neighbor = Life._newCell(cell.x + dx, cell.y + dy, this.settings);
                             this.newGen.set(neighbor.hash, neighbor); // create
                             changed = true;
                         }
@@ -99,7 +70,7 @@ class LifeWorker {
                 }
             }
 
-            if (!this._death(counter))
+            if (!Life._death(counter, this.settings))
                 this.newGen.set(cell.hash, cell); // survive
             else
                 changed = true;
@@ -108,13 +79,17 @@ class LifeWorker {
         return [ this.newGen, changed ];
     }
 
+    /**
+     * Sets the automaton settings.
+     * @param {object} settings - The automaton settings
+     */
     setup(settings) {
         this.settings = settings;
     }
 }
 
 let life = new LifeWorker();
-importScripts('./point.js');
+importScripts('life.js', 'point.js');
 
 onmessage = function(ev) {
     switch (ev.data.action) {
