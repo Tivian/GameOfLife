@@ -44,12 +44,16 @@ class UI {
         let mouseLeft = false;
         this.life.$canvas
             .on('start', _ => {
+                $('#btn-play').attr('data-bs-original-title', 'Pause')
+                    .tooltip($('.tooltip-inner:contains("Play")').length ? 'show' : 'hide');
                 $('#btn-play > i').attr('class', 'fas fa-pause');
                 $('#in-board-size > input, #in-game-rule').prop('readonly', true);
                 $('#in-board-type').prop('disabled', true);
                 $('#in-engine').prop('disabled', true);
             })
             .on('stop', _ => {
+                $('#btn-play').attr('data-bs-original-title', 'Play')
+                    .tooltip($('.tooltip-inner:contains("Pause")').length ? 'show' : 'hide');
                 $('#btn-play > i').attr('class', 'fas fa-play');
                 $('#in-board-size > input, #in-game-rule').prop('readonly', false);
                 $('#in-board-type').prop('disabled', false);
