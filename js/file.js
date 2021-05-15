@@ -1,9 +1,25 @@
+/**
+ * Container for pattern files.
+ * @see {@link http://www.mirekw.com/ca/ca_files_formats.html|File formats description}
+ */
 class CellFile {
+    /** List of supported file formats. */
     static supported = '.rle,.cells,.lif,.life,.mcl,.l';
+    /** If true then during file loading there will be
+     * some information displayed on the console. */
     static debug = false;
+    /** If true then any error in file format syntax
+     * will result in an exception. */
     static strict = false;
+    /** The description of the type of the pattern file. */
     description = 'Generic cellular automata file';
 
+    /**
+     * Creates container for a pattern file.
+     * @param {string} name - The name of the file.
+     * @param {*=} cells - The collection of alive cells,
+     *  useful when saving to file.
+     */
     constructor(name, cells) {
         this.name = name;
         this.width = 0;
@@ -20,10 +36,18 @@ class CellFile {
         this.comments = [];
     }
 
+    /**
+     * Returns blob of the pattern file.
+     * @returns {Blob} The blob of the pattern file.
+     */
     toBlob() {
         return new Blob([this.save()], { type: 'text/plain' });
     }
 
+    /**
+     * Returns the information about the file.
+     * @returns {string} The information about the file.
+     */
     toString() {
         let str = [this.description];
 
@@ -41,6 +65,15 @@ class CellFile {
         return str.join(' ');
     }
 
+    /**
+     * Creates {@link CellFile} from given collection of cells.
+     * @param {string} format - The file format.<br>
+     *  Supports only RLE and Life formats.
+     * @param {string} name - The name of the file.
+     * @param {*=} cells - The collection of alive cells.
+     * @returns {CellFile} - A new CellFile or undefined if
+     *  invalid format name is provided
+     */
     static get(format, name, cells) {
         switch (format) {
             case 'rle':
@@ -52,6 +85,11 @@ class CellFile {
         }
     }
 
+    /**
+     * Opens a file explorer pop-up for selecting a file to load.
+     * @param {function} callback - The callback which will be called
+     *  when file is finished loading.
+     */
     static open(callback) {
         let input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -60,6 +98,14 @@ class CellFile {
         input.click();
     }
 
+    /**
+     * Reads a pattern file to load.
+     * @param {*} handle - The file handle of the file to load.
+     * @param {function} callback - The callback which will be called
+     *  when file is finished loading.
+     * @param {function} onerror - The callback used to handle any errors which
+     *  could occur while loading the file.
+     */
     static read(handle, callback, onerror) {
         if (!handle)
             return;
@@ -99,15 +145,29 @@ class CellFile {
     }
 }
 
+/**
+ * Container for pattern files in RLE format.
+ * @see {@link http://www.mirekw.com/ca/ca_files_formats.html#RLE|File format sytax}
+ */
 class RLEFile extends CellFile {
+    /** The description of the type of the pattern file. */
     description = 'RLE file';
 
+    /**
+     * Creates container for RLE pattern file.
+     * @param {string} name - The name of the file
+     * @param {*=} cells - The collection of alive cells
+     */
     constructor(name, cells) {
         super(name, cells);
         if (cells && !/^.*\.(rle)/g.test(name))
             this.name += '.rle';
     }
 
+    /**
+     * Converts contained list of alive cells into RLE formatted string.
+     * @returns {string} The string of the RLE formatted content.
+     */
     save() {
         let lines = [];
         if (!this.cells || this.cells.size == 0)
@@ -181,6 +241,13 @@ class RLEFile extends CellFile {
         return lines.join('\r\n');
     }
 
+    /**
+     * Converts text content of the pattern file into the RLEFile container.
+     * @param {string} name - The name of the file
+     * @param {string} raw - The text content of the file
+     * @returns {RLEFile} - The RLEFile instance.
+     * @private
+     */
     static _read(name, raw) {
         let lines = raw.split('\n');
         let file = new RLEFile(name);
@@ -263,20 +330,39 @@ class RLEFile extends CellFile {
     }
 }
 
+/**
+ * Container for pattern files in Life1.0x format.
+ * @see {@link http://www.mirekw.com/ca/ca_files_formats.html#Life%201.05|File format syntax}
+ */
 class LifeFile extends CellFile {
+    /** The description of the type of the pattern file. */
     description = 'Life file';
 
+    /**
+     * Creates container for Life1.0x pattern file.
+     * @param {string} name - The name of the file
+     * @param {*=} cells - The collection of alive cells
+     */
     constructor(name, cells) {
         super(name, cells);
         if (cells && !/^.*\.(lif)/g.test(name))
             this.name += '.lif';
     }
 
+    /**
+     * @todo For now saving patterns in Life1.0x format isn't implemented.
+     */
     save() {
-        // TODO
         throw 'Unsupported file format for saving structures.';
     }
 
+    /**
+     * Converts text content of the pattern file into the Life1.0x container.
+     * @param {string} name - The name of the file
+     * @param {string} raw - The text content of the file
+     * @returns {LifeFile} - The LifeFile instance.
+     * @private
+     */
     // some dbLife (*.l) files may fail because of unknown file format
     static _read(name, raw) {
         let lines = raw.split('\n');
@@ -361,9 +447,19 @@ class LifeFile extends CellFile {
     }
 }
 
+/**
+ * Container for pattern files in MCell format.
+ * @see {@link http://www.mirekw.com/ca/ca_files_formats.html#MCell|File format syntax}
+ */
 class MCellFile extends CellFile {
+    /** The description of the type of the pattern file. */
     description = 'MCell file';
 
+    /**
+     * Creates container for RLE pattern file.
+     * @param {string} name - The name of the file
+     * @param {*=} cells - The collection of alive cells
+     */
     constructor(name, cells) {
         super(name, cells);
         if (cells && !/^.*\.(mcl)/g.test(name))
@@ -372,11 +468,20 @@ class MCellFile extends CellFile {
         this.type = 'Life';
     }
 
+    /**
+     * @todo For now saving patterns in MCell format isn't implemented.
+     */
     save() {
-        // TODO
         throw 'Unsupported file format for saving structures.';
     }
 
+    /**
+     * Converts text content of the pattern file into the MCell container.
+     * @param {string} name - The name of the file
+     * @param {string} raw - The text content of the file
+     * @returns {MCellFile} - The MCellFile instance.
+     * @private
+     */
     static _read(name, raw) {
         let lines = raw.split('\n');
         let file = new MCellFile(name);
