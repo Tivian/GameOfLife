@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Point</title>
+  <title> CellFile</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -74,7 +74,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Class</p>
-                    <h1>Point</h1>
+                    <h1>CellFile</h1>
                 </header>
                 
 
@@ -85,9 +85,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Point<span class="signature">(x<span class="signature-attributes">opt</span>, y<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>CellFile<span class="signature">(name, cells<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Represents 2D point.</div>
+            <div class="class-description">Container for pattern files.</div>
         
     
 </header>
@@ -106,18 +106,22 @@
 
 
     
-    <h4 class="name" id="Point">
-        <a class="href-link" href="#Point">#</a>
+    <h4 class="name" id="CellFile">
+        <a class="href-link" href="#CellFile">#</a>
         
         <span class="code-name">
             
-                new Point<span class="signature">(x<span class="signature-attributes">opt</span>, y<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                new CellFile<span class="signature">(name, cells<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
             
         </span>
     </h4>
     
 
     
+    
+    <div class="description">
+        Creates container for a pattern file.
+    </div>
     
 
 
@@ -145,8 +149,6 @@
             
 
             
-            <th>Default</th>
-            
 
             <th class="last">Description</th>
         </tr>
@@ -158,13 +160,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>x</code></td>
+      <td class="name"><code>name</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
   
@@ -173,8 +175,6 @@
   
       <td class="attributes">
       
-          &lt;optional><br>
-      
 
       
 
@@ -183,14 +183,8 @@
   
 
   
-      <td class="default">
-      
-          0
-      
-      </td>
-  
 
-  <td class="description last">The X-axis coordinate</td>
+  <td class="description last">The name of the file.</td>
 </tr>
 
 
@@ -199,13 +193,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>y</code></td>
+      <td class="name"><code>cells</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
+<span class="param-type">*</span>
 
 
   
@@ -224,14 +218,8 @@
   
 
   
-      <td class="default">
-      
-          0
-      
-      </td>
-  
 
-  <td class="description last">The Y-axis coordinate</td>
+  <td class="description last">The collection of alive cells, useful when saving to file.</td>
 </tr>
 
 
@@ -272,14 +260,21 @@
     
 
     
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="http://www.mirekw.com/ca/ca_files_formats.html">File formats description</a></li>
+        </ul>
+    </dd>
+    
 
     
 
     
         <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line2">line 2</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line5">line 5</a>
             </span>
         </p>
     
@@ -326,6 +321,289 @@
     
 
     
+        <div class='vertical-section'>
+            <h1>Members</h1>
+            <div class="members">
+            
+                <div class="member">
+
+<h4 class="name" id="debug">
+    <a class="href-link" href="#debug">#</a>
+    
+    <span class="code-name">
+        debug
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    If true then during file loading there will besome information displayed on the console.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line10">line 10</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+<h4 class="name" id="description">
+    <a class="href-link" href="#description">#</a>
+    
+    <span class="code-name">
+        description
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The description of the type of the pattern file.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line15">line 15</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+<h4 class="name" id="strict">
+    <a class="href-link" href="#strict">#</a>
+    
+    <span class="code-name">
+        strict
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    If true then any error in file format syntaxwill result in an exception.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line13">line 13</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+<h4 class="name" id="supported">
+    <a class="href-link" href="#supported">#</a>
+    
+    <span class="code-name">
+        supported
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    List of supported file formats.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line7">line 7</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+            </div>
+        </div>
+    
 
     
         <div class='vertical-section'>
@@ -336,8 +614,8 @@
 
 
     
-    <h4 class="name" id=".distance">
-        <a class="href-link" href="#.distance">#</a>
+    <h4 class="name" id=".get">
+        <a class="href-link" href="#.get">#</a>
         
             
                 <span class='tag'>static</span>
@@ -345,7 +623,7 @@
         
         <span class="code-name">
             
-                distance<span class="signature">(a, b)</span><span class="type-signature"> &rarr; {number}</span>
+                get<span class="signature">(format, name, cells<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="CellFile.html">CellFile</a>}</span>
             
         </span>
     </h4>
@@ -354,7 +632,7 @@
     
     
     <div class="description">
-        Calculates distance between two points.
+        Creates <a href="CellFile.html">CellFile</a> from given collection of cells.
     </div>
     
 
@@ -379,213 +657,7 @@
             <th>Type</th>
 
             
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>a</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-|
-
-<span class="param-type">object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">A first point</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>b</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-|
-
-<span class="param-type">object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">A second point</td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
-            <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line61">line 61</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'>The distance between two points.</div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<span class="param-type">number</span>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id=".getHash">
-        <a class="href-link" href="#.getHash">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
-        
-        <span class="code-name">
-            
-                getHash<span class="signature">(x, y)</span><span class="type-signature"> &rarr; {string}</span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        Returns hash for given coordinates.<br>Useful for maps, as JS doesn't have a native way  to change how two objects are distingushed.
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
+            <th>Attributes</th>
             
 
             
@@ -600,135 +672,186 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>x</code></td>
+      <td class="name"><code>format</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The X-axis coordinate</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>y</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">number</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The Y-axis coordinate</td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
-            <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line75">line 75</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'>The hash for given coordinates.</div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
 <span class="param-type">string</span>
 
 
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">The file format.<br> Supports only RLE and Life formats.</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>name</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">The name of the file.</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>cells</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">*</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">The collection of alive cells.</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line77">line 77</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>- A new CellFile or undefined if invalid format name is provided</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type"><a href="CellFile.html">CellFile</a></span>
+
+
     </div>
     
 </div>
@@ -746,8 +869,8 @@
 
 
     
-    <h4 class="name" id=".isInside">
-        <a class="href-link" href="#.isInside">#</a>
+    <h4 class="name" id=".open">
+        <a class="href-link" href="#.open">#</a>
         
             
                 <span class='tag'>static</span>
@@ -755,7 +878,7 @@
         
         <span class="code-name">
             
-                isInside<span class="signature">(x, y, from, to)</span><span class="type-signature"> &rarr; {boolean}</span>
+                open<span class="signature">(callback)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -764,7 +887,7 @@
     
     
     <div class="description">
-        Checks if this point is inside the rectangle.
+        Opens a file explorer pop-up for selecting a file to load.
     </div>
     
 
@@ -802,13 +925,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>x</code></td>
+      <td class="name"><code>callback</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
+<span class="param-type">function</span>
 
 
   
@@ -818,88 +941,7 @@
 
   
 
-  <td class="description last">The X-axis coordinate</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>y</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">number</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The Y-axis coordinate</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>from</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-|
-
-<span class="param-type">object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The top left corner of the rectangle.</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>to</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-|
-
-<span class="param-type">object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The bottom right corner of the rectangle.</td>
+  <td class="description last">The callback which will be called when file is finished loading.</td>
 </tr>
 
 
@@ -945,9 +987,9 @@
 
     
         <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line48">line 48</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line93">line 93</a>
             </span>
         </p>
     
@@ -969,31 +1011,6 @@
 
 
 
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'>Returns true if this point is inside the rectangle.</div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<span class="param-type">boolean</span>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
 
 
 
@@ -1004,12 +1021,16 @@
 
 
     
-    <h4 class="name" id="distance">
-        <a class="href-link" href="#distance">#</a>
+    <h4 class="name" id=".read">
+        <a class="href-link" href="#.read">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
         
         <span class="code-name">
             
-                distance<span class="signature">(other)</span><span class="type-signature"> &rarr; {number}</span>
+                read<span class="signature">(handle, callback, onerror)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1018,7 +1039,7 @@
     
     
     <div class="description">
-        Calculates distance between two points.
+        Reads a pattern file to load.
     </div>
     
 
@@ -1056,13 +1077,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>other</code></td>
+      <td class="name"><code>handle</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type"><a href="Point.html">Point</a></span>
+<span class="param-type">*</span>
 
 
   
@@ -1072,7 +1093,57 @@
 
   
 
-  <td class="description last">An other point.</td>
+  <td class="description last">The file handle of the file to load.</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>callback</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">function</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The callback which will be called when file is finished loading.</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>onerror</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">function</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The callback used to handle any errors which could occur while loading the file.</td>
 </tr>
 
 
@@ -1118,9 +1189,9 @@
 
     
         <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line28">line 28</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line109">line 109</a>
             </span>
         </p>
     
@@ -1142,31 +1213,6 @@
 
 
 
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'>The distance between this point and other point.</div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<span class="param-type">number</span>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
 
 
 
@@ -1177,12 +1223,12 @@
 
 
     
-    <h4 class="name" id="isInside">
-        <a class="href-link" href="#isInside">#</a>
+    <h4 class="name" id="toBlob">
+        <a class="href-link" href="#toBlob">#</a>
         
         <span class="code-name">
             
-                isInside<span class="signature">(from, to)</span><span class="type-signature"> &rarr; {boolean}</span>
+                toBlob<span class="signature">()</span><span class="type-signature"> &rarr; {Blob}</span>
             
         </span>
     </h4>
@@ -1191,7 +1237,7 @@
     
     
     <div class="description">
-        Checks if this point is inside the rectangle.
+        Returns blob of the pattern file.
     </div>
     
 
@@ -1202,82 +1248,6 @@
 
 
 
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>from</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The top left corner of the rectangle.</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>to</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type"><a href="Point.html">Point</a></span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The bottom right corner of the rectangle.</td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
 
 
 
@@ -1316,9 +1286,9 @@
 
     
         <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line19">line 19</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line43">line 43</a>
             </span>
         </p>
     
@@ -1349,13 +1319,13 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>Returns true if this point is inside the rectangle.</div>
+    <div class='param-desc column is-7'>The blob of the pattern file.</div>
     
     
     <div class='column is-5 has-text-left'>
         <label>Type: </label>
         
-<span class="param-type">boolean</span>
+<span class="param-type">Blob</span>
 
 
     </div>
@@ -1380,7 +1350,7 @@
         
         <span class="code-name">
             
-                toString<span class="signature">()</span><span class="type-signature"></span>
+                toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span>
             
         </span>
     </h4>
@@ -1389,7 +1359,7 @@
     
     
     <div class="description">
-        A string representation of this point.
+        Returns the information about the file.
     </div>
     
 
@@ -1438,9 +1408,9 @@
 
     
         <p class="tag-source">
-            <a href="point.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="point.js.html">point.js</a>, <a href="point.js.html#line36">line 36</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line51">line 51</a>
             </span>
         </p>
     
@@ -1471,8 +1441,16 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>A string representation of this point.</div>
+    <div class='param-desc column is-7'>The information about the file.</div>
     
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">string</span>
+
+
+    </div>
     
 </div>
 

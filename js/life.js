@@ -1,11 +1,12 @@
 /** Board for Game of Life. */
 class Life {
     /**
-     * Create new board.
+     * Creates new board for Game of Life.
      * @param {(string|object)} canvas - An ID of the canvas element or jQuery object of canvas.
      * @param {object=} options - An options for the board setup.
+     * @param {string} engine - The engine name which should be used for creating new generations.
      */
-    constructor(canvas, options) {
+    constructor(canvas, options, engine) {
         this._settings = {
             speed: 10,
             step: 1,
@@ -23,15 +24,19 @@ class Life {
             origin: new Point(),
             top: new Point(),
             bottom: new Point(),
-            colorCells: true,
+            showAge: true,
+            allowInverse: false,
             colors: {
                 background: '#fcfcfc',
                 border: '#bbb',
                 outside: '#aaa',
                 basic: '#020202',
-                hot: [ 0xdc, 0x14, 0x3c ],
-                medium: [ 0x00, 0x00, 0xff ],
-                cold: [ 0x00, 0x00, 0xcd ]
+                rgb: {
+                       hot: [ 0xdc, 0x14, 0x3c ],
+                    medium: [ 0x00, 0x00, 0xff ],
+                      cold: [ 0x00, 0x00, 0xcd ]
+                },
+                int: {}
             },
             rule: {
                 born: '3',
@@ -42,9 +47,12 @@ class Life {
         this.cellSize = this._settings.size;
         this.cellBorder = this._settings.border;
         this.scaleThreshold = 0.5;
-        this.zoomIntensity = 0.1;
+        this.zoomIntensity = 0.09;
         this.minScale = 0.01;
         this.maxScale = 100;
+
+        if (typeof options === 'string')
+            [engine, options] = [options, engine];
 
         const defaultOptions = {
             fullscreen: true,
@@ -68,20 +76,24 @@ class Life {
         this.ctx = this.canvas.getContext('2d');
         this._resize();
 
+        Object.getOwnPropertyNames(this._settings.colors)
+            .filter(x => typeof this._settings.colors[x] === 'string')
+            .forEach(x => this.setColor(x, this._settings.colors[x]));
+
         this.cells = new Map();
         this._newGen = new Map();
         this._generation = 0;
         this._running = false;
         this._dirty = false;
         this._file = undefined;
-        this._engine = 'worker';
 
         this.engines = {
-            naive: '_setupNaive',
-            worker: '_setupWorker'
+               naive: '_setupNaive',
+              worker: '_setupWorker',
+            hashlife: '_setupHashlife'
         };
         Object.freeze(this.engines);
-        this[this.engines[this._engine]]();
+        this.engine = engine || 'hashlife';
 
         let mouseLast = new Point();
         let dragging = false;
@@ -98,7 +110,7 @@ class Life {
             })
             .on('mousemove', ev => {
                 if (dragging) {
-                    $(this.canvas).css('cursor', 'grabbing');
+                    this.$canvas.css('cursor', 'grabbing');
                     let coord = new Point(ev.pageX, ev.pageY);
                     if (Point.distance(coord, mouseLast) > 1)
                         dragged = true;
@@ -161,9 +173,12 @@ class Life {
     }
 
     set engine(value) {
-        const valid = [ 'naive', 'worker'/*, 'hashlife'*/ ];
+        const valid = [ 'naive', 'worker', 'hashlife' ];
         if (!valid.includes(value))
             return;
+
+        if (this._engine === 'hashlife')
+            this._restoreLife();
 
         this._engine = value;
         this[this.engines[this._engine]]();
@@ -183,7 +198,7 @@ class Life {
      * @type {number}
      */
     get population() {
-        return this.cells.size;
+        return this.size();
     }
 
     /**
@@ -235,8 +250,8 @@ class Life {
     }
 
     set origin(value) {
-        [this._settings.origin.x, this._settings.origin.y] = value instanceof Array
-            ? value : [value.x, value.y];
+        [this._settings.origin.x, this._settings.origin.y] =
+            value instanceof Array ? value : [value.x, value.y];
         this._setDrawLimits();
     }
 
@@ -269,38 +284,46 @@ class Life {
     }
 
     set rule(value) {
-        if (typeof value !== 'undefined') {
-            if (typeof value === 'object') {
-                if (!value.born && !value.survive)
+        if (!value)
+            return;
+
+        if (typeof value === 'object') {
+            if (!value.born || !value.survive)
+                return;
+
+            [this._settings.rule.born, this._settings.rule.survive] =
+                [value.born, value.survive];
+        } else if (typeof value === 'string') {
+            value = value.toUpperCase();
+
+            if (/^([BS][0-8\/]*){1,2}$/gi.test(value)) {
+                let result = `${value}/`.split('/', 2).sort();
+                if (!result[0].startsWith('B'))
+                    result = result.reverse();
+
+                result = result.map(x => x.replace(/[^0-8]/g, ''));
+                this._settings.rule.born = result[0];
+                this._settings.rule.survive = result[1];
+            } else {
+                let result = value.match(/([0-8]+)?\/([0-8]+)?/i);
+                if (result == null)
                     return;
 
-                [this._settings.rule.born, this._settings.rule.survive] =
-                    [value.born, value.survive];
-            } else if (typeof value === 'string') {
-                let result = value.toUpperCase().match(/[BS][0-8]*/gi);
-
-                if (result != null) {
-                    this._settings.rule = { born: '', survive: '' };
-                    for (let rule of result)
-                        this._settings.rule[rule.startsWith('B') ? 'born' : 'survive'] = rule.substring(1);
-                } else {
-                    result = value.match(/([0-8]+)?\/([0-8]+)?/i);
-                    if (result == null)
-                        return;
-
-                    this._settings.rule.survive = result[1] || '';
-                    this._settings.rule.born = result[2] || '';
-                }
-            } else {
-                return;
+                this._settings.rule.survive = result[1] || '';
+                this._settings.rule.born = result[2] || '';
             }
-
-            // sort the numbers inside the rule string
-            const normalize = str => new Array(...(new Set(str.split('')))).sort().join('');
-            this._settings.rule.born = normalize(this._settings.rule.born);
-            this._settings.rule.survive = normalize(this._settings.rule.survive);
-            this.$canvas.trigger('change.rule');
+        } else {
+            return;
         }
+
+        // sort the numbers inside the rule string
+        const normalize = str => new Array(...(new Set(str.split('')))).sort().join('');
+        this._settings.rule.born = normalize(this._settings.rule.born);
+        this._settings.rule.survive = normalize(this._settings.rule.survive);
+        if (!this._settings.allowInverse)
+            this._settings.rule.born = this._settings.rule.born.replace('0', '');
+
+        this.$canvas.trigger('change.rule');
     }
 
     /**
@@ -312,6 +335,7 @@ class Life {
     }
 
     set speed(value) {
+        value = parseInt(value);
         if (value < 1)
             value = 1;
         this._settings.speed = value;
@@ -327,8 +351,10 @@ class Life {
     }
 
     set step(value) {
-        if (value < 1)
-            value = 1;
+        value = parseInt(value);
+        let min = this.engine === 'hashlife' ? 0 : 1;
+        if (value < min)
+            value = min;
         this._settings.step = value;
         this.$canvas.trigger('change.step');
     }
@@ -377,13 +403,27 @@ class Life {
      * Denotes if [draw]{@link Life#draw} function should color cells showing their age.
      * @type {boolean}
      */
-    get colorCells() {
-        return this._settings.colorCells;
+    get showAge() {
+        return this._settings.showAge;
     }
 
-    set colorCells(value) {
-        this._settings.colorCells = !!value;
+    set showAge(value) {
+        this._settings.showAge = !!value;
         this.$canvas.trigger('change.color');
+    }
+
+    /**
+     * Allows or disallows rules where birth occurs in cells with 0 neighbors.
+     * @type {boolean}
+     */
+    get allowInverse() {
+        return this._settings.allowInverse;
+    }
+
+    set allowInverse(value) {
+        this._settings.allowInverse = !!value;
+        this.rule = this.rule;
+        this.$canvas.trigger('change.inverse');
     }
 
     /**
@@ -415,9 +455,9 @@ class Life {
         let to = this._settings.limit.to;
 
         return {
-            to:     to,
-            from:   from,
-            width:  to.x - from.x,
+                to: to,
+              from: from,
+             width: to.x - from.x,
             height: from.y - to.y
         };
     }
@@ -429,8 +469,8 @@ class Life {
             } else if (value.width !== undefined && value.height !== undefined) {
                 let width  = Math.ceil(value.width  / 2);
                 let height = Math.ceil(value.height / 2);
-                this._settings.limit.from = new Point(-width, height);
-                this._settings.limit.to   = new Point(width, -height);
+                this._settings.limit.from = new Point(-width,  height);
+                this._settings.limit.to   = new Point( width, -height);
             } else {
                 return;
             }
@@ -442,8 +482,7 @@ class Life {
     /**
      * Currently loaded pattern file.
      * @type {CellFile}
-     * @fires Life#load.file - If given file isn't undefined.
-     * @fires Life#unload.file - If given file is undefined.
+     * @fires Life#unload.file - If the value was undefined.
      */
     get file() {
         return this._file;
@@ -451,7 +490,8 @@ class Life {
 
     set file(value) {
         this._file = value;
-        this.$canvas.trigger(`${!value ? 'un' : ''}load.file`);
+        if (!value)
+            this.$canvas.trigger('unload.file');
     }
 
     /**
@@ -529,7 +569,30 @@ class Life {
     }
 
     /**
+     * Prepares the automaton state for the Hashlife engine.<br>
+     * Safes methods, which are going to be replaced by the adapter.
+     * @private
+     */
+    _setupHashlife() {
+        if (!this.hashlife)
+            this.hashlife = new HashLifeAdapter(this);
+
+        this.hashlife._enable();
+        this.draw();
+    }
+
+    /**
+     * Restores the automaton to the state before the engine change.
+     * @private
+     */
+    _restoreLife() {
+        this.hashlife._disable();
+        this.draw();
+    }
+
+    /**
      * Resizes the canvas for the automaton.
+     * @fires Life#change.size
      * @private
      */
     _resize() {
@@ -539,6 +602,7 @@ class Life {
         }
 
         this._setDrawLimits();
+        this.$canvas.trigger('change.size');
     }
 
     /**
@@ -551,12 +615,12 @@ class Life {
 
         this._settings.top = new Point(
             -Math.ceil(origin.x / size),
-            Math.ceil(origin.y / size)
+             Math.ceil(origin.y / size)
         );
 
         this._settings.bottom = new Point(
-            -Math.ceil((origin.x - this.width) / size),
-            Math.ceil((origin.y - this.height) / size)
+            -Math.ceil((origin.x - this.width)  / size),
+             Math.ceil((origin.y - this.height) / size)
         );
     }
 
@@ -615,13 +679,14 @@ class Life {
      * @private
      */
     static _newCell(x, y, settings) {
-        return Life._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }), settings);
+        return Life._limitCoords(x, y, (x, y) =>
+            ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }), settings);
     }
 
     /**
      * Converts given coordinates according to set board type.
-     * @param {*} x - The X-axis coordinate
-     * @param {*} y - The Y-axis coordinate
+     * @param {number} x - The X-axis coordinate
+     * @param {number} y - The Y-axis coordinate
      * @param {coordsCallback} callback - A function which is called with translated coordinates
      * @returns {(object|undefined)} The alive cell or <code>undefined</code> if cell
      *   at given coordinates shouldn't exist with current board type.
@@ -641,8 +706,8 @@ class Life {
 
     /**
      * Converts given coordinates according to set board type.
-     * @param {*} x - The X-axis coordinate
-     * @param {*} y - The Y-axis coordinate
+     * @param {number} x - The X-axis coordinate
+     * @param {number} y - The Y-axis coordinate
      * @param {coordsCallback} callback - A function which is called with translated coordinates
      * @param {object} settings - The settings of the automaton
      * @returns {(object|undefined)} The alive cell or <code>undefined</code> if cell
@@ -650,10 +715,10 @@ class Life {
      * @private
      */
     static _limitCoords(x, y, callback, settings) {
-        let from = settings.limit.from;
-        let to = settings.limit.to;
+        let from = settings ? settings.limit.from : 0;
+        let to = settings ? settings.limit.to : 0;
 
-        switch (settings.type) {
+        switch (settings ? settings.type : '') {
             case 'infinite':
                 return callback(x, y);
             case 'finite':
@@ -667,7 +732,7 @@ class Life {
                 );
         }
 
-        return undefined;
+        return settings === undefined ? callback(x, y) : undefined;
     }
 
     /**
@@ -713,7 +778,8 @@ class Life {
 
     /** 
      * Variable to prevent array creation at every
-     *   call to [_colorGradient]{@link Life#_colorGradient}. 
+     *   call to [_colorGradient]{@link Life#_colorGradient}.
+     * @private
      */
     _gradientRGB = [];
 
@@ -724,11 +790,12 @@ class Life {
      * @param {Array.<number>} rgbColor1 - An RGB array for color on the left side
      * @param {Array.<number>} rgbColor2 - An RGB array for color in the middle
      * @param {Array.<number>=} rgbColor3 - An RGB array for color on the right side
-     * @returns {string} The RGBA string with calculated gradient value.
+     * @param {boolean=} raw - If true then the function will return color as a RGB array.
+     * @returns {string|Array} The RGB string/array with calculated gradient value.
      * Inspired by {@link https://gist.github.com/gskema/2f56dc2e087894ffc756c11e6de1b5ed}.
      * @private
      */
-    _colorGradient(fadeFraction, rgbColor1, rgbColor2, rgbColor3) {
+    _colorGradient(fadeFraction, rgbColor1, rgbColor2, rgbColor3, raw = false) {
         let color1 = rgbColor1;
         let color2 = rgbColor2;
         let fade = fadeFraction;
@@ -748,7 +815,7 @@ class Life {
         for (let i = 0; i < 3; i++)
             this._gradientRGB[i] = Math.floor(color1[i] + ((color2[i] - color1[i]) * fade));
 
-        return `rgb(${this._gradientRGB.join(',')})`;
+        return raw ? this._gradientRGB : `rgb(${this._gradientRGB.join(',')})`;
     }
 
     /**
@@ -803,10 +870,10 @@ class Life {
             if (!this._inside(cell))
                 return;
 
-            this.ctx.fillStyle = (!this._settings.colorCells)
+            this.ctx.fillStyle = (!this._settings.showAge)
                 ? this._settings.colors.basic
                 : this._colorGradient(Math.atan(cell.age / 500) / (Math.PI / 2),
-                    colors.hot, colors.medium, colors.cold);
+                    colors.rgb.hot, colors.rgb.medium, colors.rgb.cold);
             this.ctx.fillRect(origin.x + cell.x * size, origin.y - cell.y * size, size, size);
         });
 
@@ -842,7 +909,7 @@ class Life {
     }
 
     /**
-     * Starts the naive engine for automaton.
+     * Starts the naive engine for the automaton.
      * @fires Life#start
      */
     start_naive() {
@@ -996,6 +1063,9 @@ class Life {
      *   should be in [0; 1] range
      */
     randomize(width, height, threshold = 0.5) {
+        if (this.isRunning)
+            throw 'The automaton is running!';
+
         let soup = [];
         let shift = { x: Math.floor(width / 2), y: Math.floor(height / 2) };
         for (let x = 0; x < width; x++) {
@@ -1005,12 +1075,11 @@ class Life {
             }
         }
 
-        this.stop();
         this.load(soup, true);
     }
 
     /**
-     * Loads cells from file or collection.
+     * Loads cells from file or collection of cells.
      * @param {*} cells - The [CellFile]{@link CellFile} or Map/Set/Array of cells
      * @param {boolean=} override - If true then board will be cleared
      * @param {boolean=} force - Relevant only for MCell files.
@@ -1019,6 +1088,9 @@ class Life {
     load(cells, override = false, force = false) {
         if (typeof cells === 'undefined')
             return;
+
+        if (this.isRunning)
+            throw 'The automaton is running!';
 
         if (override && !(cells instanceof CellFile))
             this.cells.clear();
@@ -1052,7 +1124,7 @@ class Life {
 
     /**
      * Reloads last loaded file.<br>
-     * Works only after any file was loaded.
+     * Works only after any file has been loaded.
      * @param {boolean=} override - If true then game board will be cleared
      * @param {boolean=} force - If true then MCell game type will be ignored
      * @param {boolean=} center - If true then loaded pattern will
@@ -1102,6 +1174,7 @@ class Life {
     /**
      * Removes from the game board only given cells.
      * @param {*} cells - An Array/Set/Map of cells or single cell to be removed
+     * @fires Life#life.wipe
      */
     remove(cells) {
         if (cells instanceof Set)
@@ -1125,7 +1198,9 @@ class Life {
 
     /**
      * Calculates bounding box for currenly alive cells.
-     * @returns The bounding box of current game board
+     * @returns {object} The bounding box of current game board.
+     *  Contains information about width, height, top left
+     *  and bottom right corners of the current pattern.
      */
     getBoundingBox() {
         return Life.getBoundingBox(this.cells);
@@ -1189,14 +1264,14 @@ class Life {
     getPosition(ev) {
         let size = this.cellSize;
         return new Point(
-            Math.floor((ev.pageX - this.origin.x) / size),
+             Math.floor((ev.pageX - this.origin.x) / size),
             -Math.floor((ev.pageY - this.origin.y) / size)
         );
     }
 
     /**
-     * Returns cells as array.
-     * @returns {Array} The alive cells as array
+     * Returns array of alive cells.
+     * @returns {Array} The array of alive cells
      */
     getCells() {
         return [...this.cells.values()];
@@ -1209,9 +1284,14 @@ class Life {
      * @fires Life#change.color
      */
     setColor(name, color) {
-        const gradient = new Set([ 'hot', 'medium', 'cold' ]);
-        this._settings.colors[name] = gradient.has(name) ?
-            this._convertColor(color) : color;
+        let rgb = this._convertColor(color);
+        if (this._settings.colors[name]
+        && typeof this._settings.colors[name] === 'string')
+            this._settings.colors[name] = color;
+
+        this._settings.colors.rgb[name] = rgb;
+        this._settings.colors.int[name] =
+            rgb[0] | rgb[1] << 8 | rgb[2] << 16 | 0xFF << 24;
         this.$canvas.trigger('change.color');
     }
 
@@ -1225,6 +1305,14 @@ class Life {
     toBlob(callback, quality = 0.92, type = 'image/jpeg') {
         this.draw();
         return this.canvas.toBlob(callback, type, quality);
+    }
+
+    /**
+     * Returns number of alive cells.
+     * @returns {number} The number of alive cells.
+     */
+    size() {
+        return this.cells.size;
     }
 
     /**
@@ -1242,27 +1330,27 @@ class Life {
         cells = [...cells];
         if (cells.length == 0) {
             return {
-                top: 0,   bottom: 0,
-                left: 0,   right: 0,
+                  top: 0, bottom: 0,
+                 left: 0,  right: 0,
                 width: 0, height: 0
             };
         }
 
         return cells.reduce((acc, cur) => {
             let obj = {
-                top: Math.max(acc.top, cur.y),
+                   top: Math.max(acc.top, cur.y),
                 bottom: Math.min(acc.bottom, cur.y),
-                left: Math.min(acc.left, cur.x),
-                right: Math.max(acc.right, cur.x)
+                  left: Math.min(acc.left, cur.x),
+                 right: Math.max(acc.right, cur.x)
             };
-            obj.width = obj.right - obj.left + 1;
-            obj.height = obj.top - obj.bottom + 1;
+            obj.width  = obj.right - obj.left   + 1;
+            obj.height = obj.top   - obj.bottom + 1;
             return obj;
         }, {
-            top: -Number.MAX_VALUE,
-            bottom: Number.MAX_VALUE,
-            left: Number.MAX_VALUE,
-            right: -Number.MAX_VALUE
+               top: -Number.MAX_VALUE,
+            bottom:  Number.MAX_VALUE,
+              left:  Number.MAX_VALUE,
+             right: -Number.MAX_VALUE
         });
     }
 

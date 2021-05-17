@@ -18,7 +18,7 @@ class UI {
      * Initializes every interactive element of the website.
      */
     static init() {
-        this.life = window.life = new Life($('#game-of-life'));
+        this.life = window.life = new Life($('#game-of-life'), $('#in-engine option:selected').val());
         this.$coords = $('#coords');
         this.$toolbar = $('#toolbar');
         this.saveModal = new bootstrap.Modal(document.getElementById('modal-save'));
@@ -39,6 +39,9 @@ class UI {
         this.$toolbar
             .on('mousemove', _ => this.$coords.hide());
 
+        this.hashStep = _ =>
+            $('#gr-game-step .range-slider__value').text(Math.pow(2, this.life.step));
+
         let coordsFollow = true;
         let coordsEnabled = true;
         let mouseLeft = false;
@@ -48,25 +51,31 @@ class UI {
                     .tooltip($('.tooltip-inner:contains("Play")').length ? 'show' : 'hide');
                 $('#btn-play > i').attr('class', 'fas fa-pause');
                 $('#in-board-size > input, #in-game-rule').prop('readonly', true);
-                $('#in-board-type').prop('disabled', true);
-                $('#in-engine').prop('disabled', true);
+                $('#in-game-rule-name, #in-board-type, #in-engine').prop('disabled', true);
             })
             .on('stop', _ => {
                 $('#btn-play').attr('data-bs-original-title', 'Play')
                     .tooltip($('.tooltip-inner:contains("Pause")').length ? 'show' : 'hide');
                 $('#btn-play > i').attr('class', 'fas fa-play');
                 $('#in-board-size > input, #in-game-rule').prop('readonly', false);
-                $('#in-board-type').prop('disabled', false);
-                $('#in-engine').prop('disabled', false);
+                $('#in-game-rule-name, #in-board-type, #in-engine').prop('disabled', false);
             })
-            .on('change.rule', _ =>
-                $('#in-game-rule').val(this.life.rule)
-            )
+            .on('change.rule', _ => {
+                $('#in-game-rule').val(this.life.rule);
+                $('#in-game-rule-name option:selected').removeAttr('selected');
+                let option = $(`#in-game-rule-name option[value="${this.life.rule}"]`);
+                if (option.length == 0)
+                    option = $('#in-game-rule-name option:contains("Custom")');
+                option.attr('selected', '');
+            })
             .on('change.speed', _ =>
                 $('#in-speed').val(this.life.speed)
             )
             .on('change.lock', _ =>
                 $('#btn-lock > i').attr('class', `fas fa-${this.life.locked ? '' : 'un'}lock`)
+            )
+            .on('change.inverse', _ =>
+                $('#sw-inverse').attr('checked', this.life.allowInverse)
             )
             .on('change.detect', _ =>
                 $('#sw-dead').attr('checked', this.life.detectStillLife)
@@ -77,9 +86,7 @@ class UI {
             .on('change.step', _ => 
                 $('#in-game-step').val(this.life.step)
             )
-            .on('change.engine', _ =>
-                $('#in-engine').val(this.life.engine)
-            )
+            .on('change.engine', _ => this.showEngine())
             .on('load.file', _ => {
                 $('#gr-file-info').removeClass('d-none');
                 this.showToast('Loaded ' + this.life.file, 'success');
@@ -87,10 +94,7 @@ class UI {
             .on('unload.file', _ =>
                 $('#gr-file-info').addClass('d-none')
             )
-            .on('life.new life.next life.wipe load.file', _ => {
-                $('#out-gens').text(this.life.generation);
-                $('#out-populus').text(this.life.population);
-            })
+            .on('life.new life.next life.wipe load.file', _ => this.showStats())
             .on('life.next', _ => {
                 if (!this.fps.timestamp) {
                     this.fps.timestamp = performance.now();
@@ -99,14 +103,19 @@ class UI {
                     let value = diff * 1000 / (performance.now() - this.fps.timestamp);
                     this.fps.lastGen = this.life.generation;
                     this.fps.speed = (!this.fps.speed) ? value : (this.fps.speed + value) / 2;
-                    this.fps.max = !this.fps.max ? this.fps.speed : this.fps.speed > this.fps.max ? this.fps.speed : this.fps.max;
-                    this.fps.min = !this.fps.min ? this.fps.speed : (this.fps.speed < this.fps.min || this.fps.min < 1) ? this.fps.speed : this.fps.min;
+                    this.fps.max = (!this.fps.max) ? this.fps.speed :
+                        (this.fps.speed > this.fps.max) ? this.fps.speed : this.fps.max;
+                    this.fps.min = (!this.fps.min) ? this.fps.speed :
+                        (this.fps.speed < this.fps.min || this.fps.min < 1) ? this.fps.speed : this.fps.min;
                     this.fps.timestamp = performance.now();
-                    $('#out-fps').text(`${Math.floor(this.fps.min)} | ${Math.floor(this.fps.speed)} | ${Math.floor(this.fps.max)}`);
+                    $('#out-fps').text(
+                        `${Math.floor(this.fps.min)} | ` +
+                        `${Math.floor(this.fps.speed)} | ` +
+                        `${Math.floor(this.fps.max)}`);
                 }
             })
-            .on('life.wipe', _ => {
-                this.speed = this.max = this.min = undefined;
+            .on('life.wipe change.step', _ => {
+                this.fps.speed = this.fps.max = this.fps.min = undefined;
                 $('#out-fps').text('0 | 0 | 0');
             })
             .on('mouseenter', ev => {
@@ -167,7 +176,7 @@ class UI {
 
             let translate = (point) => {
                 return !point ? undefined : {
-                    x: point.x * size + origin.x,
+                    x:  point.x * size + origin.x,
                     y: -point.y * size + origin.y
                 };
             }
@@ -197,7 +206,6 @@ class UI {
                 this.selectState = 'none';
                 this.selectStart = undefined;
                 this.selectEnd = undefined;
-                console.log('WIPE');
             }
 
             if (this.selectState == 'none' && ev.type == 'mouseup') {
@@ -205,40 +213,40 @@ class UI {
                 this.selectStart = { x: cellPos.x, y: cellPos.y };
 
                 $selectBox.css({
-                    left: currPoint.x,
-                    top: currPoint.y,
-                    width: size,
+                      left: currPoint.x,
+                       top: currPoint.y,
+                     width: size,
                     height: size
                 });
             } else if (this.selectState == 'anchor') {
                 // FIXME: Is there more elegant way to do this?
                 if (cellPos.x >= this.selectStart.x && cellPos.y <= this.selectStart.y) { // bottom right quadrant
                     $selectBox.css({
-                        left: startPoint.x,
-                        top: startPoint.y,
-                        width: currPoint.x - startPoint.x + size,
+                          left: startPoint.x,
+                           top: startPoint.y,
+                         width: currPoint.x - startPoint.x + size,
                         height: currPoint.y - startPoint.y + size
                     });
                 } else {
                     if (cellPos.x < this.selectStart.x && cellPos.y > this.selectStart.y) { // top left quadrant
                         $selectBox.css({
-                            left: currPoint.x,
-                            top: currPoint.y,
-                            width: startPoint.x - currPoint.x + size,
+                              left: currPoint.x,
+                               top: currPoint.y,
+                             width: startPoint.x - currPoint.x + size,
                             height: startPoint.y - currPoint.y + size
                         });
                     } else if (cellPos.x < this.selectStart.x) { // bottom left quadrant
                         $selectBox.css({
-                            left: currPoint.x,
-                            top: startPoint.y,
-                            width: startPoint.x - currPoint.x + size,
+                              left: currPoint.x,
+                               top: startPoint.y,
+                             width: startPoint.x - currPoint.x + size,
                             height: currPoint.y - startPoint.y + size
                         });
                     } else { // top right quadrant
                         $selectBox.css({
-                            left: startPoint.x,
-                            top: currPoint.y,
-                            width: currPoint.x - startPoint.x + size,
+                              left: startPoint.x,
+                               top: currPoint.y,
+                             width: currPoint.x - startPoint.x + size,
                             height: startPoint.y - currPoint.y + size
                         });
                     }
@@ -255,20 +263,20 @@ class UI {
                         [this.selectStart, this.selectEnd] = [this.selectEnd, this.selectStart];
                     } else if (cellPos.x < this.selectStart.x) {
                         this.selectStart.y -= height;
-                        this.selectEnd.y += height;
+                        this.selectEnd.y   += height;
                         [this.selectStart, this.selectEnd] = [this.selectEnd, this.selectStart];
                     } else if (cellPos.y > this.selectStart.y) {
                         this.selectStart.y += height;
-                        this.selectEnd.y -= height;
+                        this.selectEnd.y   -= height;
                     }
 
                     this.copy();
                 }
             } else if (this.selectState == 'selected' || this.selectState == 'pasting') {
                 $selectBox.css({
-                    left: startPoint.x,
-                    top: startPoint.y,
-                    width: endPoint.x - startPoint.x + size,
+                      left: startPoint.x,
+                       top: startPoint.y,
+                     width: endPoint.x - startPoint.x + size,
                     height: endPoint.y - startPoint.y + size
                 });
             }
@@ -307,8 +315,9 @@ class UI {
             try {
                 this.life.reload();
                 this.showToast('Reloaded ' + this.life.file, 'primary');
-            } catch (error) {
-                this.showToast(error, 'danger');
+            } catch (err) {
+                console.error(err);
+                this.showToast(err, 'danger');
             }
         });
         $('#btn-load').click(_ => {
@@ -316,7 +325,7 @@ class UI {
             CellFile.open(file => this.life.load(file, true));
         });
         $('#btn-save').click(_ => {
-            if (this.life.cells.size == 0)
+            if (this.life.population == 0)
                 return;
 
             if (this.life.file !== undefined) {
@@ -340,7 +349,7 @@ class UI {
             if (!fname)
                 return;
 
-            let file = CellFile.get(format, fname, this.life.cells);
+            let file = CellFile.get(format, fname, this.life.getCells());
             if (!file)
                 return;
 
@@ -364,11 +373,17 @@ class UI {
         $('#btn-random')
             .click(_ => this.load(this.gallery.random()))
             .on('mousedown', ev => {
-                if (ev.which == 3) {
+                if (ev.which == 3 && !this.life.isRunning) {
+                    let size = this.life.cellSize;
+                    let width = this.life.width / size;
+                    let height = this.life.height / size;
+                    let maxWidth = this.life.engine === 'hashlife' ? width : 100;
+                    let maxHeight = this.life.engine === 'hashlife' ? height : 100;
+                    let minRand = ev.shiftKey ? 1.0 : 0.1;
                     this.life.randomize(
-                        Math.ceil(Math.random() * 100),
-                        Math.ceil(Math.random() * 100),
-                        Math.random() + 0.1);
+                        Math.ceil(Math.random() * maxWidth),
+                        Math.ceil(Math.random() * maxHeight),
+                        Math.random() + minRand);
                 }
             });
         $('#btn-lock').click(_ => {
@@ -430,14 +445,15 @@ class UI {
                     $('#in-game-step').val(this.life.step);
                     $('#in-game-rule').val(this.life.rule);
                     $('#in-board-type').val(this.life.type).trigger('change');
+                    this.showEngine();
                 } else if (ev.target.id == 'btn-info') {
                     let file = this.life.file;
                     $('#dropdown-info .dropdown-divider').each((_, elem) => $(elem).show());
 
                     if (file.title.length > 0)
                         $('#info-title').text(file.title);
-                    else if (this.gallery.file)
-                        $('#info-title').text(this.gallery.file.name.match(/(.*)\./)[1]);
+                    else if (file.name.length > 0)
+                        $('#info-title').text(file.name.match(/(.*)\./)[1]);
                     else
                         $('#gr-info-title').hide();
 
@@ -459,9 +475,18 @@ class UI {
                     $('#dropdown-info .dropdown-divider:visible:last').hide();
             });
         $('#in-game-rule').on('input', ev => {
-            let match = ev.target.value.match(/(B?[0-8]*\/S?[0-8]*)|(S[0-8]*\/B[0-8]*)/g);
-            this.life.rule = !match ? 'B/S' : match[0];
+            let rule = this.life.rule;
+            let $elem = $(ev.target);
+            let pos = $elem.getCaretPosition();
+            let match = ev.target.value.match(/^([BS][0-8\/]*){1,2}$/gi);
+
+            if (match)
+                this.life.rule = match[0];
             ev.target.value = this.life.rule;
+            $elem.setCaretPosition(pos - (this.life.rule === rule ? 1 : 0));
+        });
+        $('#in-game-rule-name').on('input', ev => {
+            this.life.rule = ev.target.value;
         });
         $('#in-board-type').change(ev => {
             let value = ev.target.value;
@@ -474,7 +499,7 @@ class UI {
             ev.target.value = parseInt(ev.target.value) || 0;
 
             this.life.limit = {
-                width: $('#in-board-width').val(),
+                 width: $('#in-board-width').val(),
                 height: $('#in-board-height').val()
             };
             this.life.draw();
@@ -489,28 +514,32 @@ class UI {
 
             if (value == 'corner') {
                 this.$coords.css({
-                    top: 'auto',
-                    right: 'auto',
+                       top: 'auto',
+                     right: 'auto',
                     bottom: '0.3vh',
-                    left: '0.3vh'
+                      left: '0.3vh'
                 });
             } else {
                 this.$coords.attr('style', '');
             }
         });
+        $('#sw-inverse').change(ev =>
+            this.life.allowInverse = ev.target.checked
+        );
         $('#sw-dead').change(ev =>
             this.life.detectStillLife = ev.target.checked
         );
         $('#sw-colors').change(ev => {
-            this.life.colorCells = ev.target.checked;
+            this.life.showAge = ev.target.checked;
             this.life.draw();
         });
         $('#sw-fps').change(ev =>
             $('#out-fps').parent().css('display', ev.target.checked ? 'flex' : 'none')
         )
-        $('#in-engine').change(ev =>
-            this.life.engine = ev.target.value
-        );
+        $('#in-engine').change(ev => {
+            this.life.engine = ev.target.value;
+            this.showEngine();
+        });
 
         $(document).on('gallery.load', _ => this.demo());
         $(document).on('keydown', ev => {
@@ -538,6 +567,61 @@ class UI {
                 }
             }
         });
+
+        // Sort alphabetically the list of rule names
+        let $rules = $('#in-game-rule-name');
+        $rules.html([...$rules.find('option')]
+            .sort((a, b) => a.text.localeCompare(b.text))
+            .map(x => x.outerHTML).join('\n'));
+    }
+
+    /**
+     * Changes how UI works depending on the selected engine.
+     */
+    static showEngine() {
+        $('#in-engine').val(this.life.engine);
+
+        if (this.life.engine === 'hashlife') {
+            $('#in-board-type, #sw-colors').attr('disabled', '');
+            $('#sw-colors').removeAttr('checked');
+            this.life.$canvas.on('change.step', this.hashStep);
+            $('#in-game-step')
+                .attr('value', '0').attr('min', '0').attr('max', '16')
+                .val(this.life.step);
+            this.hashStep();
+        } else {
+            $('#in-board-type, #sw-colors').removeAttr('disabled');
+            $('#sw-colors').attr('checked', '');
+            this.life.$canvas.off('change.step', this.hashStep);
+            $('#in-game-step')
+                .attr('value', '1').attr('min', '1').attr('max', '30')
+                .val(this.life.step);
+            $('#gr-game-step .range-slider__value').text(this.life.step);
+        }
+    }
+
+    /**
+     * Converts given number into scientific notation.
+     * @param {number} x - The integer to convert
+     * @param {number} f - The number of digits after the decimal point
+     * @returns {number} - The number in scientific notation.
+     * @private
+     */
+    static _expo(x, f) {
+        return Number.parseFloat(x).toExponential(f);
+    }
+
+    /**
+     * Shows information about population and number of generations
+     *  calculated by the automaton.
+     */
+    static showStats() {
+        [['#out-gens', this.life.generation],
+         ['#out-populus', this.life.population]
+        ].forEach(elem =>
+            $(elem[0]).text(Math.log10(elem[1]) > 9
+                ? this._expo(elem[1], 5): elem[1])
+        );
     }
 
     /**
@@ -691,9 +775,9 @@ class UI {
      * Initializes event listeners for [touchHandler]{@link UI#touchHandler}.
      */
     static touchInit() {
-        document.addEventListener('touchstart', this.touchHandler);
-        document.addEventListener('touchmove', this.touchHandler);
-        document.addEventListener('touchend', this.touchHandler);
+        document.addEventListener( 'touchstart', this.touchHandler);
+        document.addEventListener(  'touchmove', this.touchHandler);
+        document.addEventListener(   'touchend', this.touchHandler);
         document.addEventListener('touchcancel', this.touchHandler);
 
         this.$coords.remove();
@@ -717,7 +801,7 @@ class UI {
             default:           return;
         }
 
-        let simulatedEvent = document.createEvent("MouseEvent");
+        let simulatedEvent = document.createEvent('MouseEvent');
         simulatedEvent.initMouseEvent(type, true, true, window, 1,
             first.screenX, first.screenY,
             first.clientX, first.clientY, false,
@@ -737,11 +821,32 @@ class UI {
     /**
      * Loads given file from gallery into the automaton.
      * @param {(object|string)} file - A file entry or string of the file to load
+     * @param {boolean=} center - If true then pattern will be centered on the screen
      */
-    static load(file) {
+    static load(file, center = true) {
         this.gallery.load(file)
             .then(data => this.life.load(data, true))
-            .catch(error => this.showToast(error, 'danger'));
+            .catch(err => {
+                console.error(err);
+                this.showToast(err, 'danger');
+            });
+
+        const fx = _ => {
+            let bb = this.life.getBoundingBox();
+            let size = this.life.cellSize;
+            let width = this.life.width / size;
+            let height = this.life.height / size;
+            if (bb.width > width || bb.height > height) {
+                let factor = ((bb.width / this.life.width) > (bb.height / this.life.height)) ? 'width' : 'height';
+                this.life.scale = this.life[factor] / ((bb[factor] * 1.5) * this.life.defaults.size);
+                this.life.center(bb.left + bb.width / 2, bb.top - bb.height / 2, false);
+            }
+
+            this.life.$canvas.off('load.file', fx);
+        };
+
+        if (center)
+            this.life.$canvas.on('load.file', fx);
     }
 
     /**
@@ -754,20 +859,20 @@ class UI {
             case 'light':
                 $('#toolbar .dropdown-menu').removeClass('dropdown-menu-dark');
                 this.life.setColor('background', this.life.defaults.colors.background);
-                this.life.setColor('border', this.life.defaults.colors.border);
-                this.life.setColor('outside', this.life.defaults.colors.outside);
-                this.life.setColor('medium', this.life.defaults.colors.medium);
-                this.life.setColor('cold', this.life.defaults.colors.cold);
-                this.life.setColor('basic', this.life.defaults.colors.basic);
+                this.life.setColor(    'border', this.life.defaults.colors.border);
+                this.life.setColor(   'outside', this.life.defaults.colors.outside);
+                this.life.setColor(    'medium', this.life.defaults.colors.rgb.medium);
+                this.life.setColor(      'cold', this.life.defaults.colors.rgb.cold);
+                this.life.setColor(     'basic', this.life.defaults.colors.basic);
                 break;
             case 'dark':
                 $('#toolbar .dropdown-menu').addClass('dropdown-menu-dark');
                 this.life.setColor('background', '#222');
-                this.life.setColor('border', '#444');
-                this.life.setColor('outside', '#555');
-                this.life.setColor('medium', '#1e90ff');
-                this.life.setColor('cold', '#00f');
-                this.life.setColor('basic', '#fefefe');
+                this.life.setColor(    'border', '#444');
+                this.life.setColor(   'outside', '#555');
+                this.life.setColor(    'medium', '#1e90ff');
+                this.life.setColor(      'cold', '#00f');
+                this.life.setColor(     'basic', '#fefefe');
                 break;
         }
 
@@ -785,16 +890,14 @@ class UI {
             return;
 
         let maxHeight = this.life.height - this.$coords.outerHeight();
-        let maxWidth = this.life.width - this.$coords.outerWidth();
+        let maxWidth  = this.life.width  - this.$coords.outerWidth();
 
         if (ev.target == this.life.canvas && !this.$coords.is(':visible'))
             this.$coords.show();
 
         if (follow) {
-            this.$coords.css({
-                top:  ev.pageY > maxHeight - 35 ? maxHeight - 10 : ev.pageY + 20,
-                left: ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10
-            });
+            this.$coords[0].style.top  = `${ev.pageY > maxHeight - 35 ? maxHeight - 10 : ev.pageY + 20}px`;
+            this.$coords[0].style.left = `${ev.pageX > maxWidth  - 25 ? maxWidth  - 10 : ev.pageX + 10}px`;
         }
 
         $('#coord-x').text(point.x);
@@ -815,6 +918,11 @@ class UI {
         $elem.trigger('input');
     }
 
+    /**
+     * The handle for toast notification timeout.<br>
+     * Used to cancel timeout if new toast was displayed.
+     * @private
+     */
     static toastTimeout = undefined;
     /**
      * Shows toast with given content and color.
@@ -823,8 +931,7 @@ class UI {
      */
     static showToast(html, color = 'secondary') {
         const light = [
-            'primary', 'secondary', 'success',
-            'danger', 'dark'
+            'primary', 'secondary', 'success', 'danger', 'dark'
         ];
         const dark = [
             'info', 'warning', 'light'

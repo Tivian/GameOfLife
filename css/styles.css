@@ -79,13 +79,19 @@ body {
 #select-box {
     position: absolute;
     pointer-events: none;
-    border: solid 1px rgba(0, 0, 0, 0.7);
+    border-radius: 1px;
+    border: dashed 1px rgba(50, 50, 50, 0.7);
     background: rgba(50, 255, 50, 0.2);
     z-index: 90;
 }
 
 #info-toast {
     z-index: 120;
+}
+
+#out-gens, #out-populus {
+    width: 8em;
+    text-align: right;
 }
 
 /* Fix for Bootstrap v5.0 */

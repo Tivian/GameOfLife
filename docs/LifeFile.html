@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> LifeWorker</title>
+  <title> LifeFile</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -74,7 +74,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Class</p>
-                    <h1>LifeWorker</h1>
+                    <h1>LifeFile</h1>
                 </header>
                 
 
@@ -85,9 +85,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>LifeWorker<span class="signature">(nth, cores)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>LifeFile<span class="signature">(name, cells<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Web Worker simplified version of <a href="Life.html">Life</a> class.</div>
+            <div class="class-description">Container for pattern files in Life1.0x format.</div>
         
     
 </header>
@@ -106,12 +106,12 @@
 
 
     
-    <h4 class="name" id="LifeWorker">
-        <a class="href-link" href="#LifeWorker">#</a>
+    <h4 class="name" id="LifeFile">
+        <a class="href-link" href="#LifeFile">#</a>
         
         <span class="code-name">
             
-                new LifeWorker<span class="signature">(nth, cores)</span><span class="type-signature"></span>
+                new LifeFile<span class="signature">(name, cells<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -120,7 +120,7 @@
     
     
     <div class="description">
-        Creates new Life class for Web Worker.
+        Creates container for Life1.0x pattern file.
     </div>
     
 
@@ -145,6 +145,8 @@
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -158,23 +160,31 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>nth</code></td>
+      <td class="name"><code>name</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
   
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
-  <td class="description last">A number of this thread</td>
+  <td class="description last">The name of the file</td>
 </tr>
 
 
@@ -183,23 +193,33 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>cores</code></td>
+      <td class="name"><code>cells</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">number</span>
+<span class="param-type">*</span>
 
 
   
   </td>
 
   
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
 
   
 
-  <td class="description last">A number of all threads</td>
+  <td class="description last">The collection of alive cells</td>
 </tr>
 
 
@@ -240,14 +260,21 @@
     
 
     
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="http://www.mirekw.com/ca/ca_files_formats.html#Life%25201.05">File format syntax</a></li>
+        </ul>
+    </dd>
+    
 
     
 
     
         <p class="tag-source">
-            <a href="life.worker.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="life.worker.js.html">life.worker.js</a>, <a href="life.worker.js.html#line2">line 2</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line337">line 337</a>
             </span>
         </p>
     
@@ -294,6 +321,82 @@
     
 
     
+        <div class='vertical-section'>
+            <h1>Members</h1>
+            <div class="members">
+            
+                <div class="member">
+
+<h4 class="name" id="description">
+    <a class="href-link" href="#description">#</a>
+    
+    <span class="code-name">
+        description
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    The description of the type of the pattern file.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="file.js.html" class="button">View Source</a>
+            <span>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line339">line 339</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+            </div>
+        </div>
+    
 
     
         <div class='vertical-section'>
@@ -304,12 +407,12 @@
 
 
     
-    <h4 class="name" id="next">
-        <a class="href-link" href="#next">#</a>
+    <h4 class="name" id="save">
+        <a class="href-link" href="#save">#</a>
         
         <span class="code-name">
             
-                next<span class="signature">(cells)</span><span class="type-signature"> &rarr; {boolean}</span>
+                save<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -317,10 +420,6 @@
 
     
     
-    <div class="description">
-        Calculates next generation of autmaton.
-    </div>
-    
 
 
 
@@ -329,57 +428,6 @@
 
 
 
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>cells</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">Map</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">A Map of alive cells</td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
 
 
 
@@ -415,185 +463,19 @@
     
 
     
-
-    
-        <p class="tag-source">
-            <a href="life.worker.js.html" class="button">View Source</a>
-            <span>
-                <a href="life.worker.js.html">life.worker.js</a>, <a href="life.worker.js.html#line18">line 18</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'>True if any cell changed state.</div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<span class="param-type">boolean</span>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="setup">
-        <a class="href-link" href="#setup">#</a>
-        
-        <span class="code-name">
-            
-                setup<span class="signature">(settings)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        Sets the automaton settings.
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>settings</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">object</span>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last">The automaton settings</td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>For now saving patterns in Life1.0x format isn't implemented.</li>
+        </ul>
+    </dd>
     
 
     
         <p class="tag-source">
-            <a href="life.worker.js.html" class="button">View Source</a>
+            <a href="file.js.html" class="button">View Source</a>
             <span>
-                <a href="life.worker.js.html">life.worker.js</a>, <a href="life.worker.js.html#line86">line 86</a>
+                <a href="file.js.html">file.js</a>, <a href="file.js.html#line355">line 355</a>
             </span>
         </p>
     

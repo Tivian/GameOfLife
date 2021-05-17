@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> life.worker.js</title>
+  <title> jquery.utility.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -76,7 +76,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>life.worker.js</h1>
+                    <h1>jquery.utility.js</h1>
                 </header>
                 
 
@@ -85,112 +85,88 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/** Web Worker simplified version of [Life]{@link Life} class. */
-class LifeWorker {
-    /**
-     * Creates new Life class for Web Worker.
-     * @param {number} nth - A number of this thread
-     * @param {number} cores - A number of all threads
-     */
-    constructor(nth, cores) {
-        [this.nth, this.cores] = [nth, cores];
-        this.newGen = new Map();
-    }
+            <pre class="prettyprint source linenums"><code>(function($) {
+/**
+ * Initializes custom range sliders.&lt;br>
+ * See index.html to see an example of appropriate HTML code.
+ * @see {@link https://css-tricks.com/value-bubbles-for-range-inputs/|Source}
+ */
+$.rangeSlider = function() {
+    let slider = $('.range-slider');
+    let range = $('.range-slider__range');
+    let value = $('.range-slider__value');
+    
+    slider.each(function() {
+        value.each(function() {
+            let value = $(this).prev().attr('value');
+            $(this).html(value);
+        });
+        
+        range.on('input', function() {
+            $(this).next(value).html(this.value);
+        });
+    });
+};
 
-    /**
-     * Calculates next generation of autmaton.
-     * @param {Map} cells - A Map of alive cells
-     * @returns {boolean} True if any cell changed state.
-     */
-    next(cells) {
-        let changed = false;
-        this.newGen.clear();
-
-        let index = 0;
-        let min = Math.floor((this.nth / this.cores) * cells.size);
-        let max = Math.floor(((this.nth + 1) / this.cores) * cells.size);
-
-        for (let cell of cells.values()) {
-            index++;
-            if (index &lt; min)
-                continue;
-            else if (index > max)
-                break;
-
-            cell.age++;
-
-            let counter = 0;
-            for (let dx = -1; dx &lt;= 1; dx++) {
-                for (let dy = -1; dy &lt;= 1; dy++) {
-                    if (dx == 0 &amp;&amp; dy == 0)
-                        continue;
-
-                    let neighborHash = Life._getHash(cell.x + dx, cell.y + dy, this.settings);
-                    if (neighborHash === undefined)
-                        continue;
-
-                    if (cells.has(neighborHash)) {
-                        counter++;
-                    } else {
-                        let otherCounter = 0;
-                        for (let cx = -1; cx &lt;= 1; cx++) {
-                            for (let cy = -1; cy &lt;= 1; cy++) {
-                                if (cx == 0 &amp;&amp; cy == 0)
-                                    continue;
-
-                                let otherHash = Life._getHash(cell.x + dx + cx,
-                                    cell.y + dy + cy, this.settings);
-                                if (otherHash === undefined)
-                                    continue;
-
-                                if (cells.has(otherHash))
-                                    otherCounter++;
-                            }
-                        }
-
-                        if (Life._birth(otherCounter, this.settings)) {
-                            let neighbor = Life._newCell(cell.x + dx, cell.y + dy, this.settings);
-                            this.newGen.set(neighbor.hash, neighbor); // create
-                            changed = true;
-                        }
-                    }
-                }
-            }
-
-            if (!Life._death(counter, this.settings))
-                this.newGen.set(cell.hash, cell); // survive
-            else
-                changed = true;
-        }
-
-        return [ this.newGen, changed ];
-    }
-
-    /**
-     * Sets the automaton settings.
-     * @param {object} settings - The automaton settings
-     */
-    setup(settings) {
-        this.settings = settings;
-    }
+/**
+ * Makes deep copy of an object.
+ * @param {*} obj - An object
+ * @returns A new copied object.
+ */
+$.deepCopy = function(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }
 
-let life = new LifeWorker();
-importScripts('life.js', 'point.js');
+/**
+ * Checks if the current device has touche capabilities.
+ * @returns True if the current device has touche capabilities.
+ */
+$.isTouchDevice = function() {
+    return !!('ontouchstart' in window || window.DocumentTouch &amp;&amp; document instanceof DocumentTouch);
+}
 
-onmessage = function(ev) {
-    switch (ev.data.action) {
-        case 'new':
-            life = new LifeWorker(ev.data.nth, ev.data.cores);
-            break;
-        case 'setup':
-            life.setup(ev.data.settings);
-            break;
-        case 'next':
-            postMessage({ action: 'done', result: life.next(ev.data.cells) });
-            break;
+jQuery.fn.extend({
+    /**
+     * Changes position of the cursor inside a textbox.
+     * @param {number} caretPos - The desired postion of the cursor
+     * @memberof jQuery
+     */
+    setCaretPosition: function(caretPos) {
+        if (this.createTextRange) {
+            let range = this.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        } else {
+            if (this.selectionStart) {
+                this.focus();
+                this.setSelectionRange(caretPos, caretPos);
+            } else {
+                this.focus();
+            }
+        }
+    },
+    /**
+     * Returns position of the cursor inside a textbox.
+     * @returns {number} - The position of the cursor inside the textbox
+     * @memberof jQuery
+     */
+    getCaretPosition: function() {
+        let caretPos = 0;
+
+        if (document.selection) {
+            this.focus();
+            let selection = document.selection.createRange();
+            selection.moveStart('character', -this.value.length);
+            caretPos = selection.text.length;
+        } else if (this.selectionStart || this.selectionStart === '0') {
+            caretPos = this.selectionDirection === 'backward'
+                ? this.selectionStart : this.selectionEnd;
+        }
+
+        return caretPos;
     }
-};</code></pre>
+});
+}(jQuery));</code></pre>
         </article>
     </section>
 

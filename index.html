@@ -23,6 +23,8 @@
     <script src='js/gallery.js' type='application/javascript'></script>
     <script src='js/jquery.utility.js' type='application/javascript'></script>
     <script src='js/libs/zip-fs.min.js' type='application/javascript'></script>
+    <script src='js/libs/hashlife.js' type='application/javascript'></script>
+    <script src='js/libs/hashlife.adapter.js' type='application/javascript'></script>
 
     <script>
         $(() => UI.init());
@@ -30,8 +32,8 @@
 </head>
 <body>
     <div id='coords' class='rounded-pill collapse px-2'>
-        <div id='coord-x'>0</div>, 
-        <div id='coord-y'>0</div>
+        <div id='coord-x'></div>,
+        <div id='coord-y'></div>
     </div>
     <canvas id='game-of-life'></canvas>
     <div id='toolbar' class='btn-toolbar d-flex flex-wrap-reverse justify-content-end' role='toolbar'>
@@ -115,9 +117,75 @@
                 <div>
                     <hr class='dropdown-divider'>
                 </div>
-                <div class='mt-1 mb-3 form-floating'>
-                    <input id='in-game-rule' type='text' class='form-control' aria-label='Rulestring'>
-                    <label for='in-game-rule'>Rule</label>
+                <div class='row g-2 mt-1 mb-3'>
+                    <div class='col'>
+                        <div class='form-floating'>
+                            <input id='in-game-rule' type='text' class='form-control' aria-label='Rulestring'>
+                            <label for='in-game-rule'>Rule</label>
+                        </div>
+                    </div>
+                    <div class='col'>
+                        <div class='form-floating'>
+                            <select id='in-game-rule-name' class='form-select' aria-label='Rule name'>
+                                <option value='B0123478/S01234678'>AntiLife</option>
+                                <option value='B0123478/S34678'>InverseLife</option>
+                                <option value='B1/S012345678'>H-trees</option>
+                                <option value='B1/S1'>Gnarl</option>
+                                <option value='B1357/S02468'>Fredkin</option>
+                                <option value='B1357/S1357'>Replicator</option>
+                                <option value='B2/S'>Seeds</option>
+                                <option value='B2/S0'>Live Free or Die</option>
+                                <option value='B234/S'>Serviettes</option>
+                                <option value='B25678/S5678'>Iceballs</option>
+                                <option value='B3/S012345678'>Life without death</option>
+                                <option value='B3/S023'>DotLife</option>
+                                <option value='B3/S12'>Flock</option>
+                                <option value='B3/S1234'>Mazectric</option>
+                                <option value='B3/S12345'>Maze</option>
+                                <option value='B3/S1237'>SnowLife</option>
+                                <option value='B3/S124'>Corrosion of Conformity</option>
+                                <option value='B3/S13'>LowLife</option>
+                                <option value='B3/S2'>StillLife</option>
+                                <option value='B3/S23' selected>Conway's Life</option>
+                                <option value='B3/S238'>EightLife</option>
+                                <option value='B3/S45678'>Coral</option>
+                                <option value='B34/S34'>3-4 Life</option>
+                                <option value='B34/S456'>Bacteria</option>
+                                <option value='B345/S2'>Blinkers</option>
+                                <option value='B345/S4567'>Assimilation</option>
+                                <option value='B345/S5'>Long Life</option>
+                                <option value='B3457/S4568'>Gems</option>
+                                <option value='B34578/S456'>Gems Minor</option>
+                                <option value='B35/S234578'>Land Rush</option>
+                                <option value='B3567/S15678'>Bugs</option>
+                                <option value='B35678/S4678'>Holstein</option>
+                                <option value='B35678/S5678'>Diamoeba</option>
+                                <option value='B357/S1358'>Amoeba</option>
+                                <option value='B357/S238'>Pseudo Life</option>
+                                <option value='B36/S125'>2×2</option>
+                                <option value='B36/S235'>Blinker Life</option>
+                                <option value='B36/S23'>HighLife</option>
+                                <option value='B367/S125678'>Slow Blob</option>
+                                <option value='B3678/S235678'>Stains</option>
+                                <option value='B3678/S34678'>Day & Night</option>
+                                <option value='B368/S238'>LowDeath</option>
+                                <option value='B368/S245'>Move</option>
+                                <option value='B37/S1234'>Mazectric with Mice</option>
+                                <option value='B37/S12345'>Maze with Mice</option>
+                                <option value='B37/S23'>DryLife</option>
+                                <option value='B378/S012345678'>Plow World</option>
+                                <option value='B378/S235678'>Coagulations</option>
+                                <option value='B38/S23'>Pedestrian Life</option>
+                                <option value='B38/S238'>HoneyLife</option>
+                                <option value='B45/S12345'>Electrified Maze</option>
+                                <option value='B45678/S2345'>Walled cities</option>
+                                <option value='B4678/S35678'>Vote 4/5</option>
+                                <option value='B5678/S45678'>Vote</option>
+                                <option class='d-none' disabled>Custom</option>
+                            </select>
+                            <label for='in-game-rule-name'>Name</label>
+                        </div>
+                    </div>
                 </div>
                 <div class='mb-3 form-floating'>
                     <select id='in-board-type' class='form-select' aria-label='Choose board type'>
@@ -138,8 +206,8 @@
                 <div id='gr-game-step' class='mb-3'>
                     <label for='in-game-step' class='form-label'>Generation step</label>
                     <div class='range-slider'>
-                        <input id='in-game-step' class='range-slider__range' type='range' value='1' min='1' max='30' step='1'>
-                        <span class='range-slider__value'>0</span>
+                        <input id='in-game-step' class='range-slider__range' type='range' value='0' min='0' max='16' step='1'>
+                        <span class='range-slider__value'></span>
                     </div>
                 </div>
                 <div class='mb-3 form-floating'>
@@ -152,6 +220,10 @@
                 </div>
                 <div>
                     <hr class='dropdown-divider'>
+                </div>
+                <div class='mb-1 form-check form-switch'>
+                    <input id='sw-inverse' type='checkbox' class='form-check-input'>
+                    <label for='sw-inverse' class='form-check-label text-end'>Allow inverse rules</label>
                 </div>
                 <div class='mb-1 form-check form-switch'>
                     <input id='sw-dead' type='checkbox' class='form-check-input' checked>
@@ -170,9 +242,9 @@
                 </div>
                 <div class='mb-1 mt-1 form-floating'>
                     <select id='in-engine' class='form-select' aria-label='Choose engine'>
-                        <option value='worker' selected>Web Worker</option>
+                        <option value='hashlife' selected>HashLife</option>
+                        <option value='worker'>Web Worker</option>
                         <option value='naive'>Naive</option>
-                        <option value='hashlife' disabled>HashLife</option>
                     </select>
                     <label for='in-engine'>Engine</label>
                 </div>

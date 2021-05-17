@@ -76,8 +76,8 @@ class Gallery {
             });
         });
 
-        this.previewLife = new Life(this.canvas, {fullscreen: false, events: false});
-        this.previewLife.colorCells = false;
+        this.previewLife = new Life(this.canvas, {fullscreen: false, events: false}, 'naive');
+        this.previewLife.showAge = false;
         this.previewLife.setColor('background', 'white');
     }
 

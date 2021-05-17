@@ -7,4 +7,5 @@ The application aside from basic automata operations (editing, running, setting 
 Live version available at [Github Pages](https://tivian.github.io/GameOfLife/).
 
 ## Credits
-Patterns available in the gallery are from [LifeWiki](https://www.conwaylife.com/wiki/), [Mirek Wojtowicz](http://www.mirekw.com/ca/index.html), [Alan Hensel](http://www.ibiblio.org/lifepatterns/) and [Golly](http://golly.sourceforge.net/).
+Patterns available in the gallery are from [LifeWiki](https://www.conwaylife.com/wiki/), [Mirek Wojtowicz](http://www.mirekw.com/ca/index.html), [Alan Hensel](http://www.ibiblio.org/lifepatterns/) and [Golly](http://golly.sourceforge.net/).  
+Hashlife implementation provided by [copy](https://github.com/copy) available at [life](https://github.com/copy/life).

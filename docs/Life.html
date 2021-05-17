@@ -66,7 +66,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Gallery.html">Gallery</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="Point.html">Point</a></li><li><a href="UI.html">UI</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CellFile.html">CellFile</a></li><li><a href="Gallery.html">Gallery</a></li><li><a href="HashLifeAdapter.html">HashLifeAdapter</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeFile.html">LifeFile</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="MCellFile.html">MCellFile</a></li><li><a href="Point.html">Point</a></li><li><a href="RLEFile.html">RLEFile</a></li><li><a href="UI.html">UI</a></li></ul></div>
                 
             </nav>
         </div>
@@ -85,7 +85,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>, engine)</span><span class="type-signature"></span></h2>
         
             <div class="class-description">Board for Game of Life.</div>
         
@@ -111,7 +111,7 @@
         
         <span class="code-name">
             
-                new Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                new Life<span class="signature">(canvas, options<span class="signature-attributes">opt</span>, engine)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -120,7 +120,7 @@
     
     
     <div class="description">
-        Create new board.
+        Creates new board for Game of Life.
     </div>
     
 
@@ -227,6 +227,39 @@
 
 
         
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>engine</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">string</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last">The engine name which should be used for creating new generations.</td>
+</tr>
+
+
+        
         </tbody>
     </table>
 </div>
@@ -323,11 +356,19 @@
             
                 <div class="member">
 
-<h4 class="name" id="_gradientRGB">
-    <a class="href-link" href="#_gradientRGB">#</a>
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="allowInverse">
+    <a class="href-link" href="#allowInverse">#</a>
     
     <span class="code-name">
-        _gradientRGB
+        allowInverse
     </span>
     
 </h4>
@@ -336,7 +377,7 @@
 
 
 <div class="description">
-    Variable to prevent array creation at every  call to _colorGradient.
+    Allows or disallows rules where birth occurs in cells with 0 neighbors.
 </div>
 
 
@@ -378,7 +419,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line718">line 718</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line419">line 419</a>
             </span>
         </p>
     
@@ -455,84 +496,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line225">line 225</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-    <span class="method-parameter is-pulled-right">
-        <label>Type:</label>
-        
-<span class="param-type">boolean</span>
-
-
-    </span>
-
-<h4 class="name" id="colorCells">
-    <a class="href-link" href="#colorCells">#</a>
-    
-    <span class="code-name">
-        colorCells
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    Denotes if <a href="Life.html#draw">draw</a> function should color cells showing their age.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="life.js.html" class="button">View Source</a>
-            <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line380">line 380</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line240">line 240</a>
             </span>
         </p>
     
@@ -609,7 +573,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line354">line 354</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line380">line 380</a>
             </span>
         </p>
     
@@ -686,7 +650,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line159">line 159</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line171">line 171</a>
             </span>
         </p>
     
@@ -703,7 +667,7 @@
     <span class="method-parameter is-pulled-right">
         <label>Type:</label>
         
-<span class="param-type">CellFile</span>
+<span class="param-type"><a href="CellFile.html">CellFile</a></span>
 
 
     </span>
@@ -763,7 +727,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line448">line 448</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line487">line 487</a>
             </span>
         </p>
     
@@ -775,9 +739,7 @@
         <div class="column is-2"><label>Fires:</label></div>
         <div class="column is-10">
             <ul>
-                <li>Life#load.event:file - If given file isn't undefined.</li>
-            
-                <li>Life#unload.event:file - If given file is undefined.</li>
+                <li>Life#unload.event:file - If the value was undefined.</li>
             </ul>
         </div>
     </div>
@@ -851,7 +813,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line193">line 193</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line208">line 208</a>
             </span>
         </p>
     
@@ -928,7 +890,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line209">line 209</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line224">line 224</a>
             </span>
         </p>
     
@@ -1005,7 +967,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line177">line 177</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line192">line 192</a>
             </span>
         </p>
     
@@ -1082,7 +1044,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line413">line 413</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line453">line 453</a>
             </span>
         </p>
     
@@ -1159,7 +1121,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line340">line 340</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line366">line 366</a>
             </span>
         </p>
     
@@ -1236,7 +1198,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line233">line 233</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line248">line 248</a>
             </span>
         </p>
     
@@ -1313,7 +1275,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line185">line 185</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line200">line 200</a>
             </span>
         </p>
     
@@ -1390,7 +1352,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line267">line 267</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line282">line 282</a>
             </span>
         </p>
     
@@ -1467,7 +1429,84 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line247">line 247</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line262">line 262</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+    <span class="method-parameter is-pulled-right">
+        <label>Type:</label>
+        
+<span class="param-type">boolean</span>
+
+
+    </span>
+
+<h4 class="name" id="showAge">
+    <a class="href-link" href="#showAge">#</a>
+    
+    <span class="code-name">
+        showAge
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    Denotes if <a href="Life.html#draw">draw</a> function should color cells showing their age.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line406">line 406</a>
             </span>
         </p>
     
@@ -1544,7 +1583,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line367">line 367</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line393">line 393</a>
             </span>
         </p>
     
@@ -1613,7 +1652,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1274">line 1274</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1361">line 1361</a>
             </span>
         </p>
     
@@ -1690,7 +1729,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line310">line 310</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line333">line 333</a>
             </span>
         </p>
     
@@ -1767,7 +1806,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line325">line 325</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line349">line 349</a>
             </span>
         </p>
     
@@ -1844,7 +1883,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line217">line 217</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line232">line 232</a>
             </span>
         </p>
     
@@ -1921,7 +1960,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line394">line 394</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line434">line 434</a>
             </span>
         </p>
     
@@ -1998,7 +2037,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line201">line 201</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line216">line 216</a>
             </span>
         </p>
     
@@ -2143,7 +2182,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1235">line 1235</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1322">line 1322</a>
             </span>
         </p>
     
@@ -2457,7 +2496,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1144">line 1144</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1218">line 1218</a>
             </span>
         </p>
     
@@ -2563,7 +2602,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line981">line 981</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1047">line 1047</a>
             </span>
         </p>
     
@@ -2745,7 +2784,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line830">line 830</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line896">line 896</a>
             </span>
         </p>
     
@@ -2851,7 +2890,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line782">line 782</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line848">line 848</a>
             </span>
         </p>
     
@@ -2888,7 +2927,7 @@
         
         <span class="code-name">
             
-                getBoundingBox<span class="signature">()</span><span class="type-signature"></span>
+                getBoundingBox<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span>
             
         </span>
     </h4>
@@ -2948,7 +2987,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1130">line 1130</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1204">line 1204</a>
             </span>
         </p>
     
@@ -2979,8 +3018,16 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>The bounding box of current game board</div>
+    <div class='param-desc column is-7'>The bounding box of current game board. Contains information about width, height, top left and bottom right corners of the current pattern.</div>
     
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">object</span>
+
+
+    </div>
     
 </div>
 
@@ -3011,7 +3058,7 @@
     
     
     <div class="description">
-        Returns cells as array.
+        Returns array of alive cells.
     </div>
     
 
@@ -3062,7 +3109,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1201">line 1201</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1275">line 1275</a>
             </span>
         </p>
     
@@ -3093,7 +3140,7 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>The alive cells as array</div>
+    <div class='param-desc column is-7'>The array of alive cells</div>
     
     
     <div class='column is-5 has-text-left'>
@@ -3235,7 +3282,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1189">line 1189</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1263">line 1263</a>
             </span>
         </p>
     
@@ -3306,7 +3353,7 @@
     
     
     <div class="description">
-        Loads cells from file or collection.
+        Loads cells from file or collection of cells.
     </div>
     
 
@@ -3376,7 +3423,7 @@
       </td>
   
 
-  <td class="description last">The CellFile or Map/Set/Array of cells</td>
+  <td class="description last">The <a href="CellFile.html">CellFile</a> or Map/Set/Array of cells</td>
 </tr>
 
 
@@ -3506,7 +3553,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1019">line 1019</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1087">line 1087</a>
             </span>
         </p>
     
@@ -3693,7 +3740,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1171">line 1171</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1245">line 1245</a>
             </span>
         </p>
     
@@ -3815,7 +3862,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line875">line 875</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line941">line 941</a>
             </span>
         </p>
     
@@ -3946,7 +3993,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line960">line 960</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1026">line 1026</a>
             </span>
         </p>
     
@@ -4169,7 +4216,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line998">line 998</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1064">line 1064</a>
             </span>
         </p>
     
@@ -4215,7 +4262,7 @@
     
     
     <div class="description">
-        Reloads last loaded file.<br>Works only after any file was loaded.
+        Reloads last loaded file.<br>Works only after any file has been loaded.
     </div>
     
 
@@ -4419,7 +4466,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1061">line 1061</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1132">line 1132</a>
             </span>
         </p>
     
@@ -4567,7 +4614,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1106">line 1106</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1178">line 1178</a>
             </span>
         </p>
     
@@ -4576,6 +4623,15 @@
 
 
 
+
+    <div class="method-parameter columns">
+        <div class="column is-2"><label>Fires:</label></div>
+        <div class="column is-10">
+            <ul>
+                <li>Life#life.event:wipe</li>
+            </ul>
+        </div>
+    </div>
 
 
 
@@ -4740,7 +4796,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1211">line 1211</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1285">line 1285</a>
             </span>
         </p>
     
@@ -4781,12 +4837,12 @@
 
 
     
-    <h4 class="name" id="start_naive">
-        <a class="href-link" href="#start_naive">#</a>
+    <h4 class="name" id="size">
+        <a class="href-link" href="#size">#</a>
         
         <span class="code-name">
             
-                start_naive<span class="signature">()</span><span class="type-signature"></span>
+                size<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span>
             
         </span>
     </h4>
@@ -4795,7 +4851,7 @@
     
     
     <div class="description">
-        Starts the naive engine for automaton.
+        Returns number of alive cells.
     </div>
     
 
@@ -4846,7 +4902,129 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line848">line 848</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1313">line 1313</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The number of alive cells.</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<span class="param-type">number</span>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="start_naive">
+        <a class="href-link" href="#start_naive">#</a>
+        
+        <span class="code-name">
+            
+                start_naive<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        Starts the naive engine for the automaton.
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="life.js.html" class="button">View Source</a>
+            <span>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line914">line 914</a>
             </span>
         </p>
     
@@ -4952,7 +5130,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line943">line 943</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1009">line 1009</a>
             </span>
         </p>
     
@@ -5058,7 +5236,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line969">line 969</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1035">line 1035</a>
             </span>
         </p>
     
@@ -5313,7 +5491,7 @@
         <p class="tag-source">
             <a href="life.js.html" class="button">View Source</a>
             <span>
-                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1225">line 1225</a>
+                <a href="life.js.html">life.js</a>, <a href="life.js.html#line1304">line 1304</a>
             </span>
         </p>
     

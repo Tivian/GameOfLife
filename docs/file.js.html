@@ -1,4 +1,91 @@
-/**
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> file.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CellFile.html">CellFile</a></li><li><a href="Gallery.html">Gallery</a></li><li><a href="HashLifeAdapter.html">HashLifeAdapter</a></li><li><a href="Life.html">Life</a></li><li><a href="LifeFile.html">LifeFile</a></li><li><a href="LifeWorker.html">LifeWorker</a></li><li><a href="MCellFile.html">MCellFile</a></li><li><a href="Point.html">Point</a></li><li><a href="RLEFile.html">RLEFile</a></li><li><a href="UI.html">UI</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>file.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Container for pattern files.
  * @see {@link http://www.mirekw.com/ca/ca_files_formats.html|File formats description}
  */
@@ -26,7 +113,7 @@ class CellFile {
         this.height = 0;
         this.rule = '23/3';
 
-        if (cells && typeof cells[Symbol.iterator] === 'function')
+        if (cells &amp;&amp; typeof cells[Symbol.iterator] === 'function')
             this.cells = new Set([...cells.values()]);
         else
             this.cells = new Set();
@@ -59,7 +146,7 @@ class CellFile {
         if (this.author)
             str.push(`by ${this.author}`);
 
-        if (str.length == 1 && this.cells.size != 0)
+        if (str.length == 1 &amp;&amp; this.cells.size != 0)
             str.push(`of ${this.cells.size} cells`);
 
         return str.join(' ');
@@ -67,7 +154,7 @@ class CellFile {
 
     /**
      * Creates {@link CellFile} from given collection of cells.
-     * @param {string} format - The file format.<br>
+     * @param {string} format - The file format.&lt;br>
      *  Supports only RLE and Life formats.
      * @param {string} name - The name of the file.
      * @param {*=} cells - The collection of alive cells.
@@ -160,7 +247,7 @@ class RLEFile extends CellFile {
      */
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !/^.*\.(rle)/g.test(name))
+        if (cells &amp;&amp; !/^.*\.(rle)/g.test(name))
             this.name += '.rle';
     }
 
@@ -270,7 +357,7 @@ class RLEFile extends CellFile {
                     file.author = author[1];
             } else if (/^#\s?C/gi.test(line)) { // comment
                 let comment = line.match(/^#\s?C\s*(.+)?/i);
-                if (comment && comment[1])
+                if (comment &amp;&amp; comment[1])
                     file.comments.push(comment[1]);
             } else if (/^((x|y|rule[s]?)\s?=.*){2,3}/gi.test(line)) { // game rules
                 let rules = line.match(
@@ -300,7 +387,7 @@ class RLEFile extends CellFile {
                     switch (match[2]) {
                         //case 'o':
                         default: // alive cell
-                            for (let i = 0; i < value; i++, x++)
+                            for (let i = 0; i &lt; value; i++, x++)
                                 file.cells.add(new Point(x, -y));
                             break;
                         case 'b': // dead cell
@@ -318,7 +405,7 @@ class RLEFile extends CellFile {
                             break;
                     }
                 }
-            } else if (line.length != 0 && !/^[#]/g.test(line)) {
+            } else if (line.length != 0 &amp;&amp; !/^[#]/g.test(line)) {
                 if (finished)
                     file.comments.push(line);
                 else if (this.strict)
@@ -345,7 +432,7 @@ class LifeFile extends CellFile {
      */
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !/^.*\.(lif)/g.test(name))
+        if (cells &amp;&amp; !/^.*\.(lif)/g.test(name))
             this.name += '.lif';
     }
 
@@ -392,7 +479,7 @@ class LifeFile extends CellFile {
                     file.author = author[1];
             } else if (/^#[RN]/gi.test(line)) { // game rule
                 let rule = line.match(/^#[RN]\s?([0-8]*\/[0-8]*)?/i);
-                if (rule && rule[1])
+                if (rule &amp;&amp; rule[1])
                     file.rule = rule[1];
             } else if (/^#P/gi.test(line)) { // origin
                 let origin = line.match(/^#P\s?([-+]?\d+)\s?([-+]?\d+)/i);
@@ -406,7 +493,7 @@ class LifeFile extends CellFile {
                     file.speed = parseInt(speed[1]);
             } else if (/^[!#]\s?[CD]?/gi.test(line)) { // comment
                 let comment = line.match(/^[!#]\s?[CD]?\s*(.+)?/i);
-                if (comment && comment[1])
+                if (comment &amp;&amp; comment[1])
                     file.comments.push(comment[1]);
             } else if (/^[.*o]+$/gi.test(line)) { // cells
                 let matches = line.matchAll(/([.*o])+?/gi);
@@ -423,11 +510,11 @@ class LifeFile extends CellFile {
                 let cell = line.match(/^([-+\d]+)\s?([-+\d]+)$/i);
                 if (cell)
                     cells.add(new Point(parseInt(cell[1]), parseInt(cell[2])));
-            } else if (line.length == 0 && style == '!') { // special case
+            } else if (line.length == 0 &amp;&amp; style == '!') { // special case
                 y++;
-            } else if (line.length != 0 && style == '!') { // unknown line from dbLife
+            } else if (line.length != 0 &amp;&amp; style == '!') { // unknown line from dbLife
                 ;
-            } else if (this.strict && line.length != 0 && !/^[!#]/g.test(line)) {
+            } else if (this.strict &amp;&amp; line.length != 0 &amp;&amp; !/^[!#]/g.test(line)) {
                 throw `Unknown line #${index + 1}: "${line}"`;
             }
         });
@@ -462,7 +549,7 @@ class MCellFile extends CellFile {
      */
     constructor(name, cells) {
         super(name, cells);
-        if (cells && !/^.*\.(mcl)/g.test(name))
+        if (cells &amp;&amp; !/^.*\.(mcl)/g.test(name))
             this.name += '.mcl';
 
         this.type = 'Life';
@@ -532,7 +619,7 @@ class MCellFile extends CellFile {
                     file.palette = palette[1];
             } else if (/^#D\s?.*$/gi.test(line)) { // comment
                 let comment = line.match(/^#D\s*(.+)?$/i);
-                if (comment && comment[1])
+                if (comment &amp;&amp; comment[1])
                     file.comments.push(comment[1]);
             } else if (/^#L\s?[.$\w]+$/gi.test(line)) { // cells in RLE format
                 let matches = line.substring(2).matchAll(/(\d+)?\s?([.$A-Za-z])\s?/gi);
@@ -542,7 +629,7 @@ class MCellFile extends CellFile {
 
                     switch (match[2]) {
                         default: // alive cell
-                            for (let i = 0; i < value; i++, x++)
+                            for (let i = 0; i &lt; value; i++, x++)
                                 cells.add(new Point(x, -y));
                             break;
                         case '.': // dead cell
@@ -554,7 +641,7 @@ class MCellFile extends CellFile {
                             break;
                     }
                 }
-            } else if (this.strict && line.length != 0) {
+            } else if (this.strict &amp;&amp; line.length != 0) {
                 throw `Unknown line [${index + 1}]: "${line}"`;
             }
         });
@@ -566,3 +653,32 @@ class MCellFile extends CellFile {
         return file.cells.size != 0 ? file : undefined;
     }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
