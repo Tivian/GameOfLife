@@ -119,9 +119,9 @@ class Life {
                 outside: '#aaa',
                 basic: '#020202',
                 rgb: {
-                    hot: [ 0xdc, 0x14, 0x3c ],
+                       hot: [ 0xdc, 0x14, 0x3c ],
                     medium: [ 0x00, 0x00, 0xff ],
-                    cold: [ 0x00, 0x00, 0xcd ]
+                      cold: [ 0x00, 0x00, 0xcd ]
                 },
                 int: {}
             },
@@ -175,8 +175,8 @@ class Life {
         this._file = undefined;
 
         this.engines = {
-            naive: '_setupNaive',
-            worker: '_setupWorker',
+               naive: '_setupNaive',
+              worker: '_setupWorker',
             hashlife: '_setupHashlife'
         };
         Object.freeze(this.engines);
@@ -337,8 +337,8 @@ class Life {
     }
 
     set origin(value) {
-        [this._settings.origin.x, this._settings.origin.y] = value instanceof Array
-            ? value : [value.x, value.y];
+        [this._settings.origin.x, this._settings.origin.y] =
+            value instanceof Array ? value : [value.x, value.y];
         this._setDrawLimits();
     }
 
@@ -542,9 +542,9 @@ class Life {
         let to = this._settings.limit.to;
 
         return {
-            to:     to,
-            from:   from,
-            width:  to.x - from.x,
+                to: to,
+              from: from,
+             width: to.x - from.x,
             height: from.y - to.y
         };
     }
@@ -556,8 +556,8 @@ class Life {
             } else if (value.width !== undefined &amp;&amp; value.height !== undefined) {
                 let width  = Math.ceil(value.width  / 2);
                 let height = Math.ceil(value.height / 2);
-                this._settings.limit.from = new Point(-width, height);
-                this._settings.limit.to   = new Point(width, -height);
+                this._settings.limit.from = new Point(-width,  height);
+                this._settings.limit.to   = new Point( width, -height);
             } else {
                 return;
             }
@@ -702,12 +702,12 @@ class Life {
 
         this._settings.top = new Point(
             -Math.ceil(origin.x / size),
-            Math.ceil(origin.y / size)
+             Math.ceil(origin.y / size)
         );
 
         this._settings.bottom = new Point(
-            -Math.ceil((origin.x - this.width) / size),
-            Math.ceil((origin.y - this.height) / size)
+            -Math.ceil((origin.x - this.width)  / size),
+             Math.ceil((origin.y - this.height) / size)
         );
     }
 
@@ -766,7 +766,8 @@ class Life {
      * @private
      */
     static _newCell(x, y, settings) {
-        return Life._limitCoords(x, y, (x, y) => ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }), settings);
+        return Life._limitCoords(x, y, (x, y) =>
+            ({ x: x, y: y, age: 0, hash: Point.getHash(x, y) }), settings);
     }
 
     /**
@@ -1350,7 +1351,7 @@ class Life {
     getPosition(ev) {
         let size = this.cellSize;
         return new Point(
-            Math.floor((ev.pageX - this.origin.x) / size),
+             Math.floor((ev.pageX - this.origin.x) / size),
             -Math.floor((ev.pageY - this.origin.y) / size)
         );
     }
@@ -1416,27 +1417,27 @@ class Life {
         cells = [...cells];
         if (cells.length == 0) {
             return {
-                top: 0,   bottom: 0,
-                left: 0,   right: 0,
+                  top: 0, bottom: 0,
+                 left: 0,  right: 0,
                 width: 0, height: 0
             };
         }
 
         return cells.reduce((acc, cur) => {
             let obj = {
-                top: Math.max(acc.top, cur.y),
+                   top: Math.max(acc.top, cur.y),
                 bottom: Math.min(acc.bottom, cur.y),
-                left: Math.min(acc.left, cur.x),
-                right: Math.max(acc.right, cur.x)
+                  left: Math.min(acc.left, cur.x),
+                 right: Math.max(acc.right, cur.x)
             };
-            obj.width = obj.right - obj.left + 1;
-            obj.height = obj.top - obj.bottom + 1;
+            obj.width  = obj.right - obj.left   + 1;
+            obj.height = obj.top   - obj.bottom + 1;
             return obj;
         }, {
-            top: -Number.MAX_VALUE,
-            bottom: Number.MAX_VALUE,
-            left: Number.MAX_VALUE,
-            right: -Number.MAX_VALUE
+               top: -Number.MAX_VALUE,
+            bottom:  Number.MAX_VALUE,
+              left:  Number.MAX_VALUE,
+             right: -Number.MAX_VALUE
         });
     }
 

@@ -313,6 +313,7 @@ class UI {
 
         $('#btn-reload').click(_ => {
             try {
+                this.centerPattern();
                 this.life.reload();
                 this.showToast('Reloaded ' + this.life.file, 'primary');
             } catch (err) {
@@ -321,8 +322,10 @@ class UI {
             }
         });
         $('#btn-load').click(_ => {
-            this.life.stop();
-            CellFile.open(file => this.life.load(file, true));
+            CellFile.open(file => {
+                this.centerPattern();
+                this.life.load(file, true);
+            });
         });
         $('#btn-save').click(_ => {
             if (this.life.population == 0)
@@ -429,7 +432,7 @@ class UI {
         });
 
         $('#btn-gallery-load').click(_ => {
-            this.load();
+            this.load(this.gallery.file);
             this.gallery.hide();
         });
 
@@ -767,8 +770,13 @@ class UI {
             [bb.left, center[1]],         center,         [bb.right, center[1]],
             [bb.left,    bb.top], [center[0],    bb.top], [bb.right,    bb.top]
         ];
-        this.life.center(...pos[key]);
-        this.$coords.hide();
+
+        if (key === 4) {
+            this.centerPattern(true);
+        } else {
+            this.life.center(...pos[key]);
+            this.$coords.hide();
+        }
     }
 
     /**
@@ -820,18 +828,36 @@ class UI {
 
     /**
      * Loads given file from gallery into the automaton.
-     * @param {(object|string)} file - A file entry or string of the file to load
-     * @param {boolean=} center - If true then pattern will be centered on the screen
+     * @param {(object|string)=} file - A file entry or string of the file to load
      */
-    static load(file, center = true) {
-        this.gallery.load(file)
-            .then(data => this.life.load(data, true))
-            .catch(err => {
-                console.error(err);
-                this.showToast(err, 'danger');
-            });
+    static load(file) {
+        this.life.stop();
 
-        const fx = _ => {
+        const loadFx = file => {
+            this.centerPattern();
+            this.life.load(file, true);
+        };
+
+        if (!file) {
+            CellFile.open(loadFx);
+        } else {
+            this.gallery.load(file)
+                .then(loadFx)
+                .catch(err => {
+                    console.error(err);
+                    this.showToast(err, 'danger');
+                });
+        }
+    }
+
+    /**
+     * After receiving 'load.file' event, centers the pattern on the screen
+     *  and adjusts the scale accordingly
+     * @param {boolean=} now - If true then the pattern
+     *  will be centered immediately.
+     */
+    static centerPattern(now = false) {
+        const centerFx = _ => {
             let bb = this.life.getBoundingBox();
             let size = this.life.cellSize;
             let width = this.life.width / size;
@@ -842,11 +868,14 @@ class UI {
                 this.life.center(bb.left + bb.width / 2, bb.top - bb.height / 2, false);
             }
 
-            this.life.$canvas.off('load.file', fx);
+            if (!now)
+                this.life.$canvas.off('load.file', centerFx);
         };
 
-        if (center)
-            this.life.$canvas.on('load.file', fx);
+        if (now)
+            centerFx();
+        else
+            this.life.$canvas.on('load.file', centerFx);
     }
 
     /**

@@ -224,6 +224,178 @@
 
 
     
+    <h4 class="name" id=".centerPattern">
+        <a class="href-link" href="#.centerPattern">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                centerPattern<span class="signature">(now<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        After receiving 'load.file' event, centers the pattern on the screen and adjusts the scale accordingly
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+            <th>Default</th>
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>now</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">boolean</span>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          false
+      
+      </td>
+  
+
+  <td class="description last">If true then the pattern will be centered immediately.</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="app.js.html" class="button">View Source</a>
+            <span>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line859">line 859</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
     <h4 class="name" id=".changeSpeed">
         <a class="href-link" href="#.changeSpeed">#</a>
         
@@ -344,7 +516,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line910">line 910</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line940">line 940</a>
             </span>
         </p>
     
@@ -496,7 +668,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line969">line 969</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line998">line 998</a>
             </span>
         </p>
     
@@ -734,7 +906,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line629">line 629</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line637">line 637</a>
             </span>
         </p>
     
@@ -835,7 +1007,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line646">line 646</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line654">line 654</a>
             </span>
         </p>
     
@@ -936,7 +1108,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line812">line 812</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line825">line 825</a>
             </span>
         </p>
     
@@ -1145,7 +1317,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line882">line 882</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line916">line 916</a>
             </span>
         </p>
     
@@ -1287,7 +1459,7 @@
         
         <span class="code-name">
             
-                load<span class="signature">(file, center<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                load<span class="signature">(file<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1325,8 +1497,6 @@
             
 
             
-            <th>Default</th>
-            
 
             <th class="last">Description</th>
         </tr>
@@ -1356,43 +1526,6 @@
   
       <td class="attributes">
       
-
-      
-
-      
-      </td>
-  
-
-  
-      <td class="default">
-      
-      </td>
-  
-
-  <td class="description last">A file entry or string of the file to load</td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>center</code></td>
-  
-
-  <td class="type">
-  
-      
-<span class="param-type">boolean</span>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
           &lt;optional><br>
       
 
@@ -1403,14 +1536,8 @@
   
 
   
-      <td class="default">
-      
-          true
-      
-      </td>
-  
 
-  <td class="description last">If true then pattern will be centered on the screen</td>
+  <td class="description last">A file entry or string of the file to load</td>
 </tr>
 
 
@@ -1458,7 +1585,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line821">line 821</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line833">line 833</a>
             </span>
         </p>
     
@@ -1610,7 +1737,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line757">line 757</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line765">line 765</a>
             </span>
         </p>
     
@@ -1711,7 +1838,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line660">line 660</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line668">line 668</a>
             </span>
         </p>
     
@@ -1812,7 +1939,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line744">line 744</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line752">line 752</a>
             </span>
         </p>
     
@@ -1913,7 +2040,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line693">line 693</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line701">line 701</a>
             </span>
         </p>
     
@@ -2014,7 +2141,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line576">line 576</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line584">line 584</a>
             </span>
         </p>
     
@@ -2115,7 +2242,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line613">line 613</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line621">line 621</a>
             </span>
         </p>
     
@@ -2304,7 +2431,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line931">line 931</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line961">line 961</a>
             </span>
         </p>
     
@@ -2456,7 +2583,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line852">line 852</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line886">line 886</a>
             </span>
         </p>
     
@@ -2608,7 +2735,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line787">line 787</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line800">line 800</a>
             </span>
         </p>
     
@@ -2718,7 +2845,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line772">line 772</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line785">line 785</a>
             </span>
         </p>
     
@@ -2819,7 +2946,7 @@
         <p class="tag-source">
             <a href="app.js.html" class="button">View Source</a>
             <span>
-                <a href="app.js.html">app.js</a>, <a href="app.js.html#line735">line 735</a>
+                <a href="app.js.html">app.js</a>, <a href="app.js.html#line743">line 743</a>
             </span>
         </p>
     
