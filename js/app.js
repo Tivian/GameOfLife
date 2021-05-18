@@ -8,6 +8,7 @@ class UI {
     static gallery;
     static fps = {};
     static speedIncrement = 10;
+    static defaultTheme = 'dark';
 
     static clipboard = [];
     static selectState = 'none';
@@ -61,12 +62,11 @@ class UI {
                 $('#in-game-rule-name, #in-board-type, #in-engine').prop('disabled', false);
             })
             .on('change.rule', _ => {
-                $('#in-game-rule').val(this.life.rule);
-                $('#in-game-rule-name option:selected').removeAttr('selected');
-                let option = $(`#in-game-rule-name option[value="${this.life.rule}"]`);
-                if (option.length == 0)
-                    option = $('#in-game-rule-name option:contains("Custom")');
-                option.attr('selected', '');
+                let rule = this.life.rule;
+                $('#in-game-rule').val(rule);
+                if (!$(`#in-game-rule-name option[value="${rule}"]`).length)
+                    rule = 'Custom';
+                $('#in-game-rule-name').val(rule);
             })
             .on('change.speed', _ =>
                 $('#in-speed').val(this.life.speed)
@@ -408,9 +408,7 @@ class UI {
                     .attr('data-bs-original-title', state ? 'Dark mode' : 'Light mode')
                     .tooltip('show');
             }
-            $symbol
-                .removeClass(state ? 'far' : 'fas')
-                .addClass(state ? 'fas' : 'far');
+
             this.theme(!state ? 'dark' : 'light');
         });
 
@@ -536,6 +534,10 @@ class UI {
             this.life.showAge = ev.target.checked;
             this.life.draw();
         });
+        $('#sw-stats').change(ev => {
+            $('#info')[ev.target.checked ? 'removeClass' : 'addClass']('d-none');
+            $('#sw-fps').parent().toggle(ev.target.checked);
+        });
         $('#sw-fps').change(ev =>
             $('#out-fps').parent().css('display', ev.target.checked ? 'flex' : 'none')
         )
@@ -576,6 +578,8 @@ class UI {
         $rules.html([...$rules.find('option')]
             .sort((a, b) => a.text.localeCompare(b.text))
             .map(x => x.outerHTML).join('\n'));
+
+        this.theme(this.defaultTheme);
     }
 
     /**
@@ -862,7 +866,7 @@ class UI {
             let size = this.life.cellSize;
             let width = this.life.width / size;
             let height = this.life.height / size;
-            if (bb.width > width || bb.height > height) {
+            if (now || bb.width > width || bb.height > height) {
                 let factor = ((bb.width / this.life.width) > (bb.height / this.life.height)) ? 'width' : 'height';
                 this.life.scale = this.life[factor] / ((bb[factor] * 1.5) * this.life.defaults.size);
                 this.life.center(bb.left + bb.width / 2, bb.top - bb.height / 2, false);
@@ -886,6 +890,7 @@ class UI {
     static theme(name) {
         switch (name) {
             case 'light':
+                $('#btn-night > i').removeClass('far').addClass('fas');
                 $('#toolbar .dropdown-menu').removeClass('dropdown-menu-dark');
                 this.life.setColor('background', this.life.defaults.colors.background);
                 this.life.setColor(    'border', this.life.defaults.colors.border);
@@ -895,6 +900,7 @@ class UI {
                 this.life.setColor(     'basic', this.life.defaults.colors.basic);
                 break;
             case 'dark':
+                $('#btn-night > i').removeClass('fas').addClass('far');
                 $('#toolbar .dropdown-menu').addClass('dropdown-menu-dark');
                 this.life.setColor('background', '#222');
                 this.life.setColor(    'border', '#444');
