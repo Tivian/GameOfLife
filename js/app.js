@@ -63,10 +63,11 @@ class UI {
             })
             .on('change.rule', _ => {
                 let rule = this.life.rule;
+                let opt = $(`#in-game-rule-name option[value="${rule}"]`);
                 $('#in-game-rule').val(rule);
-                if (!$(`#in-game-rule-name option[value="${rule}"]`).length)
+                if (!opt.length)
                     rule = 'Custom';
-                $('#in-game-rule-name').val(rule);
+                $('#in-game-rule-name').val(rule).attr('title', opt.attr('title'));
             })
             .on('change.speed', _ =>
                 $('#in-speed').val(this.life.speed)
@@ -96,6 +97,9 @@ class UI {
             )
             .on('life.new life.next life.wipe load.file', _ => this.showStats())
             .on('life.next', _ => {
+                if (!this.life.isRunning || !this.life.population)
+                    return;
+
                 if (!this.fps.timestamp) {
                     this.fps.timestamp = performance.now();
                 } else {
