@@ -675,12 +675,12 @@ class UI {
                 this.play();
             } else if (ev.which == 82) { // R
                 this.rotate();
+            } else if (ev.which == 77) { // M
+                this.mirror(ev);
             } else if (ev.which == 46) { // Delete
                 this.cut();
                 this.clipboard = [];
-            }
-
-            if (ev.ctrlKey) {
+            } else if (ev.ctrlKey) {
                 if (ev.which == 67) { // C
                     this.copy(true);
                 } else if (ev.which == 88) { // X
@@ -823,41 +823,61 @@ class UI {
      * Rotates clockwise cells selected by selection tool.
      */
     static rotate() {
-        if (this.selectState != 'selected')
-            return;
-
-        let rotetePoint = (point, center, angle) => {
+        const angle = -Math.PI / 2;
+        this.transform((point, pivot) => {
             let sin = Math.sin(angle);
             let cos = Math.cos(angle);
 
-            point.x -= center.x;
-            point.y -= center.y;
+            point.x -= pivot.x;
+            point.y -= pivot.y;
 
             let xNew = point.x * cos - point.y * sin;
             let yNew = point.x * sin - point.y * cos;
 
-            point.x = Math.round(xNew + center.x);
-            point.y = Math.round(yNew + center.y);
+            point.x = Math.ceil(xNew + pivot.x);
+            point.y = Math.ceil(yNew + pivot.y);
             return point;
-        };
+        });
+    }
+
+    /**
+     * Mirrors (by default vertically) selected cells.
+     * @param {KeyboardEvent} ev - If CTRL key is pressed then mirror is horizontal.
+     */
+    static mirror(ev) {
+        let axis = ev.ctrlKey;
+        this.transform((point, pivot) => {
+            point.x = Math.floor((axis ? -1 : 1) * point.x + (axis ? 2 : 0) * pivot.x);
+            point.y = Math.floor((axis ? 1 : -1) * point.y + (axis ? 0 : 2) * pivot.y);
+            return point;
+        });
+    }
+
+    /**
+     * Transforms points in the clipboard using function provided in the call.
+     * @param {function} fx - The function which transforms coordinates of the point.
+     * @param {(object|Point)=} pivot - The center point of the transformation.
+     *  If the pivot isn't specified then the center point will be choosen.
+     */
+    static transform(fx, pivot) {
+        if (this.selectState != 'selected')
+            return;
 
         this.copy(false, false);
-
-        const angle = -Math.PI / 2;
-        let bb = Life.getBoundingBox(this.clipboard);
-        let pivot = {
-            x: Math.floor(bb.left + bb.width / 2),
-            y: Math.ceil(bb.top - bb.height / 2)
-        };
-        let points = this.clipboard.map(p =>
-            rotetePoint($.deepCopy(p), pivot, angle));
+        if (!pivot) {
+            let bb = Life.getBoundingBox(this.clipboard);
+            pivot = {
+                x: bb.left + (bb.width  - 1) / 2,
+                y: bb.top  - (bb.height - 1) / 2
+            };
+        }
+        let points = this.clipboard.map(p => fx($.deepCopy(p), pivot));
         this.cut();
         this.life.load(points);
 
-        let tr = rotetePoint($.deepCopy(this.selectStart), pivot, angle);
-        let bl = rotetePoint($.deepCopy(this.selectEnd), pivot, angle);
-        this.selectEnd = { x: tr.x, y: bl.y };
-        this.selectStart = { x: bl.x, y: tr.y };
+        let bb = Life.getBoundingBox(points);
+        this.selectStart = { x: bb.left,  y: bb.top    };
+        this.selectEnd   = { x: bb.right, y: bb.bottom };
         this.life.$canvas.trigger('mousemove');
     }
 
