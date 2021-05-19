@@ -93,8 +93,13 @@ body {
 }
 
 #in-game-rule-name {
-    padding-left: 0.3rem !important;
+    padding-left: 0.5rem !important;
     padding-top: 1.6rem !important;
+    background-image: none !important;
+}
+
+#dropdown-settings select:hover {
+    cursor: pointer;
 }
 
 #select-box {

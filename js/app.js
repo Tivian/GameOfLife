@@ -610,6 +610,27 @@ class UI {
             .sort((a, b) => a.text.localeCompare(b.text))
             .map(x => x.outerHTML).join('\n'));
 
+        const getFileFromDrop = ev => {
+            if (ev.dataTransfer.items) {
+                for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+                    if (ev.dataTransfer.items[i].kind === 'file')
+                        return ev.dataTransfer.items[i].getAsFile();
+                }
+            } else {
+                return ev.dataTransfer.files[0];
+            }
+
+            return undefined;
+        }
+        this.life.canvas.ondrop = ev => {
+            ev.preventDefault();
+            CellFile.read(getFileFromDrop(ev), data => {
+                this.centerPattern();
+                this.life.load(data, true);
+            });
+        };
+        this.life.canvas.ondragover = ev => ev.preventDefault();
+
         this.theme(this.defaultTheme);
     }
 
@@ -738,8 +759,8 @@ class UI {
     static rotate() {
         const angle = -Math.PI / 2;
         this.transform((point, pivot) => {
-            let sin = Math.sin(angle);
-            let cos = Math.cos(angle);
+            let sin = Math.round(Math.sin(angle));
+            let cos = Math.round(Math.cos(angle));
 
             point.x -= pivot.x;
             point.y -= pivot.y;
@@ -747,8 +768,8 @@ class UI {
             let xNew = point.x * cos - point.y * sin;
             let yNew = point.x * sin - point.y * cos;
 
-            point.x = Math.ceil(xNew + pivot.x);
-            point.y = Math.ceil(yNew + pivot.y);
+            point.x = xNew + pivot.x;
+            point.y = yNew + pivot.y;
             return point;
         });
     }
@@ -790,7 +811,7 @@ class UI {
         this.life.load(points);
 
         let bb = Life.getBoundingBox(points);
-        this.selectStart = { x: bb.left,  y: bb.top    };
+        this.selectStart = { x: bb.left , y: bb.top    };
         this.selectEnd   = { x: bb.right, y: bb.bottom };
         this.life.$canvas.trigger('mousemove');
     }
@@ -885,7 +906,7 @@ class UI {
     }
 
     /**
-     * Loads given file from gallery into the automaton.
+     * Loads given file from the gallery into the automaton.
      * @param {(object|string)=} file - A file entry or string of the file to load
      */
     static load(file) {
