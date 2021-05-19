@@ -27,9 +27,9 @@ class Life {
             showAge: true,
             allowInverse: false,
             colors: {
-                background: '#fcfcfc',
-                border: '#bbb',
-                outside: '#aaa',
+                background: '#eee',
+                border: '#aaa',
+                outside: '#999',
                 basic: '#020202',
                 rgb: {
                        hot: [ 0xdc, 0x14, 0x3c ],

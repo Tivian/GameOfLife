@@ -68,12 +68,30 @@ body {
     word-break: break-all;
 }
 
+#in-file-comments {
+    height: 100% !important;
+}
+
 #modal-gallery .modal-content {
     min-height: 100%;
 }
 
 #modal-gallery .modal-body {
     overflow-x: hidden;
+}
+
+#modal-soup input {
+    text-align: end;
+}
+
+#in-game-rule {
+    padding-left: 0.5rem !important;
+    padding-top: 1.8rem !important;
+}
+
+#in-game-rule-name {
+    padding-left: 0.3rem !important;
+    padding-top: 1.6rem !important;
 }
 
 #select-box {

@@ -109,7 +109,7 @@ class HashLifeAdapter {
             });
 
         this.backup.minScale = this.life.minScale;
-        this.life.minScale = 1e-16;
+        this.life.minScale = Number.MIN_VALUE;
 
         this.backup.step = this.life.step;
         this.life.step = this._.step;
@@ -417,7 +417,7 @@ class HashLifeAdapter {
         this.file = undefined;
         this.center();
 
-        this._generation = this.hashlife._.generation;
+        this._generation = this.hashlife._.generation = 0;
         this.$canvas.trigger('life.wipe');
     }
 

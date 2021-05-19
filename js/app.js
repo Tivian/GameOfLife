@@ -4,6 +4,7 @@ class UI {
     static $coords;
     static $toolbar;
     static saveModal;
+    static soupModal;
     static infoToast;
     static gallery;
     static fps = {};
@@ -23,6 +24,7 @@ class UI {
         this.$coords = $('#coords');
         this.$toolbar = $('#toolbar');
         this.saveModal = new bootstrap.Modal(document.getElementById('modal-save'));
+        this.soupModal = new bootstrap.Modal(document.getElementById('modal-soup'));
         this.infoToast = new bootstrap.Toast(document.getElementById('info-toast'), {autohide: false});
         this.gallery = new Gallery('modal-gallery', './static/patterns.zip');
 
@@ -380,13 +382,20 @@ class UI {
         $('#btn-random')
             .click(_ => this.load(this.gallery.random()))
             .on('mousedown', ev => {
-                if (ev.which == 3 && !this.life.isRunning) {
+                if (this.life.isRunning) {
+                    this.showToast('The automaton is running!', 'danger');
+                    return;
+                }
+
+                if (ev.which == 2) {
+                    this.soupModal.show();
+                } else if (ev.which == 3) {
                     let size = this.life.cellSize;
                     let width = this.life.width / size;
                     let height = this.life.height / size;
                     let maxWidth = this.life.engine === 'hashlife' ? width : 100;
                     let maxHeight = this.life.engine === 'hashlife' ? height : 100;
-                    let minRand = ev.shiftKey ? 1.0 : 0.1;
+                    let minRand = ev.ctrlKey ? 1.0 : 0.1;
                     this.life.randomize(
                         Math.ceil(Math.random() * maxWidth),
                         Math.ceil(Math.random() * maxHeight),
@@ -436,6 +445,24 @@ class UI {
         $('#btn-gallery-load').click(_ => {
             this.load(this.gallery.file);
             this.gallery.hide();
+        });
+
+        $('#in-soup-height, #in-soup-width').on('input', ev => {
+            let value = parseInt(ev.target.value.replace(/[\D]*/g, ''));
+            ev.target.value = (isNaN(value) || value <= 0) ? 0 :
+                (value >= 10000) ? 10000 : value;
+        });
+        $('#in-soup-density').on('input', ev => {
+            let value = parseFloat(ev.target.value.replace(/[^\d.]*/g, ''));
+            ev.target.value = (isNaN(value) || value <= 0) ? 0 :
+                (value >= 1) ? 1 : value;
+        });
+        $('#btn-soup-gen').on('click', _ => {
+            this.soupModal.hide();
+            this.life.randomize(
+                $('#in-soup-width').val(),
+                $('#in-soup-height').val(),
+                $('#in-soup-density').val())
         });
 
         // setup of the settings dropdown
@@ -593,6 +620,7 @@ class UI {
         $('#in-engine').val(this.life.engine);
 
         if (this.life.engine === 'hashlife') {
+            $('#in-board-type').parent().hide();
             $('#in-board-type, #sw-colors').attr('disabled', '');
             $('#sw-colors').removeAttr('checked');
             this.life.$canvas.on('change.step', this.hashStep);
@@ -601,6 +629,7 @@ class UI {
                 .val(this.life.step);
             this.hashStep();
         } else {
+            $('#in-board-type').parent().show();
             $('#in-board-type, #sw-colors').removeAttr('disabled');
             $('#sw-colors').attr('checked', '');
             this.life.$canvas.off('change.step', this.hashStep);

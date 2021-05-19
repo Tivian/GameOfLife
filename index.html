@@ -290,7 +290,7 @@
                     <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                 </div>
                 <form class='modal-body' autocomplete='off'>
-                    <div class='form-floating mb-3'>
+                    <div class='form-floating mt-1 mb-3'>
                         <input id='in-file-title' type='text' class='form-control'>
                         <label for='in-file-title'>Title</label>
                     </div>
@@ -299,10 +299,10 @@
                         <label for='in-file-author'>Author</label>
                     </div>
                     <div class='form-floating mb-3'>
-                        <textarea id='in-file-comments' class='form-control' aria-label='Comments'></textarea>
+                        <textarea id='in-file-comments' class='form-control' aria-label='Comments' rows='5'></textarea>
                         <label for='in-file-comments'>Comments</label>
                     </div>
-                    <div class='input-group mb-3'>
+                    <div class='input-group mb-1'>
                         <div class='form-floating'>
                             <input id='in-file-name' type='text' class='form-control' aria-label='Filename'>
                             <label for='in-file-name'>File name</label>
@@ -360,6 +360,34 @@
         <div class='d-flex'>
             <button type='button' class='btn-close btn-close-white my-auto ms-2' data-bs-dismiss='toast' aria-label='Close'></button>
             <div class='toast-body'> </div>
+        </div>
+    </div>
+
+    <div id='modal-soup' class='modal fade' tabindex='-1' aria-hidden='true'>
+        <div class='modal-dialog modal-sm modal-dialog-scrollable modal-dialog-centered'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='modal-save-label'>Soup Generator</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                </div>
+                <form class='modal-body' autocomplete='off'>
+                    <div class='form-floating mt-1 mb-3'>
+                        <input id='in-soup-width' type='text' class='form-control' value='20'>
+                        <label for='in-soup-width'>Width</label>
+                    </div>
+                    <div class='form-floating mb-3'>
+                        <input id='in-soup-height' type='text' class='form-control' value='20'>
+                        <label for='in-soup-height'>Height</label>
+                    </div>
+                    <div class='form-floating mb-1'>
+                        <input id='in-soup-density' type='number' class='form-control' min='0.0' max='1.0' step='0.01' value='0.5'>
+                        <label for='in-soup-density'>Density</label>
+                    </div>
+                </form>
+                <div class='modal-footer'>
+                    <button id='btn-soup-gen' type='button' class='btn btn-primary'>Generate</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>
