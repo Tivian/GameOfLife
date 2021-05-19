@@ -43,7 +43,7 @@ class UI {
             .on('mousemove', _ => this.$coords.hide());
 
         this.hashStep = _ =>
-            $('#gr-game-step .range-slider__value').text(Math.pow(2, this.life.step));
+            $('#gr-game-step .range-slider__value').text(`2^${this.life.step}`);
 
         let coordsFollow = true;
         let coordsEnabled = true;
@@ -646,7 +646,7 @@ class UI {
             $('#sw-colors').removeAttr('checked');
             this.life.$canvas.on('change.step', this.hashStep);
             $('#in-game-step')
-                .attr('value', '0').attr('min', '0').attr('max', '16')
+                .attr('value', '0').attr('min', '0').attr('max', '32')
                 .val(this.life.step);
             this.hashStep();
         } else {
