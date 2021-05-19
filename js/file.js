@@ -413,7 +413,7 @@ class LifeFile extends CellFile {
 
                 for (let match of matches) {
                     if (match[1] != '.')
-                        cells.add(new Point(x, -y));
+                        cells.add(new Point(x, y));
                     x++;
                 }
 
@@ -441,7 +441,7 @@ class LifeFile extends CellFile {
             Math.floor(file.width / 2) + boundingBox.left - 1,
             Math.floor(file.height / 2) + boundingBox.bottom - 1
         ];
-        cells.forEach(p => file.cells.add(new Point(p.x - x, p.y - y)));
+        cells.forEach(p => file.cells.add(new Point(p.x - x, -(p.y - y))));
 
         return file.cells.size != 0 ? file : undefined;
     }
