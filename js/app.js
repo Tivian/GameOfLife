@@ -910,8 +910,6 @@ class UI {
      * @param {(object|string)=} file - A file entry or string of the file to load
      */
     static load(file) {
-        this.life.stop();
-
         const loadFx = file => {
             this.centerPattern();
             this.life.load(file, true);
