@@ -83,6 +83,10 @@ body {
     overflow-x: hidden;
 }
 
+#in-gallery-type:hover {
+    cursor: pointer;
+}
+
 #modal-soup input {
     text-align: end;
 }

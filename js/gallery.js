@@ -40,34 +40,76 @@ class Gallery {
             this._resizePreview();
         });
 
-        $gallerySet.on('change', _ => {
-            let btn = file => 
-                `<button type='button' class='list-group-item list-group-item-action text-truncate'`
-                + `value="${file.path}">${file.name}</button>`;
+        const btnFromFile = file =>
+            `<button type='button' class='list-group-item list-group-item-action text-truncate'`
+            + `value="${file.path}">${file.name}</button>`;
 
-            let dir = $gallerySet.val();
-            $('#gallery-file-list').html(this.files.get(dir).map((x, i) => btn(x, i)).join('\n'));
+        const showFiles = files => {
+            $('#gallery-file-list').html(files.map((x, i) => btnFromFile(x, i)).join('\n'));
             $('#gallery-file-list button').on('click', ev => this._preview(ev));
             $('#gallery-file-list button:first').trigger('click');
+        };
+
+        const filterDuplicates = files => {
+            return files.filter((file, i, arr) => {
+                let match = file.name.toLowerCase().match(/^(.*)\.(.*)/i);
+                return match
+                && ((match[2] == 'rle')
+                    || !arr.some(o => o != file && o.name.toLowerCase().includes(match[1])));
+            });
+        }
+
+        const naturalSort = (arr, attr = 'name') => arr.sort((a, b) =>
+            a[attr].localeCompare(b[attr], { sensitivity: 'base', numeric: true }));
+
+        $gallerySet.on('change', _ =>
+            showFiles(this.files.get($gallerySet.val()))
+        );
+
+        let $galleryType = $('#in-gallery-type');
+        let $fileName = $('#in-gallery-file-name');
+        $galleryType.click(_ => {
+            let type = $galleryType.find('i.fa-list').length != 0;
+            let classes = ['fa-list', 'fa-search'];
+            if (!type) {
+                classes = classes.reverse();
+                $gallerySet.trigger('change');
+            } else {
+                showFiles(naturalSort(filterDuplicates(this.find('', true))));
+            }
+
+            $galleryType.attr('data-bs-original-title', type ? 'List' : 'Search')
+                .tooltip('show');
+            $galleryType.find('i')
+                .removeClass(classes[0])
+                .addClass(classes[1]);
+
+            $gallerySet.toggle(!type);
+            $fileName.toggle(type);
+        });
+
+        $fileName.on('input', ev => {
+            let $list = $('#gallery-file-list');
+            let val = ev.target.value;
+
+            $list.find('button').each(function() {
+                let $this = $(this);
+                $this.toggle($this.val().includes(val));
+            });
+            [...$('#gallery-file-list button:visible')]
+                .sort((a, b) => b.textContent.startsWith(val) - a.textContent.startsWith(val))
+                .forEach(x => $list[0].appendChild(x));
         });
         
         fetch(filename).then(file => {
             file.blob().then(data => {
                 this.fs.importBlob(data).then(_ => {
-                    let naturalSort = arr => arr.sort((a, b) =>
-                        a.name.localeCompare(b.name, { sensitivity: 'base', numeric: true }));
-
                     naturalSort(this.fs.root.children);
                     for (let dir of this.fs.root.children) {
                         let files = [];
                         this._traverse(files, dir);
-                        naturalSort(files);
-                        files = files.filter(f => {
-                            let match = f.name.toLowerCase().match(/^(.*)\.(.*)/i);
-                            return !match ? false : (match[2] == 'rle')
-                                ? true : !files.some(o => o != f && o.name.toLowerCase().includes(match[1]));
-                        });
 
+                        files = filterDuplicates(naturalSort(files));
                         this.files.set(dir.name.substr(dir.name.indexOf('_') + 1), files);
                     }
 
@@ -181,7 +223,7 @@ class Gallery {
      * @param {string} str - A string to match
      * @returns {Array.<object>} The file entries if any was found.
      */
-    find(str) {
+    find(str, map = false) {
         let found = [];
         let traverse = (node) => {
             for (let entry of node.children) {
@@ -193,7 +235,10 @@ class Gallery {
         }
 
         traverse(this.fs.root);
-        return found;
+        return map ? found.map(x => ({
+            name: x.name,
+            path: x.data.filename
+        })) : found;
     }
 
     /**
