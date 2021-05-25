@@ -582,24 +582,51 @@ class UI {
             if (ev.target !== document.body)
                 return;
 
-            if (ev.which >= 97 && ev.which <= 105) { // numpad 1-9
-                this.numpad(ev.which - 97);
-            } else if (ev.which == 32) { // SPACE
-                this.play();
-            } else if (ev.which == 82) { // R
-                this.rotate();
-            } else if (ev.which == 77) { // M
-                this.flip(ev);
-            } else if (ev.which == 46) { // Delete
-                this.cut();
-                this.clipboard = [];
-            } else if (ev.ctrlKey) {
-                if (ev.which == 67) { // C
-                    this.copy(true);
-                } else if (ev.which == 88) { // X
-                    this.cut();
-                } else if (ev.which == 86) { // V
-                    this.paste();
+            let key = ev.key;
+
+            if (ev.ctrlKey) {
+                switch (key) {
+                    case 'c':
+                        this.copy(true);
+                        break;
+                    case 'x':
+                        this.cut();
+                        break;
+                    case 'v':
+                        this.paste();
+                        break;
+                }
+            } else {
+                if (key >= '1' && key <= '9') {
+                    this.numpad(key - 1);
+                } else {
+                    switch (key) {
+                        case ' ':
+                            this.play();
+                            break;
+                        case 'r':
+                            this.rotate();
+                            break;
+                        case 'm':
+                            this.flip(ev);
+                            break;
+                        case 'Delete':
+                            this.cut();
+                            this.clipboard = [];
+                            break;
+                        case 'ArrowRight':
+                            this.life.next();
+                            this.life.draw();
+                            break;
+                        case '+':
+                            this.life.scale /= 0.75;
+                            this.life.draw();
+                            break;
+                        case '-':
+                            this.life.scale *= 0.75;
+                            this.life.draw();
+                            break;
+                    }
                 }
             }
         });
@@ -641,8 +668,9 @@ class UI {
         $('#in-engine').val(this.life.engine);
 
         if (this.life.engine === 'hashlife') {
-            $('#in-board-type').parent().hide();
-            $('#in-board-type, #sw-colors').attr('disabled', '');
+            $('#in-board-type, #sw-colors, #sw-dead')
+                .attr('disabled', '').parent().hide();
+            $('#sw-inverse').parent().show();
             $('#sw-colors').removeAttr('checked');
             this.life.$canvas.on('change.step', this.hashStep);
             $('#in-game-step')
@@ -650,8 +678,9 @@ class UI {
                 .val(this.life.step);
             this.hashStep();
         } else {
-            $('#in-board-type').parent().show();
-            $('#in-board-type, #sw-colors').removeAttr('disabled');
+            $('#in-board-type, #sw-colors, #sw-dead')
+                .removeAttr('disabled').parent().show();
+            $('#sw-inverse').parent().hide();
             $('#sw-colors').attr('checked', '');
             this.life.$canvas.off('change.step', this.hashStep);
             $('#in-game-step')
