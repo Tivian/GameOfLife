@@ -18,8 +18,12 @@ class Gallery {
         this.limitCache = 100;
         this.prevQuality = 0.92;
 
+        let $fileList = $('#gallery-file-list');
         let $gallerySet = $('#gallery-set');
         this.elem.addEventListener('show.bs.modal', _ => {
+            if ($('#gallery-set * ').length)
+                return;
+
             let opt = dir => `<option value="${dir}">${dir}</option>`;
             let keys = [...this.files.keys()];
 
@@ -29,11 +33,10 @@ class Gallery {
         this.elem.addEventListener('shown.bs.modal', _ => {
             this.$canvas.show();
             this._resizePreview();
-            $('#gallery-file-list button:first').trigger('click');
+            $fileList.find('button:visible:first').trigger('click');
         });
         this.elem.addEventListener('hide.bs.modal', _ => {
             this.$canvas.hide();
-            $('#gallery-file-list button').off('click');
         });
         window.addEventListener('resize', _ => {
             this.cache = {};
@@ -45,9 +48,12 @@ class Gallery {
             + `value="${file.path}">${file.name}</button>`;
 
         const showFiles = files => {
-            $('#gallery-file-list').html(files.map((x, i) => btnFromFile(x, i)).join('\n'));
-            $('#gallery-file-list button').on('click', ev => this._preview(ev));
-            $('#gallery-file-list button:first').trigger('click');
+            $fileList.html(files.map((x, i) => btnFromFile(x, i)).join('\n'));
+            $fileList.find('button').on('click', ev => {
+                this._currentBtn = ev.target;
+                this._preview(ev);
+            });
+            $fileList.find('button:first').trigger('click');
         };
 
         const filterDuplicates = files => {
@@ -65,6 +71,51 @@ class Gallery {
         $gallerySet.on('change', _ =>
             showFiles(this.files.get($gallerySet.val()))
         );
+
+        $fileList.on('keydown', ev => {
+            let prevent = true;
+            let getElem = elem => elem;
+
+            let pageStep = Math.floor(
+                $fileList.closest('.modal-body').height() /
+                $fileList.find('button:first').outerHeight()) - 1;
+
+            const pageFx = (elem, fx) => {
+                let result = elem[fx]().eq(pageStep);
+                if (!result.length)
+                    result = elem[fx]().last();
+                return result;
+            };
+
+            switch (ev.key) {
+                case 'ArrowUp':
+                    getElem = elem => elem.prev();
+                    break;
+                case 'ArrowDown':
+                    getElem = elem => elem.next();
+                    break;
+                case 'PageUp':
+                    getElem = elem => pageFx(elem, 'prevAll');
+                    break;
+                case 'PageDown':
+                    getElem = elem => pageFx(elem, 'nextAll');
+                    break;
+                case 'Home':
+                    getElem = elem => elem.prevAll().last();
+                    break;
+                case 'End':
+                    getElem = elem => elem.nextAll().last();
+                    break;
+                default:
+                    prevent = false;
+                    break;
+            }
+
+            if (prevent) {
+                ev.preventDefault();
+                getElem($(this._currentBtn)).focus().click();
+            }
+        });
 
         let $galleryType = $('#in-gallery-type');
         let $fileName = $('#in-gallery-file-name');
@@ -89,16 +140,15 @@ class Gallery {
         });
 
         $fileName.on('input', ev => {
-            let $list = $('#gallery-file-list');
             let val = ev.target.value;
 
-            $list.find('button').each(function() {
+            $fileList.find('button').each(function() {
                 let $this = $(this);
                 $this.toggle($this.val().includes(val));
             });
             [...$('#gallery-file-list button:visible')]
                 .sort((a, b) => b.textContent.startsWith(val) - a.textContent.startsWith(val))
-                .forEach(x => $list[0].appendChild(x));
+                .forEach(x => $fileList[0].appendChild(x));
         });
         
         fetch(filename).then(file => {
