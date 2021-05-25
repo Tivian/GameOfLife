@@ -192,7 +192,8 @@ class RLEFile extends CellFile {
         [this.width, this.height] = [boundingBox.width, boundingBox.height];
         lines.push(`x = ${this.width || 0}, y = ${this.height || 0}, rule = ${this.rule || 'B23/S3'}`);
 
-        let arr = new Array(...this.cells);
+        let arr = new Array();
+        this.cells.forEach(cell => arr.push(cell));
         arr.sort((a, b) => (b.y * this.width - b.x) - (a.y * this.width - a.x));
 
         let lastX = boundingBox.left;
